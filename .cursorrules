@@ -1,0 +1,68 @@
+# IMAGE PORTAL — CURSOR / CLAUDE CODE RULES
+# Canonical authority: docs/IMAGE_PORTAL_MASTER_SPEC.md. If anything conflicts,
+# the master spec wins. Do not redesign the architecture. Execute it.
+
+## PROJECT
+Image Portal: any image becomes an owner-controlled programmable doorway.
+Monorepo, pnpm workspaces, TypeScript everywhere, Zod for all input validation.
+
+## ARCHITECTURE LAWS (DO NOT VIOLATE)
+1. Recognition is TWO-STAGE retrieve-then-verify, and BOTH stages ship in V1:
+   Stage A = copy-detection embedding ANN over pgvector HNSW (top-K 20).
+   Stage B = local-feature geometric verification (ORB + RANSAC homography
+   inliers in MVP; SuperPoint+LightGlue later behind the same interface).
+   Never ship Stage A alone. Nearest-neighbor is recall, not a decision.
+2. The primary embedding is a COPY-DETECTION / instance-retrieval model
+   (SSCD or DINOv2). It is NOT CLIP. CLIP is semantic and false-positives at
+   scale. CLIP may exist only as an optional later secondary discovery signal.
+3. Query embedding is computed ON-DEVICE (Expo: ONNX/ExecuTorch/TFLite).
+   Catalog embedding is computed at upload via managed API or batch.
+   There is NO Python FastAPI / vision microservice at MVP.
+4. Embedding-space consistency is sacred: identical model + identical
+   preprocessing on both sides. Every fingerprint row carries embedding_model
+   and embedding_version. /api/scan must refuse rows of the wrong version.
+   Never hot-swap a model; always re-embed then flip version atomically.
+5. No aspect-ratio enforcement. Quality score warns; it never rejects.
+6. No auto-open. Scanner shows a result card with the destination domain;
+   user taps to open. Auto-open may exist only as an explicit opt-in setting.
+7. No continuous video to backend. Throttled capture 800-1500ms or tap-to-scan.
+8. MindAR is for bounded, pre-compiled campaign packs and AR feel only.
+   It is never the cloud recognition engine for arbitrary uploads. PWA uses
+   getUserMedia throttled capture + the same server retrieve-then-verify.
+9. Steganographic watermarking is V3, not now. The "NoK|OfF / IMAGE PORTAL"
+   mark is a cosmetic, creator-toggled V1 export option only — never functional.
+
+## DATA
+- Tables exactly as supabase/ migrations + master spec section 5.
+- vector(N): N is fixed to the pinned model. Do not vary it per row.
+- RLS on every table. Fingerprints/embeddings are NEVER client-selectable;
+  /api/scan is the only read path into recognition data.
+- Never return inactive or suspended portals from scan or redirect.
+
+## SECURITY (ENFORCE IN CODE, NOT JUST DOCS)
+- Destination URL: https only (http dev-only). Reject javascript:, data:,
+  file:, localhost, 127.0.0.1, private/link-local ranges, malformed.
+- Punycode-decode destinations; flag mixed-script / lookalike domains.
+- Flag destinations that are themselves open redirectors.
+- Safe Browsing check at set-time + periodic re-check; auto-suspend on hit.
+- No server-side fetch of the destination on the hot path. Any future unfurl:
+  domain allowlist + IP pin + block redirects into private ranges (SSRF).
+- /api/scan is unauthenticated by design: hard rate-limit by IP + device id.
+- Block/flag near-duplicate uploads against active portals (scan-hijack).
+- Store ip_hash, never raw IP, in scan_events. Honor deletion requests (CCPA).
+- Service role key server-only. Never shipped to client or mobile bundle.
+
+## CODE STYLE
+- TypeScript strict. No `any` on public boundaries.
+- Zod schema for every API input and every cross-package payload.
+- Server-only Supabase admin client isolated; never imported client-side.
+- Reusable components; explicit loading / empty / error states everywhere.
+- Provider-swappable abstractions for embedding + verification (interface,
+  not a hardcoded vendor). Do not simulate core recognition silently — if a
+  model binary is missing, fail loudly with a clear setup error.
+- Small, reviewable commits aligned to the MANUAL.md task numbers.
+
+## WHEN UNSURE
+Re-read docs/IMAGE_PORTAL_MASTER_SPEC.md. Do not invent a new approach.
+If the spec is genuinely silent, choose the simplest option that preserves
+laws 1-9 and state the assumption in the commit message.

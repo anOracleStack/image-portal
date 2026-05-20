@@ -1,0 +1,4 @@
+{ "expo": { "name": "Image Portal", "slug": "image-portal", "scheme": "imageportal",
+  "ios": { "infoPlist": { "NSCameraUsageDescription": "Scan Image Portals." } },
+  "android": { "permissions": ["CAMERA"] },
+  "plugins": ["expo-camera"] } }

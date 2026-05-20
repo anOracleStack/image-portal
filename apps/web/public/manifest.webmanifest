@@ -1,0 +1,12 @@
+{
+  "name": "Image Portal",
+  "short_name": "ImagePortal",
+  "description": "Any image, a programmable doorway. Scan visuals to open destinations.",
+  "start_url": "/scan",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#7df9ff",
+  "orientation": "portrait",
+  "categories": ["utilities", "productivity"],
+  "screenshots": []
+}

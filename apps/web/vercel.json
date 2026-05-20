@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter @ip/web build",
+  "outputDirectory": ".next",
+  "regions": ["iad1"]
+}
