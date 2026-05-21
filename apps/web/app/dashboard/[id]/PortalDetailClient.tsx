@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
+import { BalancedText } from "@/components/ui/BalancedText";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
 
 interface Props {
@@ -11,48 +12,38 @@ interface Props {
   userId: string;
 }
 
-const statusColor: Record<string, string> = {
-  active: "#22c55e",
-  inactive: "#6b7280",
-  suspended: "#ef4444",
+const statusBadgeClass: Record<string, string> = {
+  active: "ip-badge-success",
+  inactive: "ip-badge-muted",
+  suspended: "ip-badge-danger",
 };
 
-/// --- style helpers ---
-function badge(color: string): React.CSSProperties {
-  return {
-    display: "inline-block",
-    padding: "2px 8px",
-    borderRadius: 999,
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    background: color + "22",
-    color,
-  };
-}
-function btn(bg: string, fg: string = "#ededed"): React.CSSProperties {
-  return {
-    background: bg,
-    border: "none",
-    borderRadius: 8,
-    padding: "8px 16px",
-    fontSize: "0.85rem",
-    color: fg,
-    cursor: "pointer",
-    fontWeight: 600,
-  };
-}
 const s = {
   header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "2rem", flexWrap: "wrap" as const },
-  title: { fontSize: "1.5rem", fontWeight: 700, margin: 0, color: "#ededed" },
+  title: { fontSize: "1.5rem", fontWeight: 700, margin: 0 },
   metaRow: { display: "flex", alignItems: "center", gap: 12, marginTop: 4, flexWrap: "wrap" as const },
-  section: { background: "#141414", border: "1px solid #222", borderRadius: 12, padding: "1.25rem 1.5rem", marginBottom: "1.5rem" },
-  sectionTitle: { fontSize: "1rem", fontWeight: 600, color: "#ededed", marginTop: 0, marginBottom: "0.75rem" },
-  label: { fontSize: "0.85rem", fontWeight: 500, color: "#888" },
-  value: { fontSize: "0.95rem", color: "#ccc", marginBottom: "0.5rem" },
+  sectionTitle: { fontSize: "1rem", fontWeight: 600, marginTop: 0, marginBottom: "0.75rem" },
+  label: { fontSize: "0.85rem", fontWeight: 500, color: "var(--muted)" },
+  value: { fontSize: "0.95rem", color: "var(--foreground)", marginBottom: "0.5rem", opacity: 0.9 },
   grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 },
-  thumb: { width: "100%", aspectRatio: "1", objectFit: "cover" as const, borderRadius: 6, background: "#1a1a1a" },
-  overlay: { position: "fixed" as const, inset: 0, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 },
-  confirmBox: { background: "#141414", border: "1px solid #333", borderRadius: 12, padding: "1.5rem 2rem", maxWidth: 400, textAlign: "center" as const },
+  thumb: {
+    width: "100%",
+    aspectRatio: "1",
+    objectFit: "cover" as const,
+    borderRadius: 6,
+    background: "var(--bg-elevated)",
+  },
+  overlay: {
+    position: "fixed" as const,
+    inset: 0,
+    background: "color-mix(in srgb, var(--background) 30%, transparent)",
+    backdropFilter: "blur(6px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  confirmBox: { maxWidth: 400, textAlign: "center" as const },
 };
 
 export default function PortalDetailClient({ portal, images, userId }: Props) {
@@ -154,58 +145,61 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
         <div>
           <h1 style={s.title}>{portal.title}</h1>
           <div style={s.metaRow}>
-            <span style={{ color: "#7df" }}>/p/{portal.slug}</span>
-            <span style={badge(statusColor[status] ?? "#888")}>
+            <span style={{ color: "var(--accent)" }}>/p/{portal.slug}</span>
+            <span className={`ip-badge ${statusBadgeClass[status] ?? "ip-badge-muted"}`}>
               {status}
             </span>
-            <span style={{ color: "#888", fontSize: "0.85rem" }}>
-              {portal.visibility === "public" ? "🌍 Public" : "🔒 Private"}
+            <span className="ip-muted" style={{ fontSize: "0.85rem" }}>
+              {portal.visibility === "public" ? "Public" : "Private"}
             </span>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          <a
-            href={`/dashboard/${portal.id}/edit`}
-            style={btn("#333", "#ededed")}
-          >
+          <a href={`/dashboard/${portal.id}/edit`} className="ip-btn ip-btn-ghost ip-btn-sm">
             Edit
           </a>
-          <button
-            onClick={handleToggleStatus}
-            style={btn(status === "active" ? "#5b3a0a" : "#1a3b1a")}
-          >
+          <button type="button" onClick={handleToggleStatus} className="ip-btn ip-btn-secondary ip-btn-sm">
             {status === "active" ? "Deactivate" : "Activate"}
           </button>
-          <button
-            onClick={() => setShowConfirm(true)}
-            style={btn("#3b1a1a", "#ef4444")}
-          >
+          <button type="button" onClick={() => setShowConfirm(true)} className="ip-btn ip-btn-danger ip-btn-sm">
             Delete
           </button>
-          <span style={{ color: "#444", fontSize: "0.75rem" }}>|</span>
+          <span className="ip-faint" style={{ fontSize: "0.75rem" }} aria-hidden>
+            |
+          </span>
           <button
+            type="button"
             onClick={() => handleExport("qrcode")}
             disabled={exporting === "qrcode"}
-            style={btn(exporting === "qrcode" ? "#2a3a2a" : "#1a2a1a", "#4ade80")}
+            className="ip-btn ip-btn-secondary ip-btn-sm"
           >
-            {exporting === "qrcode" ? "..." : "QR Code"}
+            {exporting === "qrcode" ? "…" : "QR code"}
           </button>
           <button
+            type="button"
             onClick={() => handleExport("image_only")}
             disabled={exporting === "image_only" || images.length === 0}
-            style={btn(exporting === "image_only" ? "#2a2a3a" : "#1a1a2a", images.length === 0 ? "#555" : "#818cf8")}
+            className="ip-btn ip-btn-secondary ip-btn-sm"
           >
-            {exporting === "image_only" ? "..." : "Export Image"}
+            {exporting === "image_only" ? "…" : "Export image"}
           </button>
           <button
+            type="button"
             onClick={() => handleExport("image_qr")}
             disabled={exporting === "image_qr" || images.length === 0}
-            style={btn(exporting === "image_qr" ? "#2a2a3a" : "#1a1a2a", images.length === 0 ? "#555" : "#818cf8")}
+            className="ip-btn ip-btn-secondary ip-btn-sm"
           >
-            {exporting === "image_qr" ? "..." : "Image+QR"}
+            {exporting === "image_qr" ? "…" : "Image + QR"}
           </button>
           {exportMsg && (
-            <span style={{ color: exportMsg.startsWith("Exported") ? "#4ade80" : "#ef4444", fontSize: "0.8rem", marginLeft: 8 }}>
+            <span
+              className="ip-muted"
+              style={{
+                color: exportMsg.startsWith("Exported") ? "var(--success)" : "var(--danger)",
+                fontSize: "0.8rem",
+                marginLeft: 8,
+              }}
+            >
               {exportMsg}
             </span>
           )}
@@ -213,15 +207,15 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
       </div>
 
       {/* Info Section */}
-      <div style={s.section}>
-        <h2 style={s.sectionTitle}>Details</h2>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <h2 className="ip-display" style={s.sectionTitle}>Details</h2>
         <div style={s.label}>Destination URL</div>
         <div style={s.value}>
           <a
             href={portal.destination_url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "#7df" }}
+            style={{ color: "var(--accent)" }}
           >
             {domain}
           </a>
@@ -243,32 +237,42 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
       </div>
 
       {/* Share & links */}
-      <div style={s.section}>
-        <h2 style={s.sectionTitle}>Share & distribute</h2>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <h2 className="ip-display" style={s.sectionTitle}>Share & distribute</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-          <a href={`/p/${portal.slug}`} target="_blank" rel="noopener noreferrer" style={btn("#1a2a2a", "#7df")}>
+          <a
+            href={`/p/${portal.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ip-btn ip-btn-ghost ip-btn-sm"
+          >
             Public page
           </a>
-          <a href={`/p/${portal.slug}/go`} target="_blank" rel="noopener noreferrer" style={btn("#1a2a2a", "#7df")}>
+          <a
+            href={`/p/${portal.slug}/go`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ip-btn ip-btn-ghost ip-btn-sm"
+          >
             QR redirect (/go)
           </a>
           <a
             href={`/api/portals/${portal.id}/share-card`}
             target="_blank"
             rel="noopener noreferrer"
-            style={btn("#1a2a1a", "#4ade80")}
+            className="ip-btn ip-btn-secondary ip-btn-sm"
           >
             Social share card
           </a>
         </div>
         <div style={s.label}>Copy link</div>
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <code style={{ color: "#aaa", fontSize: "0.8rem", wordBreak: "break-all" }}>
+          <code className="ip-mono ip-faint" style={{ fontSize: "0.8rem", wordBreak: "break-all" }}>
             {typeof window !== "undefined" ? `${window.location.origin}/p/${portal.slug}` : `/p/${portal.slug}`}
           </code>
           <button
             type="button"
-            style={btn("#333")}
+            className="ip-btn ip-btn-ghost ip-btn-sm"
             onClick={() => {
               const url = `${window.location.origin}/p/${portal.slug}`;
               void navigator.clipboard.writeText(url);
@@ -281,12 +285,14 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
       </div>
 
       {/* Image Gallery */}
-      <div style={s.section}>
-        <h2 style={s.sectionTitle}>Images ({images.length})</h2>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <h2 className="ip-display" style={s.sectionTitle}>Images ({images.length})</h2>
         {images.length === 0 ? (
-          <p style={{ color: "#888", fontSize: "0.9rem" }}>
-            No images uploaded yet.
-          </p>
+          <BalancedText
+            className="ip-muted ip-text-block ip-card-copy"
+            style={{ fontSize: "0.9rem" }}
+            lines={["No images uploaded yet."]}
+          />
         ) : (
           <div style={s.grid}>
             {images.map((img) => (
@@ -302,25 +308,28 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
       </div>
 
       {/* Upload Section */}
-      <div style={s.section}>
-        <h2 style={s.sectionTitle}>Upload Image</h2>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <h2 className="ip-display" style={s.sectionTitle}>Upload Image</h2>
         <ImageUploader onUpload={handleUpload} />
       </div>
 
       {/* Delete Confirmation Dialog */}
       {showConfirm && (
         <div style={s.overlay} onClick={() => setShowConfirm(false)}>
-          <div
-            style={s.confirmBox}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ color: "#ef4444", marginTop: 0 }}>
-              Delete Portal?
+          <div className="ip-card" style={s.confirmBox} onClick={(e) => e.stopPropagation()}>
+            <h3 className="ip-display" style={{ color: "var(--danger)", marginTop: 0 }}>
+              Delete portal?
             </h3>
-            <p style={{ color: "#888", fontSize: "0.9rem" }}>
-              This permanently deletes the portal, all uploaded images, and
-              fingerprints. This cannot be undone.
-            </p>
+            <BalancedText
+              className="ip-muted ip-text-block"
+              style={{ fontSize: "0.9rem", lineHeight: 1.6 }}
+              lines={[
+                "This permanently deletes the portal,",
+                "all uploaded images,",
+                "& fingerprints.",
+                "This cannot be undone.",
+              ]}
+            />
             <div
               style={{
                 display: "flex",
@@ -329,16 +338,10 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
                 marginTop: "1.25rem",
               }}
             >
-              <button
-                onClick={() => setShowConfirm(false)}
-                style={btn("#333")}
-              >
+              <button type="button" onClick={() => setShowConfirm(false)} className="ip-btn ip-btn-ghost">
                 Cancel
               </button>
-              <button
-                onClick={handleDelete}
-                style={btn("#3b1a1a", "#ef4444")}
-              >
+              <button type="button" onClick={handleDelete} className="ip-btn ip-btn-danger">
                 Delete
               </button>
             </div>

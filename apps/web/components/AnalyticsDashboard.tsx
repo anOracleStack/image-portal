@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,10 +55,12 @@ export function AnalyticsDashboard() {
   // Loading state
   if (loading) {
     return (
-      <div style={cardStyle}>
-        <div style={{ textAlign: "center", padding: "2rem", color: "#888" }}>
-          Loading analytics…
-        </div>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ padding: "2rem 1rem" }}
+          lines={["Loading analytics…"]}
+        />
       </div>
     );
   }
@@ -66,15 +69,14 @@ export function AnalyticsDashboard() {
   if (error) {
     return (
       <div
+        className="ip-card"
         style={{
-          ...cardStyle,
-          border: "1px solid #ef4444",
-          background: "#2a0a0a",
+          marginBottom: "1.5rem",
+          color: "var(--danger)",
+          borderColor: "var(--danger)",
         }}
       >
-        <div style={{ color: "#ef4444", textAlign: "center", padding: "1rem" }}>
-          {error}
-        </div>
+        <BalancedText className="ip-text-block" style={{ padding: "1rem" }} lines={[error]} />
       </div>
     );
   }
@@ -84,16 +86,17 @@ export function AnalyticsDashboard() {
     data && data.dailyScans.some((d) => d.count > 0);
   if (!hasData) {
     return (
-      <div style={cardStyle}>
-        <h3 style={sectionTitleStyle}>Scan Analytics</h3>
-        <div style={{ textAlign: "center", padding: "2rem", color: "#888" }}>
-          <p style={{ fontSize: "1.1rem", marginBottom: 8 }}>
-            No scan data yet
-          </p>
-          <p style={{ fontSize: "0.85rem" }}>
-            Scans will appear here once users interact with your portals.
-          </p>
-        </div>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <h3 className="ip-section-title">Scan analytics</h3>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ padding: "1.5rem 1rem 2rem" }}
+          lines={[
+            "No scan data yet.",
+            "Scans appear here once people",
+            "interact with your portals.",
+          ]}
+        />
       </div>
     );
   }
@@ -101,8 +104,8 @@ export function AnalyticsDashboard() {
   const totalScans = data!.matchRate.matched + data!.matchRate.unmatched;
 
   return (
-    <div style={cardStyle}>
-      <h3 style={sectionTitleStyle}>Scan Analytics</h3>
+    <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+      <h3 className="ip-section-title">Scan analytics</h3>
 
       <div
         style={{
@@ -198,7 +201,7 @@ function BarChart({ data }: { data: DailyScan[] }) {
                 maxWidth: 20,
                 height: `${pct}%`,
                 minHeight: d.count > 0 ? 4 : 0,
-                background: "#7df",
+                background: "var(--accent)",
                 borderRadius: "3px 3px 0 0",
                 transition: "height 0.3s",
               }}
@@ -207,7 +210,7 @@ function BarChart({ data }: { data: DailyScan[] }) {
               <span
                 style={{
                   fontSize: "0.6rem",
-                  color: "#666",
+                  color: "var(--text-faint)",
                   marginTop: 4,
                 }}
               >
@@ -235,7 +238,7 @@ function DonutChart({
 }) {
   if (total === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "1rem", color: "#888" }}>
+      <div className="ip-muted ip-text-block" style={{ textAlign: "center", padding: "1rem" }}>
         No data
       </div>
     );
@@ -259,7 +262,7 @@ function DonutChart({
           width: 100,
           height: 100,
           borderRadius: "50%",
-          background: `conic-gradient(#7df 0deg ${matchedDeg}deg, #333 ${matchedDeg}deg 360deg)`,
+          background: `conic-gradient(var(--accent) 0deg ${matchedDeg}deg, var(--border-strong) ${matchedDeg}deg 360deg)`,
           flexShrink: 0,
         }}
       />
@@ -271,13 +274,12 @@ function DonutChart({
               width: 10,
               height: 10,
               borderRadius: "50%",
-              background: "#7df",
+              background: "var(--accent)",
               marginRight: 8,
             }}
           />
-          <span style={{ color: "#aaa" }}>Matched</span>
-          <span
-            style={{ color: "#ededed", marginLeft: 8, fontWeight: 600 }}
+          <span className="ip-muted">Matched</span>
+          <span style={{ marginLeft: 8, fontWeight: 600 }}
           >
             {matched.toLocaleString()} ({matchedPct}%)
           </span>
@@ -289,13 +291,12 @@ function DonutChart({
               width: 10,
               height: 10,
               borderRadius: "50%",
-              background: "#333",
+              background: "var(--border-strong)",
               marginRight: 8,
             }}
           />
-          <span style={{ color: "#aaa" }}>Unmatched</span>
-          <span
-            style={{ color: "#ededed", marginLeft: 8, fontWeight: 600 }}
+          <span className="ip-muted">Unmatched</span>
+          <span style={{ marginLeft: 8, fontWeight: 600 }}
           >
             {unmatched.toLocaleString()} ({unmatchedPct}%)
           </span>
@@ -319,13 +320,22 @@ function BreakdownList({
 }) {
   if (entries.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "1rem", color: "#888" }}>
+      <div className="ip-muted ip-text-block" style={{ textAlign: "center", padding: "1rem" }}>
         No data
       </div>
     );
   }
 
-  const colors = ["#7df", "#6cf", "#5be", "#4ad", "#4ac", "#7cf", "#8df", "#9ef"];
+  const colors = [
+    "var(--accent)",
+    "color-mix(in srgb, var(--accent) 85%, var(--text))",
+    "color-mix(in srgb, var(--accent) 70%, var(--text))",
+    "color-mix(in srgb, var(--accent) 55%, var(--text-muted))",
+    "var(--text-muted)",
+    "color-mix(in srgb, var(--accent) 40%, var(--border))",
+    "var(--border-strong)",
+    "var(--text-faint)",
+  ];
 
   return (
     <div
@@ -349,10 +359,10 @@ function BreakdownList({
                 marginBottom: 4,
               }}
             >
-              <span style={{ color: "#aaa", textTransform: "capitalize" }}>
+              <span className="ip-muted" style={{ textTransform: "capitalize" }}>
                 {label}
               </span>
-              <span style={{ color: "#ededed", fontWeight: 600 }}>
+              <span style={{ fontWeight: 600 }}>
                 {entry.count.toLocaleString()} ({pct}%)
               </span>
             </div>
@@ -360,7 +370,7 @@ function BreakdownList({
               style={{
                 height: 6,
                 borderRadius: 999,
-                background: "#222",
+                background: "var(--border)",
                 overflow: "hidden",
               }}
             >
@@ -415,13 +425,13 @@ function TopPortalsList({
                 marginBottom: 4,
               }}
             >
-              <span style={{ color: "#aaa" }}>
-                <span style={{ color: "#666", marginRight: 6 }}>
+              <span className="ip-muted">
+                <span className="ip-faint" style={{ marginRight: 6 }}>
                   #{i + 1}
                 </span>
                 {p.title}
               </span>
-              <span style={{ color: "#ededed", fontWeight: 600 }}>
+              <span style={{ fontWeight: 600 }}>
                 {p.count.toLocaleString()} ({share}%)
               </span>
             </div>
@@ -429,7 +439,7 @@ function TopPortalsList({
               style={{
                 height: 6,
                 borderRadius: 999,
-                background: "#222",
+                background: "var(--border)",
                 overflow: "hidden",
               }}
             >
@@ -437,7 +447,7 @@ function TopPortalsList({
                 style={{
                   width: `${pct}%`,
                   height: "100%",
-                  background: "#7df",
+                  background: "var(--accent)",
                   borderRadius: 999,
                   transition: "width 0.3s",
                 }}
@@ -450,29 +460,9 @@ function TopPortalsList({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Shared styles
-// ---------------------------------------------------------------------------
-const cardStyle: React.CSSProperties = {
-  background: "#0f0f0f",
-  border: "1px solid #222",
-  borderRadius: 12,
-  padding: "1.25rem 1.5rem",
-  marginBottom: "1.5rem",
-};
-
-const sectionTitleStyle: React.CSSProperties = {
-  fontSize: "0.875rem",
-  fontWeight: 600,
-  margin: 0,
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  color: "#888",
-};
-
 const subsectionStyle: React.CSSProperties = {
-  background: "#0a0a0a",
-  border: "1px solid #222",
+  background: "var(--bg-elevated)",
+  border: "1px solid var(--border)",
   borderRadius: 8,
   padding: "1rem",
 };
@@ -481,6 +471,6 @@ const subsectionTitleStyle: React.CSSProperties = {
   fontSize: "0.8rem",
   fontWeight: 600,
   margin: 0,
-  color: "#aaa",
+  color: "var(--text-muted)",
   marginBottom: 8,
 };

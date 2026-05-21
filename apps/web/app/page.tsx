@@ -1,523 +1,254 @@
-"use client";
+import { GlowBackground } from "@/components/ui/GlowBackground";
+import { Button } from "@/components/ui/Button";
+import { BalancedText } from "@/components/ui/BalancedText";
+import { MarketingNav } from "@/components/marketing/MarketingNav";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { ScanDemo } from "@/components/landing/ScanDemo";
 
-const s = {
-  page: {
-    background: "#0a0a0a",
-    color: "#ededed",
-    fontFamily:
-      'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    minHeight: "100vh",
+const useCases = [
+  {
+    icon: "◫",
+    title: "Posters & Flyers",
+    lines: [
+      "Printed materials that change",
+      "with your content.",
+      "Update the link without reprinting.",
+    ],
   },
-  dim: "rgba(237,237,237,0.55)" as const,
-  section: (py: number) =>
-    ({
-      maxWidth: 1100,
-      margin: "0 auto",
-      padding: py + "px 24px",
-    }) as const,
-} as const;
+  {
+    icon: "◎",
+    title: "Restaurant Menus",
+    lines: [
+      "The menu image itself is scannable —",
+      "change prices,",
+      "& items instantly.",
+    ],
+  },
+  {
+    icon: "◇",
+    title: "Event Tickets",
+    lines: [
+      "Link tickets to pages that update",
+      "in real time — schedule, venue,",
+      "& refunds.",
+    ],
+  },
+  {
+    icon: "▣",
+    title: "Product Packaging",
+    lines: [
+      "Packaging becomes a channel",
+      "to your brand — manuals, offers,",
+      "& unboxing.",
+    ],
+  },
+  {
+    icon: "◈",
+    title: "Art & Photography",
+    lines: [
+      "Every physical print becomes",
+      "a gallery link collectors can scan.",
+    ],
+  },
+  {
+    icon: "◆",
+    title: "Business Cards",
+    lines: [
+      "Your card design is the key —",
+      "no separate QR block required.",
+    ],
+  },
+] as const;
 
-function IconCircle({ label }: { label: string }) {
-  return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 56,
-        height: 56,
-        borderRadius: "50%",
-        background: "rgba(119,221,255,0.12)",
-        color: "#7df",
-        fontWeight: 700,
-        fontSize: 22,
-        flexShrink: 0,
-      }}
-    >
-      {label}
-    </span>
-  );
-}
+const whyItems = [
+  {
+    title: "No QR codes needed",
+    lines: [
+      "QR codes require a printed code.",
+      "Image Portal uses the image itself —",
+      "any existing printed material works.",
+    ],
+  },
+  {
+    title: "Update anytime, never reprint",
+    lines: [
+      "Change the destination whenever you want.",
+      "The printed image stays the same;",
+      "the link does not.",
+    ],
+  },
+  {
+    title: "Reliable scanning",
+    lines: [
+      "Copy-detection embeddings plus",
+      "geometric verification — works on print,",
+      "glare,",
+      "& low light.",
+    ],
+  },
+] as const;
 
-function Navbar() {
-  const links: [string, string][] = [
-    ["Dashboard", "/dashboard"],
-    ["Pricing", "/pricing"],
-    ["Scan", "/scan"],
-    ["Gallery", "/gallery"],
-  ];
-
-  return (
-    <nav
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        maxWidth: 1100,
-        margin: "0 auto",
-        padding: "18px 24px",
-      }}
-    >
-      <a
-        href="/"
-        style={{
-          color: "#ededed",
-          textDecoration: "none",
-          fontWeight: 700,
-          fontSize: 18,
-          letterSpacing: "-0.03em",
-        }}
-      >
-        Image Portal
-      </a>
-
-      <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
-        {links.map(([label, href]) => (
-          <a
-            key={href}
-            href={href}
-            style={{
-              color: s.dim,
-              textDecoration: "none",
-              fontSize: 14,
-              transition: "color 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ededed")}
-            onMouseOut={(e) => (e.currentTarget.style.color = s.dim)}
-          >
-            {label}
-          </a>
-        ))}
-        <a
-          href="/dashboard"
-          style={{
-            background: "#7df",
-            color: "#0a0a0a",
-            textDecoration: "none",
-            borderRadius: 8,
-            padding: "8px 18px",
-            fontWeight: 600,
-            fontSize: 14,
-          }}
-        >
-          Get Started
-        </a>
-      </div>
-    </nav>
-  );
-}
-
-function Footer() {
-  const links: [string, string][] = [
-    ["Dashboard", "/dashboard"],
-    ["Pricing", "/pricing"],
-    ["Scan", "/scan"],
-    ["Gallery", "/gallery"],
-    ["Privacy", "/privacy"],
-  ];
-  return (
-    <footer
-      style={{
-        borderTop: "1px solid rgba(237,237,237,0.08)",
-        padding: "40px 24px",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 16,
-        }}
-      >
-        <span style={{ color: s.dim, fontSize: 14 }}>
-          &copy; {new Date().getFullYear()} Image Portal
-        </span>
-        <div style={{ display: "flex", gap: 24 }}>
-          {links.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              style={{
-                color: s.dim,
-                textDecoration: "none",
-                fontSize: 14,
-                transition: "color 0.2s",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.color = "#ededed")}
-              onMouseOut={(e) => (e.currentTarget.style.color = s.dim)}
-            >
-              {label}
-            </a>
-          ))}
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-function CTAButton({
-  primary,
-  children,
-  href,
-  onClick,
-}: {
-  primary?: boolean;
-  children: React.ReactNode;
-  href?: string;
-  onClick?: () => void;
-}) {
-  const Tag = href ? "a" : "button";
-  return (
-    <Tag
-      href={href}
-      onClick={onClick}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        padding: "14px 32px",
-        borderRadius: 10,
-        fontWeight: 600,
-        fontSize: 16,
-        textDecoration: "none",
-        cursor: "pointer",
-        border: "none",
-        transition: "transform 0.2s, box-shadow 0.2s",
-        ...(primary
-          ? {
-              background: "#7df",
-              color: "#0a0a0a",
-              boxShadow: "0 0 0 1px rgba(119,221,255,0.3)",
-            }
-          : {
-              background: "transparent",
-              color: "#ededed",
-              boxShadow: "0 0 0 1px rgba(237,237,237,0.2)",
-            }),
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.transform = "scale(1.03)";
-        if (primary)
-          e.currentTarget.style.boxShadow = "0 0 20px rgba(119,221,255,0.35)";
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.transform = "scale(1)";
-        if (primary)
-          e.currentTarget.style.boxShadow = "0 0 0 1px rgba(119,221,255,0.3)";
-        else
-          e.currentTarget.style.boxShadow = "0 0 0 1px rgba(237,237,237,0.2)";
-      }}
-    >
-      {children}
-    </Tag>
-  );
-}
-
-function UseCaseCard({
-  emoji,
-  title,
-  desc,
-}: {
-  emoji: string;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div
-      style={{
-        background: "rgba(237,237,237,0.04)",
-        borderRadius: 14,
-        padding: 28,
-        border: "1px solid rgba(237,237,237,0.06)",
-        transition: "border-color 0.25s, background 0.25s",
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.borderColor = "rgba(119,221,255,0.3)";
-        e.currentTarget.style.background = "rgba(119,221,255,0.04)";
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.borderColor = "rgba(237,237,237,0.06)";
-        e.currentTarget.style.background = "rgba(237,237,237,0.04)";
-      }}
-    >
-      <div style={{ fontSize: 28, marginBottom: 10 }}>{emoji}</div>
-      <h3 style={{ margin: "0 0 6px", fontSize: 17, fontWeight: 600 }}>
-        {title}
-      </h3>
-      <p style={{ margin: 0, color: s.dim, fontSize: 14, lineHeight: 1.6 }}>
-        {desc}
-      </p>
-    </div>
-  );
-}
-
-function StepCard({
-  n,
-  title,
-  desc,
-}: {
-  n: number;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
-      <IconCircle label={String(n)} />
-      <div>
-        <h3 style={{ margin: "0 0 6px", fontSize: 17, fontWeight: 600 }}>
-          {title}
-        </h3>
-        <p style={{ margin: 0, color: s.dim, fontSize: 14, lineHeight: 1.6 }}>
-          {desc}
-        </p>
-      </div>
-    </div>
-  );
-}
+const howSteps = [
+  {
+    title: "Upload any image",
+    lines: ["Poster, flyer, menu, screenshot,", "or artwork — anything works."],
+  },
+  {
+    title: "Link a destination",
+    lines: [
+      "Website, profile, store, payment —",
+      "change it anytime from your dashboard.",
+    ],
+  },
+  {
+    title: "Share everywhere",
+    lines: [
+      "Print, post, or display on screen.",
+      "Viewers scan with their camera —",
+      "no app install.",
+    ],
+  },
+] as const;
 
 export default function LandingPage() {
   return (
-    <div style={s.page}>
-      <Navbar />
+    <div className="ip-page">
+      <GlowBackground />
+      <MarketingNav />
 
-      <section
-        style={{
-          ...s.section(100),
-          textAlign: "center" as const,
-          maxWidth: 720,
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "clamp(2.4rem, 6vw, 4rem)",
-            fontWeight: 800,
-            lineHeight: 1.1,
-            letterSpacing: "-0.04em",
-            margin: "0 0 20px",
-          }}
+      <section className="ip-container ip-hero">
+        <p
+          className="ip-mono ip-badge ip-badge-accent ip-animate-in"
+          style={{ display: "inline-flex", marginBottom: 16 }}
         >
-          Turn Any Image<br />
-          Into a Link
+          Visual scan · programmable links
+        </p>
+        <h1 className="ip-hero-title ip-animate-in ip-animate-in-delay-1">
+          Turn any image
+          <br />
+          <span>into a doorway</span>
         </h1>
-        <p
-          style={{
-            fontSize: "clamp(1rem, 2.5vw, 1.2rem)",
-            color: s.dim,
-            lineHeight: 1.7,
-            margin: "0 auto 40px",
-            maxWidth: 580,
-          }}
-        >
-          Upload an image. Link it to anywhere. The image is the key &mdash; not
-          the destination. Anyone with a phone camera can scan it in seconds.
+        <BalancedText
+          className="ip-muted ip-text-block ip-animate-in ip-animate-in-delay-1"
+          style={{ fontSize: "1.125rem", maxWidth: 480, lineHeight: 1.7 }}
+          lines={[
+            "Upload an image. Link it anywhere.",
+            "The image is the key — not",
+            "the destination.",
+            "Anyone with a phone camera",
+            "can open your link in seconds.",
+          ]}
+        />
+        <div className="ip-hero-actions ip-animate-in ip-animate-in-delay-2">
+          <Button href="/login" variant="primary">
+            Get started free
+          </Button>
+          <Button href="#how-it-works" variant="secondary">
+            See how it works ↓
+          </Button>
+        </div>
+        <p className="ip-faint ip-mono" style={{ marginTop: 40, fontSize: "0.75rem" }}>
+          No app download · No QR required · Change destinations anytime
         </p>
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <CTAButton primary href="/dashboard">
-            Get Started Free
-          </CTAButton>
-          <CTAButton
-            onClick={() =>
-              document
-                .getElementById("how-it-works")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            See How It Works &darr;
-          </CTAButton>
-        </div>
-
-        <p
-          style={{
-            marginTop: 48,
-            fontSize: 13,
-            color: s.dim,
-            letterSpacing: "0.02em",
-          }}
-        >
-          No app download &middot; No QR code needed &middot; Change
-          destinations anytime
-        </p>
+        <ScanDemo />
       </section>
 
-      <section id="how-it-works" style={s.section(80)}>
-        <h2
-          style={{
-            textAlign: "center",
-            fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
-            fontWeight: 700,
-            margin: "0 0 48px",
-            letterSpacing: "-0.03em",
-          }}
-        >
-          How It Works
-        </h2>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 40,
-            maxWidth: 580,
-            margin: "0 auto",
-          }}
-        >
-          <StepCard
-            n={1}
-            title="Upload any image"
-            desc="A poster, flyer, menu, screenshot, or artwork &mdash; anything works."
-          />
-          <StepCard
-            n={2}
-            title="Link it to a destination"
-            desc="Your website, social profile, app store, payment link &mdash; change it anytime."
-          />
-          <StepCard
-            n={3}
-            title="Share it anywhere"
-            desc="Print it, post it, display it on screen. Viewers scan with their phone camera &mdash; no app download needed."
-          />
-        </div>
-      </section>
-
-      <section style={s.section(80)}>
-        <h2
-          style={{
-            textAlign: "center",
-            fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
-            fontWeight: 700,
-            margin: "0 0 48px",
-            letterSpacing: "-0.03em",
-          }}
-        >
-          Use Cases
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: 20,
-          }}
-        >
-          <UseCaseCard
-            emoji={"\u{1F5BC}\uFE0F"}
-            title="Posters &amp; Flyers"
-            desc="Printed materials that change with your content. Update the link without reprinting."
-          />
-          <UseCaseCard
-            emoji={"\u{1F37D}\uFE0F"}
-            title="Restaurant Menus"
-            desc="Menu behind QR? No. The menu image itself is scannable. Change prices and items instantly."
-          />
-          <UseCaseCard
-            emoji={"\u{1F3AB}"}
-            title="Event Tickets"
-            desc="Link tickets to event pages that update in real-time &mdash; schedule changes, venue info, refunds."
-          />
-          <UseCaseCard
-            emoji={"\u{1F4E6}"}
-            title="Product Packaging"
-            desc="Turn packaging into a direct channel to your brand &mdash; unboxing videos, manuals, offers."
-          />
-          <UseCaseCard
-            emoji={"\u{1F3A8}"}
-            title="Art &amp; Photography"
-            desc="Every physical print becomes a gallery link. Collectors scan to see the portfolio."
-          />
-          <UseCaseCard
-            emoji={"\u{1F4BC}"}
-            title="Business Cards"
-            desc="Your card&rsquo;s design is its own scannable link. No QR code needed, just the card itself."
-          />
-        </div>
-      </section>
-
-      <section style={{ ...s.section(80), maxWidth: 640 }}>
-        <h2
-          style={{
-            textAlign: "center",
-            fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
-            fontWeight: 700,
-            margin: "0 0 48px",
-            letterSpacing: "-0.03em",
-          }}
-        >
-          Why Image Portal?
-        </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-          {[
-            [
-              "No QR codes needed",
-              "QR codes require a printed code. Image Portal uses the image itself &mdash; any existing printed material works.",
-            ],
-            [
-              "Update anytime, never reprint",
-              "Change the destination whenever you want. The printed image never changes; the link does.",
-            ],
-            [
-              "Reliable scanning technology",
-              "Two-stage recognition: copy-detection embeddings plus geometric verification. Works on printed, distorted, and low-light scans.",
-            ],
-          ].map(([title, desc]) => (
-            <div key={title}>
-              <h3 style={{ margin: "0 0 4px", fontSize: 16, fontWeight: 600 }}>
-                {title}
+      <section id="how-it-works" className="ip-container ip-section ip-section-center">
+        <h2 className="ip-display ip-section-title">How it works</h2>
+        <div className="ip-steps-flow">
+          {howSteps.map((step, i) => (
+            <div key={step.title} className="ip-step-block">
+              <span className="ip-step-num">{i + 1}</span>
+              <h3 className="ip-display" style={{ margin: 0, fontSize: "1.125rem" }}>
+                {step.title}
               </h3>
-              <p
-                style={{
-                  margin: 0,
-                  color: s.dim,
-                  fontSize: 14,
-                  lineHeight: 1.7,
-                }}
-              >
-                {desc}
-              </p>
+              <BalancedText
+                className="ip-muted ip-text-block"
+                style={{ margin: 0, fontSize: "0.9375rem", maxWidth: 400, lineHeight: 1.65 }}
+                lines={step.lines}
+              />
             </div>
           ))}
         </div>
       </section>
 
-      <section style={{ ...s.section(60), textAlign: "center" as const }}>
-        <h2
-          style={{
-            fontSize: "clamp(1.4rem, 3vw, 1.8rem)",
-            fontWeight: 700,
-            margin: "0 0 12px",
-            letterSpacing: "-0.03em",
-          }}
-        >
-          Pricing
-        </h2>
-        <p style={{ color: s.dim, fontSize: 15, margin: "0 0 24px" }}>
-          Free for 3 portals and 200 scans/month. Pro plans from $19/month.
-        </p>
-        <a
-          href="/pricing"
-          style={{
-            color: "#7df",
-            fontSize: 15,
-            fontWeight: 600,
-            textDecoration: "none",
-            borderBottom: "1px solid rgba(119,221,255,0.3)",
-            paddingBottom: 2,
-          }}
-        >
-          View full pricing &rarr;
-        </a>
+      <section className="ip-container ip-section ip-section-center">
+        <h2 className="ip-display ip-section-title">Use cases</h2>
+        <div className="ip-grid-3">
+          {useCases.map((c) => (
+            <div key={c.title} className="ip-card ip-card-interactive ip-card-glow ip-card-copy">
+              <span
+                className="ip-mono"
+                style={{ fontSize: "1.5rem", color: "var(--accent)", display: "block" }}
+                aria-hidden
+              >
+                {c.icon}
+              </span>
+              <h3 className="ip-display" style={{ margin: "16px 0 8px", fontSize: "1.05rem" }}>
+                {c.title}
+              </h3>
+              <BalancedText
+                className="ip-muted ip-text-block"
+                style={{ margin: 0, fontSize: "0.9rem", maxWidth: 280, lineHeight: 1.6 }}
+                lines={c.lines}
+              />
+            </div>
+          ))}
+        </div>
       </section>
 
-      <Footer />
+      <section className="ip-container ip-section ip-section-center" style={{ maxWidth: 640 }}>
+        <h2 className="ip-display ip-section-title" style={{ marginBottom: 40 }}>
+          Why Image Portal?
+        </h2>
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          {whyItems.map((item) => (
+            <div key={item.title} className="ip-card ip-card-copy">
+              <h3 className="ip-display" style={{ margin: "0 0 12px", fontSize: "1rem" }}>
+                {item.title}
+              </h3>
+              <BalancedText
+                className="ip-muted ip-text-block"
+                style={{ margin: 0, fontSize: "0.9rem", maxWidth: 420, lineHeight: 1.7 }}
+                lines={item.lines}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="ip-container ip-section ip-section-center">
+        <h2 className="ip-display ip-section-title-sm">Pricing</h2>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ margin: "0 0 24px", maxWidth: 360, fontSize: "1rem" }}
+          lines={["Free for 3 portals", "& 200 scans/month.", "Pro plans from $19/month."]}
+        />
+        <Button href="/pricing" variant="secondary">
+          View full pricing →
+        </Button>
+      </section>
+
+      <section className="ip-container ip-section-center" style={{ paddingBottom: 80 }}>
+        <div className="ip-card ip-card-glow ip-card-copy" style={{ padding: "3rem 2rem" }}>
+          <h2 className="ip-hero-title" style={{ fontSize: "clamp(1.75rem, 4vw, 2.25rem)", marginBottom: 16 }}>
+            Ready to <span>open the door</span>?
+          </h2>
+          <BalancedText
+            className="ip-muted ip-text-block"
+            style={{ margin: "0 auto 28px", maxWidth: 400, lineHeight: 1.65 }}
+            lines={[
+              "Create your first portal in under a minute.",
+              "Dark or light — your choice in the nav.",
+            ]}
+          />
+          <Button href="/login" variant="primary">
+            Create free account
+          </Button>
+        </div>
+      </section>
+
+      <MarketingFooter />
     </div>
   );
 }

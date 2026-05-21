@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, type CSSProperties } from "react";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 interface Props {
   onUpload: (file: File) => Promise<void>;
@@ -10,31 +11,28 @@ interface Props {
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-function dropzoneStyle(dragOver: boolean): React.CSSProperties {
+function dropzoneStyle(dragOver: boolean): CSSProperties {
   return {
-    border: `2px dashed ${dragOver ? "#7df" : "#333"}`,
+    border: `2px dashed ${dragOver ? "var(--accent)" : "var(--border-strong)"}`,
     borderRadius: 12,
     padding: "2rem 1rem",
     textAlign: "center",
     cursor: "pointer",
     transition: "border-color 0.2s",
-    background: dragOver ? "rgba(119, 221, 255, 0.06)" : "transparent",
+    background: dragOver
+      ? "color-mix(in srgb, var(--accent) 8%, transparent)"
+      : "transparent",
   };
 }
-function barStyle(pct: number): React.CSSProperties {
+
+function barStyle(pct: number): CSSProperties {
   return {
     width: `${pct}%`,
     height: "100%",
-    background: "#7df",
+    background: "var(--accent)",
     transition: "width 0.3s",
   };
 }
-const iStyles = {
-  preview: { maxWidth: "100%", maxHeight: 240, borderRadius: 8, marginTop: 12, objectFit: "contain" as const },
-  progress: { marginTop: 12, height: 6, borderRadius: 3, background: "#222", overflow: "hidden" },
-  hint: { fontSize: "0.82rem", color: "#888", marginTop: 8 },
-  error: { fontSize: "0.82rem", color: "#ef4444", marginTop: 8 },
-};
 
 export default function ImageUploader({ onUpload, disabled }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +49,7 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
       setProgress(0);
 
       if (!ALLOWED_TYPES.has(file.type)) {
-        setError("Only JPEG, PNG, and WebP files are allowed.");
+        setError("Only JPEG, PNG, & WebP files are allowed.");
         return;
       }
       if (file.size > MAX_SIZE) {
@@ -59,7 +57,6 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
         return;
       }
 
-      // Show preview
       const reader = new FileReader();
       reader.onload = () => setPreview(reader.result as string);
       reader.readAsDataURL(file);
@@ -111,13 +108,22 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
         onClick={() => inputRef.current?.click()}
       >
         {busy ? (
-          <p style={{ color: "#888" }}>Uploading…</p>
+          <BalancedText className="ip-muted ip-text-block" lines={["Uploading…"]} />
         ) : (
           <>
-            <p style={{ color: "#ccc", margin: 0 }}>
-              Drop an image here or click to browse
-            </p>
-            <div style={iStyles.hint}>JPEG / PNG / WebP &middot; max 10 MB</div>
+            <BalancedText
+              className="ip-text-block"
+              style={{ color: "var(--foreground)", margin: 0 }}
+              lines={[
+                "Drop an image here",
+                "or click to browse.",
+              ]}
+            />
+            <BalancedText
+              className="ip-muted ip-text-block"
+              style={{ marginTop: 8, fontSize: "0.82rem" }}
+              lines={["JPEG / PNG / WebP · max 10 MB"]}
+            />
           </>
         )}
       </div>
@@ -131,16 +137,40 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
       />
 
       {preview && !busy && (
-        <img src={preview} alt="Preview" style={iStyles.preview} />
+        <img
+          src={preview}
+          alt="Preview"
+          style={{
+            maxWidth: "100%",
+            maxHeight: 240,
+            borderRadius: 8,
+            marginTop: 12,
+            objectFit: "contain",
+          }}
+        />
       )}
 
       {progress > 0 && progress < 100 && (
-        <div style={iStyles.progress}>
+        <div
+          style={{
+            marginTop: 12,
+            height: 6,
+            borderRadius: 3,
+            background: "var(--border-strong)",
+            overflow: "hidden",
+          }}
+        >
           <div style={barStyle(progress)} />
         </div>
       )}
 
-      {error && <div style={iStyles.error}>{error}</div>}
+      {error && (
+        <BalancedText
+          className="ip-text-block"
+          style={{ fontSize: "0.82rem", color: "var(--danger)", marginTop: 8 }}
+          lines={[error]}
+        />
+      )}
     </div>
   );
 }

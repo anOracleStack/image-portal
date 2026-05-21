@@ -5,97 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 import { getInboxLinkForEmail } from "@/lib/email-inbox-url";
-
-const s = {
-  page: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    background: "#0a0a0a",
-    color: "#ededed",
-    fontFamily: "system-ui, sans-serif",
-    padding: "1.5rem",
-  } as const,
-  card: {
-    width: "100%",
-    maxWidth: 440,
-    padding: "2rem",
-    borderRadius: 12,
-    border: "1px solid #222",
-    background: "#111",
-  } as const,
-  title: { margin: "0 0 0.5rem", fontSize: "1.5rem", fontWeight: 600 } as const,
-  subtitle: {
-    margin: "0 0 1.25rem",
-    fontSize: "0.9rem",
-    color: "#aaa",
-    lineHeight: 1.5,
-  } as const,
-  emailBox: {
-    padding: "0.75rem 1rem",
-    marginBottom: "1.25rem",
-    borderRadius: 8,
-    background: "#1a1a1a",
-    border: "1px solid #333",
-    fontSize: "0.95rem",
-    wordBreak: "break-all" as const,
-  },
-  steps: {
-    margin: "0 0 1.25rem",
-    paddingLeft: "1.25rem",
-    fontSize: "0.875rem",
-    color: "#bbb",
-    lineHeight: 1.6,
-  },
-  primary: {
-    display: "block",
-    width: "100%",
-    padding: "0.75rem",
-    marginBottom: "0.75rem",
-    borderRadius: 8,
-    border: "none",
-    background: "#7df",
-    color: "#0a0a0a",
-    fontSize: "0.9375rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    textAlign: "center" as const,
-    textDecoration: "none",
-  },
-  secondary: {
-    display: "block",
-    width: "100%",
-    padding: "0.7rem",
-    marginBottom: "0.5rem",
-    borderRadius: 8,
-    border: "1px solid #444",
-    background: "transparent",
-    color: "#ededed",
-    fontSize: "0.875rem",
-    cursor: "pointer",
-  },
-  note: { fontSize: "0.8rem", color: "#777", marginTop: "1rem", lineHeight: 1.5 } as const,
-  success: {
-    padding: "0.5rem 0.75rem",
-    marginBottom: "1rem",
-    borderRadius: 8,
-    background: "#0f2a1a",
-    border: "1px solid #2a5",
-    color: "#8f8",
-    fontSize: "0.8125rem",
-  } as const,
-  error: {
-    padding: "0.5rem 0.75rem",
-    marginBottom: "1rem",
-    borderRadius: 8,
-    background: "#2a0f0f",
-    border: "1px solid #e44",
-    color: "#f88",
-    fontSize: "0.8125rem",
-  } as const,
-  link: { color: "#7df", textDecoration: "underline" } as const,
-};
+import { AuthShell } from "@/components/auth/AuthShell";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 function ConfirmEmailContent() {
   const searchParams = useSearchParams();
@@ -126,7 +37,7 @@ function ConfirmEmailContent() {
       setError(resendError.message);
       return;
     }
-    setStatus("We sent another confirmation email. Check your inbox (and spam).");
+    setStatus("We sent another confirmation email. Check your inbox (& spam).");
   }
 
   async function checkConfirmed() {
@@ -146,67 +57,110 @@ function ConfirmEmailContent() {
 
   if (!email) {
     return (
-      <div style={s.page}>
-        <div style={s.card}>
-          <h1 style={s.title}>Check your email</h1>
-          <p style={s.subtitle}>We need your email address to show inbox shortcuts.</p>
-          <Link href="/login" style={s.link}>
+      <AuthShell>
+        <div className="ip-auth-card">
+          <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: "0 0 0.5rem" }}>
+            Check your email
+          </h1>
+          <BalancedText
+            className="ip-muted ip-text-block"
+            lines={[
+              "We need your email address",
+              "to show inbox shortcuts.",
+            ]}
+          />
+          <Link href="/login" className="ip-nav-link" style={{ marginTop: 16, display: "inline-block" }}>
             Back to sign in
           </Link>
         </div>
-      </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div style={s.page}>
-      <div style={s.card}>
-        <h1 style={s.title}>Confirm your email</h1>
-        <p style={s.subtitle}>
-          We sent a confirmation link to the address below. You must confirm before you can
-          use Image Portal.
-        </p>
+    <AuthShell>
+      <div className="ip-auth-card ip-auth-card-center">
+        <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: "0 0 0.5rem" }}>
+          Confirm your email
+        </h1>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ marginBottom: "1.25rem", maxWidth: 360, lineHeight: 1.55 }}
+          lines={[
+            "We sent a confirmation link to the",
+            "address below. Confirm before",
+            "using Image Portal.",
+          ]}
+        />
 
-        <div style={s.emailBox}>{email}</div>
+        <div className="ip-input" style={{ marginBottom: "1.25rem", wordBreak: "break-all" }}>
+          {email}
+        </div>
 
-        <ol style={s.steps}>
-          <li>Open your email inbox (use the button below if we recognize your provider).</li>
-          <li>Find the message from Image Portal and tap <strong>Confirm email</strong>.</li>
-          <li>You will return to this site and land on your dashboard automatically.</li>
+        <ol
+          className="ip-muted"
+          style={{
+            margin: "0 auto 1.25rem",
+            paddingLeft: "1.25rem",
+            fontSize: "0.875rem",
+            lineHeight: 1.6,
+            maxWidth: 340,
+            textAlign: "left",
+          }}
+        >
+          <li>Open your inbox (button below if we recognize your provider).</li>
+          <li>
+            Find the message from Image Portal & tap <strong>Confirm email</strong>.
+          </li>
+          <li>You will return here & land on your dashboard.</li>
         </ol>
 
-        {status && <div style={s.success}>{status}</div>}
-        {error && <div style={s.error}>{error}</div>}
+        {status && (
+          <div className="ip-badge ip-badge-success" style={{ marginBottom: "1rem", display: "block", padding: "0.5rem 0.75rem" }}>
+            {status}
+          </div>
+        )}
+        {error && (
+          <div style={{ marginBottom: "1rem", color: "var(--danger)", fontSize: "0.8125rem" }}>
+            {error}
+          </div>
+        )}
 
         {inbox && (
-          <a href={inbox.href} target="_blank" rel="noopener noreferrer" style={s.primary}>
+          <a
+            href={inbox.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ip-btn ip-btn-primary"
+            style={{ width: "100%", marginBottom: "0.75rem" }}
+          >
             {inbox.label}
           </a>
         )}
 
-        <button type="button" style={s.secondary} onClick={() => void resend()}>
+        <button type="button" className="ip-btn ip-btn-secondary" style={{ width: "100%", marginBottom: "0.5rem" }} onClick={() => void resend()}>
           Resend confirmation email
         </button>
 
         <button
           type="button"
-          style={s.secondary}
+          className="ip-btn ip-btn-ghost"
+          style={{ width: "100%" }}
           disabled={checking}
           onClick={() => void checkConfirmed()}
         >
-          {checking ? "Checking…" : "I confirmed — continue to Image Portal"}
+          {checking ? "Checking…" : "I confirmed — continue"}
         </button>
 
-        <p style={s.note}>
-          The link in your email expires after a while. If it fails, use resend above. Already
-          confirmed?{" "}
-          <Link href="/login" style={s.link}>
+        <p className="ip-faint" style={{ fontSize: "0.8rem", marginTop: "1rem", lineHeight: 1.5 }}>
+          Links expire after a while. Already confirmed?{" "}
+          <Link href="/login" style={{ color: "var(--accent)" }}>
             Sign in
           </Link>
           .
         </p>
       </div>
-    </div>
+    </AuthShell>
   );
 }
 
@@ -214,11 +168,11 @@ export default function ConfirmEmailPage() {
   return (
     <Suspense
       fallback={
-        <div style={s.page}>
-          <div style={s.card}>
-            <p style={s.subtitle}>Loading…</p>
+        <AuthShell>
+          <div className="ip-auth-card">
+            <p className="ip-muted">Loading…</p>
           </div>
-        </div>
+        </AuthShell>
       }
     >
       <ConfirmEmailContent />

@@ -22,86 +22,8 @@ function friendlyAuthError(message: string): string {
   return message;
 }
 
-const s = {
-  page: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    background: "#0a0a0a",
-    color: "#ededed",
-    fontFamily: "system-ui, sans-serif",
-  } as const,
-  card: {
-    width: "100%",
-    maxWidth: 400,
-    padding: "2rem",
-    borderRadius: 12,
-    border: "1px solid #222",
-    background: "#111",
-  } as const,
-  title: {
-    margin: "0 0 0.25rem",
-    fontSize: "1.5rem",
-    fontWeight: 600,
-  } as const,
-  subtitle: {
-    margin: "0 0 1.5rem",
-    fontSize: "0.875rem",
-    color: "#888",
-  } as const,
-  label: {
-    display: "block",
-    marginBottom: 4,
-    fontSize: "0.8125rem",
-    color: "#aaa",
-  } as const,
-  input: {
-    width: "100%",
-    padding: "0.625rem 0.75rem",
-    marginBottom: "1rem",
-    borderRadius: 8,
-    border: "1px solid #333",
-    background: "#1a1a1a",
-    color: "#ededed",
-    fontSize: "0.9375rem",
-    outline: "none",
-    boxSizing: "border-box" as const,
-  },
-  button: {
-    width: "100%",
-    padding: "0.7rem",
-    borderRadius: 8,
-    border: "none",
-    background: "#7df",
-    color: "#0a0a0a",
-    fontSize: "0.9375rem",
-    fontWeight: 600,
-    cursor: "pointer",
-  } as const,
-  toggle: {
-    marginTop: "1rem",
-    textAlign: "center" as const,
-    fontSize: "0.8125rem",
-    color: "#888",
-  } as const,
-  toggleLink: {
-    color: "#7df",
-    cursor: "pointer",
-    textDecoration: "underline",
-    marginLeft: 4,
-  } as const,
-  error: {
-    padding: "0.5rem 0.75rem",
-    marginBottom: "1rem",
-    borderRadius: 8,
-    background: "#2a0f0f",
-    border: "1px solid #e44",
-    color: "#f88",
-    fontSize: "0.8125rem",
-    lineHeight: 1.45,
-  } as const,
-};
+import { AuthShell } from "@/components/auth/AuthShell";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 function LoginForm() {
   const router = useRouter();
@@ -179,68 +101,113 @@ function LoginForm() {
   }
 
   return (
-    <div style={s.page}>
-      <form onSubmit={handleSubmit} style={s.card}>
-        <h1 style={s.title}>{isSignUp ? "Create Account" : "Sign In"}</h1>
-        <p style={s.subtitle}>
-          {isSignUp
-            ? "Sign up, confirm your email, then start building portals"
-            : "Welcome back to Image Portal"}
+    <AuthShell>
+      <form onSubmit={handleSubmit} className="ip-auth-card ip-auth-card-center">
+        <p className="ip-mono ip-badge ip-badge-accent" style={{ marginBottom: 12 }}>
+          {isSignUp ? "Create account" : "Welcome back"}
         </p>
+        <h1 className="ip-display" style={{ margin: "0 0 0.25rem", fontSize: "1.5rem" }}>
+          {isSignUp ? "Create account" : "Sign in"}
+        </h1>
+        {isSignUp ? (
+          <BalancedText
+            className="ip-muted ip-text-block"
+            style={{ margin: "0 0 1.5rem", fontSize: "0.875rem" }}
+            lines={[
+              "Confirm your email,",
+              "then start building portals.",
+            ]}
+          />
+        ) : (
+          <BalancedText
+            className="ip-muted ip-text-block"
+            style={{ margin: "0 0 1.5rem", fontSize: "0.875rem" }}
+            lines={["Pick up where you left off."]}
+          />
+        )}
 
-        {error && <div style={s.error}>{error}</div>}
+        {error && (
+          <div
+            style={{
+              padding: "0.5rem 0.75rem",
+              marginBottom: "1rem",
+              borderRadius: 8,
+              background: "color-mix(in srgb, var(--danger) 12%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--danger) 40%, transparent)",
+              color: "var(--danger)",
+              fontSize: "0.8125rem",
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-        <label style={s.label} htmlFor="email">
+        <label className="ip-mono ip-faint" style={{ display: "block", marginBottom: 4, fontSize: "0.7rem" }} htmlFor="email">
           Email
         </label>
         <input
           id="email"
           type="email"
+          className="ip-input"
           placeholder="you@example.com"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={s.input}
+          style={{ marginBottom: "1rem" }}
         />
 
-        <label style={s.label} htmlFor="password">
+        <label className="ip-mono ip-faint" style={{ display: "block", marginBottom: 4, fontSize: "0.7rem" }} htmlFor="password">
           Password
         </label>
         <input
           id="password"
           type="password"
+          className="ip-input"
           placeholder="At least 6 characters"
           required
           minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={s.input}
+          style={{ marginBottom: "1rem" }}
         />
 
-        <button type="submit" disabled={loading} style={s.button}>
-          {loading ? "Please wait…" : isSignUp ? "Sign Up" : "Sign In"}
+        <button type="submit" disabled={loading} className="ip-btn ip-btn-primary" style={{ width: "100%" }}>
+          {loading ? "Please wait…" : isSignUp ? "Sign up" : "Sign in"}
         </button>
 
         {isSignUp && (
-          <p style={{ ...s.subtitle, marginTop: "0.75rem", marginBottom: 0 }}>
-            After sign up you must confirm via email before you can sign in.
-          </p>
+          <BalancedText
+            className="ip-faint ip-text-block"
+            style={{ marginTop: "0.75rem", marginBottom: 0, fontSize: "0.8rem" }}
+            lines={[
+              "You must confirm via email",
+              "before signing in.",
+            ]}
+          />
         )}
 
-        <div style={s.toggle}>
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}
-          <span
-            style={s.toggleLink}
+        <p className="ip-muted" style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.8125rem" }}>
+          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+          <button
+            type="button"
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--accent)",
+              cursor: "pointer",
+              textDecoration: "underline",
+              font: "inherit",
+            }}
             onClick={() => {
               setIsSignUp(!isSignUp);
               setError(null);
             }}
           >
-            {isSignUp ? "Sign In" : "Sign Up"}
-          </span>
-        </div>
+            {isSignUp ? "Sign in" : "Sign up"}
+          </button>
+        </p>
       </form>
-    </div>
+    </AuthShell>
   );
 }
 
@@ -248,11 +215,11 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div style={s.page}>
-          <div style={s.card}>
-            <p style={s.subtitle}>Loading…</p>
+        <AuthShell>
+          <div className="ip-auth-card">
+            <p className="ip-muted">Loading…</p>
           </div>
-        </div>
+        </AuthShell>
       }
     >
       <LoginForm />

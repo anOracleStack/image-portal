@@ -3,6 +3,8 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import PortalForm from "@/components/PortalForm";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { BalancedText } from "@/components/ui/BalancedText";
 import type { PortalRow } from "@/lib/types";
 
 interface PortalValues {
@@ -79,66 +81,41 @@ export default function EditPortalPage() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "4rem 1rem",
-          color: "#888",
-        }}
-      >
-        Loading portal…
+      <div className="ip-empty-state">
+        <BalancedText className="ip-muted ip-text-block" lines={["Loading portal…"]} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "4rem 1rem",
-          color: "#ef4444",
-        }}
-      >
-        {error}
+      <div className="ip-empty-state" style={{ color: "var(--danger)" }}>
+        <BalancedText className="ip-text-block" lines={[error]} />
       </div>
     );
   }
 
   if (!portal) {
     return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "4rem 1rem",
-          color: "#888",
-        }}
-      >
-        Portal not found.
+      <div className="ip-empty-state">
+        <BalancedText className="ip-muted ip-text-block" lines={["Portal not found."]} />
       </div>
     );
   }
 
   return (
-    <div>
-      <h1
-        style={{
-          fontSize: "1.5rem",
-          fontWeight: 700,
-          marginBottom: "1.5rem",
-        }}
-      >
-        Edit Portal
-      </h1>
+    <div className="ip-form-shell">
+      <PageIntro
+        title="Edit Portal"
+        lines={["Update title, destination,", "scan mode, & visibility."]}
+      />
 
       {submitError && (
         <div
+          className="ip-card"
           style={{
-            background: "#2a0a0a",
-            border: "1px solid #ef4444",
-            borderRadius: 8,
-            padding: "12px 16px",
-            color: "#ef4444",
+            color: "var(--danger)",
+            borderColor: "var(--danger)",
             marginBottom: "1rem",
           }}
         >

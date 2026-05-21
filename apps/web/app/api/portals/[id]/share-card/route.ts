@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { getAppUrl } from "@/lib/app-url";
 import sharp from "sharp";
 
-const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
+const APP_URL = getAppUrl();
 
 /** Branded 1200×630 OG share card for social previews. */
 export async function GET(

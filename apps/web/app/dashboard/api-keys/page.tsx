@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createBrowserClient_ } from "@/lib/supabase-browser";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 interface ApiKeyRow {
   id: string;
@@ -68,124 +69,46 @@ export default function ApiKeysPage() {
 
   const dismissNewKey = () => setNewKey(null);
 
-  const s = {
-    page: { color: "#ededed" },
-    heading: {
-      fontSize: "1.5rem",
-      fontWeight: 700,
-      margin: "0 0 1.5rem",
-    },
-    section: {
-      background: "#141414",
-      border: "1px solid #222",
-      borderRadius: 12,
-      padding: "1.5rem",
-      marginBottom: "1.5rem",
-    },
-    label: {
-      display: "block",
-      fontSize: "0.85rem",
-      color: "#888",
-      marginBottom: 6,
-    },
-    inputRow: {
-      display: "flex",
-      gap: 8,
-    },
-    input: {
-      flex: 1,
-      padding: "10px 14px",
-      borderRadius: 8,
-      border: "1px solid #333",
-      background: "#0a0a0a",
-      color: "#ededed",
-      fontSize: "0.9rem",
-      outline: "none",
-    },
-    btn: (bg: string, fg = "#ededed") => ({
-      background: bg,
-      border: "none",
-      borderRadius: 8,
-      padding: "10px 18px",
-      fontSize: "0.85rem",
-      fontWeight: 600,
-      color: fg,
-      cursor: "pointer",
-      whiteSpace: "nowrap" as const,
-    }),
-    newKeyBox: {
-      background: "#0d2818",
-      border: "1px solid #22c55e",
-      borderRadius: 10,
-      padding: "16px",
-      marginBottom: "1.5rem",
-    },
-    newKeyLabel: { fontSize: "0.82rem", color: "#22c55e", marginBottom: 8 },
-    keyValue: {
-      fontSize: "0.9rem",
-      fontWeight: 600,
-      color: "#ededed",
-      wordBreak: "break-all" as const,
-      fontFamily: "monospace",
-      marginBottom: 8,
-    },
-    keyWarning: {
-      fontSize: "0.78rem",
-      color: "#facc15",
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse" as const,
-    },
-    th: {
-      textAlign: "left" as const,
-      padding: "10px 8px",
-      fontSize: "0.82rem",
-      color: "#888",
-      borderBottom: "1px solid #222",
-    },
-    td: {
-      padding: "10px 8px",
-      fontSize: "0.85rem",
-      borderBottom: "1px solid #1a1a1a",
-      color: "#ccc",
-    },
-    empty: {
-      textAlign: "center" as const,
-      padding: "2rem",
-      color: "#666",
-    },
-    prefix: {
-      fontFamily: "monospace",
-      color: "#7df",
-    },
-    revokeBtn: {
-      background: "none",
-      border: "1px solid #5a1a1a",
-      borderRadius: 6,
-      padding: "4px 10px",
-      fontSize: "0.78rem",
-      color: "#ef4444",
-      cursor: "pointer",
-    },
-  };
-
   return (
-    <div style={s.page}>
-      <h1 style={s.heading}>API Keys</h1>
+    <div style={{ maxWidth: 720, margin: "0 auto" }}>
+      <PageIntro
+        title="API Keys"
+        lines={[
+          "Generate keys for CI,",
+          "integrations, & automation.",
+        ]}
+      />
 
       {newKey && (
-        <div style={s.newKeyBox}>
-          <div style={s.newKeyLabel}>Your new API key (shown once)</div>
-          <div style={s.keyValue}>{newKey}</div>
-          <div style={s.keyWarning}>
-            Save this key — you will not be able to see it again.
-          </div>
-          <button
+        <div className="ip-key-reveal">
+          <BalancedText
+            className="ip-text-block"
+            style={{ color: "var(--success)", fontSize: "0.82rem", marginBottom: 8 }}
+            lines={["Your new API key", "(shown once)"]}
+          />
+          <div
             style={{
-              ...s.btn("#1a5a1a"),
-              marginTop: 10,
+              fontSize: "0.9rem",
+              fontWeight: 600,
+              wordBreak: "break-all",
+              fontFamily: "monospace",
+              marginBottom: 8,
             }}
+          >
+            {newKey}
+          </div>
+          <BalancedText
+            className="ip-faint ip-text-block"
+            style={{ fontSize: "0.78rem", color: "var(--warning, #facc15)" }}
+            lines={[
+              "Save this key —",
+              "you will not see it again.",
+            ]}
+          />
+          <button
+            type="button"
+            className="ip-btn ip-btn-primary"
+            style={{ marginTop: 10 }}
             onClick={dismissNewKey}
           >
             I&apos;ve saved it
@@ -193,53 +116,66 @@ export default function ApiKeysPage() {
         </div>
       )}
 
-      <div style={s.section}>
-        <label style={s.label}>Key name (optional)</label>
-        <div style={s.inputRow}>
+      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+        <label className="ip-label" style={{ display: "block", marginBottom: 6 }}>
+          Key name (optional)
+        </label>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input
-            style={s.input}
+            className="ip-input"
             type="text"
             placeholder="e.g. CI pipeline"
             value={keyName}
             onChange={(e) => setKeyName(e.target.value)}
+            style={{ flex: "1 1 200px" }}
           />
-          <button
-            style={s.btn("#7df", "#0a0a0a")}
-            onClick={generateKey}
-          >
+          <button type="button" className="ip-btn ip-btn-primary" onClick={generateKey}>
             Generate Key
           </button>
         </div>
       </div>
 
-      <div style={s.section}>
+      <div className="ip-card ip-table-scroll">
         {loading ? (
-          <div style={s.empty}>Loading...</div>
+          <div className="ip-empty-state" style={{ padding: "2rem" }}>
+            <BalancedText className="ip-muted ip-text-block" lines={["Loading…"]} />
+          </div>
         ) : keys.length === 0 ? (
-          <div style={s.empty}>No API keys yet</div>
+          <div className="ip-empty-state" style={{ padding: "2rem" }}>
+            <BalancedText className="ip-muted ip-text-block" lines={["No API keys yet."]} />
+          </div>
         ) : (
-          <table style={s.table}>
+          <table className="ip-data-table">
             <thead>
               <tr>
-                <th style={s.th}>Name</th>
-                <th style={s.th}>Prefix</th>
-                <th style={s.th}>Last used</th>
-                <th style={s.th}>Created</th>
-                <th style={s.th}></th>
+                <th>Name</th>
+                <th>Prefix</th>
+                <th>Last used</th>
+                <th>Created</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {keys.map((k) => (
                 <tr key={k.id}>
-                  <td style={s.td}>{k.name}</td>
-                  <td style={s.td}>
-                    <span style={s.prefix}>{k.key_prefix}...</span>
+                  <td>{k.name}</td>
+                  <td>
+                    <span className="ip-mono" style={{ color: "var(--accent)" }}>
+                      {k.key_prefix}...
+                    </span>
                   </td>
-                  <td style={s.td}>{timeAgo(k.last_used_at)}</td>
-                  <td style={s.td}>{timeAgo(k.created_at)}</td>
-                  <td style={s.td}>
+                  <td>{timeAgo(k.last_used_at)}</td>
+                  <td>{timeAgo(k.created_at)}</td>
+                  <td>
                     <button
-                      style={s.revokeBtn}
+                      type="button"
+                      className="ip-btn ip-btn-ghost"
+                      style={{
+                        borderColor: "var(--danger)",
+                        color: "var(--danger)",
+                        padding: "4px 10px",
+                        fontSize: "0.78rem",
+                      }}
                       onClick={() => revokeKey(k.id)}
                     >
                       Revoke

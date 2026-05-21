@@ -20,54 +20,10 @@ function timeAgo(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-const statusColor: Record<string, string> = {
-  active: "#22c55e",
-  inactive: "#6b7280",
-  suspended: "#ef4444",
-};
-
-const styles = {
-  card: {
-    background: "#141414",
-    border: "1px solid #222",
-    borderRadius: 12,
-    padding: "1.25rem 1.5rem",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "1rem",
-  },
-  left: { display: "flex", flexDirection: "column" as const, gap: 6, minWidth: 0 },
-  title: { fontSize: "1.1rem", fontWeight: 600, color: "#ededed", margin: 0 },
-  meta: {
-    fontSize: "0.82rem",
-    color: "#888",
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-    flexWrap: "wrap" as const,
-  },
-  badge: (color: string) => ({
-    display: "inline-block",
-    padding: "2px 8px",
-    borderRadius: 999,
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    background: color + "22",
-    color,
-  }),
-  actions: { display: "flex", gap: 8, flexShrink: 0 },
-  btn: (bg: string) => ({
-    background: bg,
-    border: "none",
-    borderRadius: 8,
-    padding: "6px 14px",
-    fontSize: "0.82rem",
-    color: "#ededed",
-    cursor: "pointer",
-  }),
+const statusClass: Record<string, string> = {
+  active: "ip-badge-success",
+  inactive: "ip-badge-muted",
+  suspended: "ip-badge-danger",
 };
 
 export default function PortalCard({ portal, onDelete }: Props) {
@@ -79,38 +35,38 @@ export default function PortalCard({ portal, onDelete }: Props) {
     }
   })();
 
+  const status = statusClass[portal.status] ?? "ip-badge-muted";
+
   return (
-    <div style={styles.card}>
-      <div style={styles.row}>
-        <div style={styles.left}>
-          <h3 style={styles.title}>{portal.title}</h3>
-          <div style={styles.meta}>
-            <span style={{ color: "#7df" }}>/p/{portal.slug}</span>
-            <span style={styles.badge(statusColor[portal.status] ?? "#888")}>
-              {portal.status}
-            </span>
-            <span>{domain}</span>
-            <span>
-              {portal.visibility === "public"
-                ? "🌍"
-                : "🔒"}{" "}
-              {portal.visibility}
-            </span>
-            <span>{portal.total_scans} scans</span>
-            <span>{timeAgo(portal.last_scanned_at)}</span>
+    <div className="ip-card" style={{ padding: "1.25rem 1.5rem" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center", minWidth: 0, flex: 1 }}>
+          <div className="ip-portal-thumb" aria-hidden>
+            ◫
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <h3 className="ip-display" style={{ fontSize: "1.1rem", margin: "0 0 8px" }}>
+              {portal.title}
+            </h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", fontSize: "0.82rem" }}>
+              <span className="ip-mono" style={{ color: "var(--accent)" }}>
+                /p/{portal.slug}
+              </span>
+              <span className={`ip-badge ${status}`}>{portal.status}</span>
+              <span className="ip-muted">{domain}</span>
+              <span className="ip-muted">
+                {portal.visibility === "public" ? "Public" : "Private"}
+              </span>
+              <span className="ip-muted">{portal.total_scans} scans</span>
+              <span className="ip-faint">{timeAgo(portal.last_scanned_at)}</span>
+            </div>
           </div>
         </div>
-        <div style={styles.actions}>
-          <a
-            href={`/dashboard/${portal.id}/edit`}
-            style={styles.btn("#333")}
-          >
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }} onClick={(e) => e.preventDefault()}>
+          <a href={`/dashboard/${portal.id}/edit`} className="ip-btn ip-btn-ghost ip-btn-sm">
             Edit
           </a>
-          <button
-            style={styles.btn("#3b1a1a")}
-            onClick={() => onDelete(portal.id)}
-          >
+          <button type="button" className="ip-btn ip-btn-danger ip-btn-sm" onClick={() => onDelete(portal.id)}>
             Delete
           </button>
         </div>

@@ -33,7 +33,7 @@ export async function UsageSummary({ userId }: Props) {
         style={{
           height: 6,
           borderRadius: 999,
-          background: "#222",
+          background: "var(--border)",
           overflow: "hidden",
           marginTop: 4,
         }}
@@ -52,15 +52,7 @@ export async function UsageSummary({ userId }: Props) {
   };
 
   return (
-    <div
-      style={{
-        background: "#0f0f0f",
-        border: "1px solid #222",
-        borderRadius: 12,
-        padding: "1.25rem 1.5rem",
-        marginBottom: "1.5rem",
-      }}
-    >
+    <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
       <div
         style={{
           display: "flex",
@@ -70,21 +62,21 @@ export async function UsageSummary({ userId }: Props) {
         }}
       >
         <h3
+          className="ip-muted"
           style={{
             fontSize: "0.875rem",
             fontWeight: 600,
             margin: 0,
             textTransform: "uppercase",
             letterSpacing: "0.05em",
-            color: "#888",
           }}
         >
-          Plan Usage
+          Plan usage
         </h3>
         <span
           style={{
             fontSize: "0.8125rem",
-            color: "#aaa",
+            color: "var(--text-muted)",
             textTransform: "capitalize",
           }}
         >
@@ -92,8 +84,8 @@ export async function UsageSummary({ userId }: Props) {
         </span>
       </div>
 
-      <div style={{ display: "flex", gap: 32 }}>
-        <div style={{ flex: 1 }}>
+      <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 200px" }}>
           <div
             style={{
               display: "flex",
@@ -101,15 +93,15 @@ export async function UsageSummary({ userId }: Props) {
               fontSize: "0.8125rem",
             }}
           >
-            <span style={{ color: "#aaa" }}>Scans this month</span>
-            <span style={{ color: "#ededed", fontWeight: 600 }}>
+            <span className="ip-muted">Scans this month</span>
+            <span style={{ fontWeight: 600 }}>
               {scanUsed.toLocaleString()} / {limits.maxScansPerMonth.toLocaleString()}
             </span>
           </div>
           {bar(scanUsed, limits.maxScansPerMonth)}
         </div>
 
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: "1 1 200px" }}>
           <div
             style={{
               display: "flex",
@@ -117,8 +109,8 @@ export async function UsageSummary({ userId }: Props) {
               fontSize: "0.8125rem",
             }}
           >
-            <span style={{ color: "#aaa" }}>Portals created</span>
-            <span style={{ color: "#ededed", fontWeight: 600 }}>
+            <span className="ip-muted">Portals created</span>
+            <span style={{ fontWeight: 600 }}>
               {portalUsed.toLocaleString()} / {limits.maxPortals.toLocaleString()}
             </span>
           </div>

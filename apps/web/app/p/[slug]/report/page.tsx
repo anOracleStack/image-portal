@@ -2,6 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { MarketingPage } from "@/components/marketing/MarketingPage";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 const REASONS = [
   "Phishing or scam",
@@ -52,119 +54,87 @@ export default function ReportAbusePage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0a0a0a",
-        color: "#ededed",
-        fontFamily: "system-ui, sans-serif",
-        padding: "2rem 1rem",
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <form
-        onSubmit={submit}
+    <MarketingPage>
+      <section
+        className="ip-section-center"
         style={{
-          maxWidth: 420,
-          width: "100%",
-          background: "#141414",
-          border: "1px solid #222",
-          borderRadius: 16,
-          padding: "2rem",
+          padding: "3rem 1rem",
+          display: "flex",
+          justifyContent: "center",
         }}
       >
-        <h1 style={{ fontSize: "1.25rem", margin: "0 0 0.5rem" }}>Report abuse</h1>
-        <p style={{ color: "#888", fontSize: "0.85rem", marginBottom: "1.5rem" }}>
-          Portal: <strong style={{ color: "#7df" }}>{slug}</strong>
-        </p>
-
-        <label style={{ display: "block", marginBottom: "1rem" }}>
-          <span style={{ fontSize: "0.8rem", color: "#888" }}>Reason</span>
-          <select
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            style={{
-              width: "100%",
-              marginTop: 6,
-              padding: "10px 12px",
-              background: "#1a1a1a",
-              border: "1px solid #333",
-              borderRadius: 8,
-              color: "#ededed",
-            }}
-          >
-            {REASONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label style={{ display: "block", marginBottom: "1.5rem" }}>
-          <span style={{ fontSize: "0.8rem", color: "#888" }}>Details (optional)</span>
-          <textarea
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            rows={4}
-            style={{
-              width: "100%",
-              marginTop: 6,
-              padding: "10px 12px",
-              background: "#1a1a1a",
-              border: "1px solid #333",
-              borderRadius: 8,
-              color: "#ededed",
-              resize: "vertical",
-            }}
+        <form
+          onSubmit={submit}
+          className="ip-card ip-auth-card-center"
+          style={{ maxWidth: 420, width: "100%" }}
+        >
+          <h1 className="ip-display" style={{ fontSize: "1.25rem", margin: "0 0 0.5rem" }}>
+            Report abuse
+          </h1>
+          <BalancedText
+            className="ip-muted ip-text-block"
+            style={{ marginBottom: "1.5rem", fontSize: "0.85rem" }}
+            lines={[`Portal: ${slug}`]}
           />
-        </label>
 
-        <button
-          type="submit"
-          disabled={status === "loading" || status === "done"}
-          style={{
-            width: "100%",
-            padding: "12px",
-            background: status === "done" ? "#1a3b1a" : "#7df",
-            color: "#0a0a0a",
-            border: "none",
-            borderRadius: 10,
-            fontWeight: 600,
-            cursor: status === "loading" ? "wait" : "pointer",
-          }}
-        >
-          {status === "loading" ? "Submitting…" : status === "done" ? "Submitted" : "Submit report"}
-        </button>
+          <label className="ip-label" style={{ display: "block", marginBottom: "1rem", textAlign: "left" }}>
+            Reason
+            <select
+              className="ip-input"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              style={{ width: "100%", marginTop: 6 }}
+            >
+              {REASONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        {msg && (
-          <p
-            style={{
-              marginTop: 12,
-              fontSize: "0.85rem",
-              color: status === "error" ? "#ef4444" : "#4ade80",
-            }}
+          <label className="ip-label" style={{ display: "block", marginBottom: "1.5rem", textAlign: "left" }}>
+            Details (optional)
+            <textarea
+              className="ip-input"
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              rows={4}
+              style={{ width: "100%", marginTop: 6, resize: "vertical" }}
+            />
+          </label>
+
+          <button
+            type="submit"
+            className="ip-btn ip-btn-primary"
+            disabled={status === "loading" || status === "done"}
+            style={{ width: "100%", cursor: status === "loading" ? "wait" : "pointer" }}
           >
-            {msg}
-          </p>
-        )}
+            {status === "loading" ? "Submitting…" : status === "done" ? "Submitted" : "Submit report"}
+          </button>
 
-        <button
-          type="button"
-          onClick={() => router.push(`/p/${slug}`)}
-          style={{
-            marginTop: 16,
-            background: "none",
-            border: "none",
-            color: "#888",
-            cursor: "pointer",
-            fontSize: "0.85rem",
-          }}
-        >
-          ← Back to portal
-        </button>
-      </form>
-    </div>
+          {msg && (
+            <BalancedText
+              className="ip-text-block"
+              style={{
+                marginTop: 12,
+                fontSize: "0.85rem",
+                color: status === "error" ? "var(--danger)" : "var(--success)",
+              }}
+              lines={[msg]}
+            />
+          )}
+
+          <button
+            type="button"
+            className="ip-btn ip-btn-ghost"
+            onClick={() => router.push(`/p/${slug}`)}
+            style={{ marginTop: 16, width: "100%" }}
+          >
+            ← Back to portal
+          </button>
+        </form>
+      </section>
+    </MarketingPage>
   );
 }

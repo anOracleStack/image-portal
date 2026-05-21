@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
+import { getAppUrl } from "@/lib/app-url";
 import { createAdminClient } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
@@ -14,12 +15,12 @@ export async function POST(req: NextRequest) {
 
     if (!priceId || !userId) {
       return NextResponse.json(
-        { error: "priceId and userId are required" },
+        { error: "priceId & userId are required" },
         { status: 400 },
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const appUrl = getAppUrl();
 
     // Check if the user already has a Stripe customer ID on file.
     const db = createAdminClient();

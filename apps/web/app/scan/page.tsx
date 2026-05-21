@@ -3,6 +3,9 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import type { ScanResponse } from "@ip/shared";
 import { EMBED_MODEL, EMBED_VERSION } from "@ip/shared";
+import { MarketingPage } from "@/components/marketing/MarketingPage";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 const THROTTLE_MS = 500;
 const MAX_LOG = 50;
@@ -65,58 +68,6 @@ type LogEntry = {
 
 // ---------- inline styles ----------
 const s = {
-  page: {
-    background: "#0a0a0a",
-    color: "#ededed",
-    fontFamily:
-      'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    minHeight: "100vh",
-    paddingBottom: 40,
-  },
-  header: {
-    background: "#0f0f0f",
-    borderBottom: "1px solid #222",
-    position: "sticky" as const,
-    top: 0,
-    zIndex: 50,
-  },
-  headerInner: {
-    maxWidth: 1200,
-    margin: "0 auto",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 1rem",
-    height: 56,
-  },
-  logo: {
-    fontSize: "1.1rem",
-    fontWeight: 700,
-    color: "#7df",
-    textDecoration: "none",
-  },
-  navLink: {
-    fontSize: "0.875rem",
-    color: "#aaa",
-    textDecoration: "none",
-    transition: "color 0.15s",
-  },
-  main: {
-    maxWidth: 800,
-    margin: "0 auto",
-    padding: "2rem 1rem",
-  },
-  videoBox: {
-    position: "relative" as const,
-    borderRadius: 12,
-    overflow: "hidden",
-    background: "#000",
-    marginBottom: 20,
-    aspectRatio: "4 / 3" as const,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   video: {
     width: "100%",
     height: "100%",
@@ -124,7 +75,7 @@ const s = {
     display: "block",
   },
   videoPlaceholder: {
-    color: "#555",
+    color: "var(--text-faint)",
     fontSize: 14,
     textAlign: "center" as const,
     padding: "0 1rem",
@@ -144,57 +95,11 @@ const s = {
     borderRadius: 8,
     padding: "4px 10px",
     fontSize: 12,
-    color: "#7df",
+    color: "var(--accent)",
     fontVariantNumeric: "tabular-nums" as const,
   },
-  controls: {
-    display: "flex",
-    gap: 12,
-    alignItems: "center",
-    marginBottom: 20,
-    flexWrap: "wrap" as const,
-  },
-  btn: {
-    background: "#222",
-    color: "#ededed",
-    border: "none",
-    borderRadius: 10,
-    padding: "10px 22px",
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    cursor: "pointer",
-  },
-  btnPrimary: {
-    background: "#7df",
-    color: "#0a0a0a",
-    border: "none",
-    borderRadius: 10,
-    padding: "10px 22px",
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    cursor: "pointer",
-  },
-  btnDanger: {
-    background: "#ef4444",
-    color: "#fff",
-    border: "none",
-    borderRadius: 10,
-    padding: "10px 22px",
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    cursor: "pointer",
-  },
-  statusCard: {
-    background: "#0f0f0f",
-    borderRadius: 12,
-    padding: "16px 20px",
-    border: "1px solid #222",
-    marginBottom: 20,
-    fontSize: 14,
-    lineHeight: 1.6,
-  },
   statusLabel: {
-    color: "#888",
+    color: "var(--text-muted)",
     fontSize: 12,
     textTransform: "uppercase" as const,
     letterSpacing: "0.05em",
@@ -207,20 +112,15 @@ const s = {
       borderRadius: 4,
       fontSize: 11,
       fontWeight: 600,
-      background: matched ? "rgba(119,221,255,0.15)" : "rgba(239,68,68,0.15)",
-      color: matched ? "#7df" : "#ef4444",
+      background: matched
+        ? "color-mix(in srgb, var(--accent) 18%, transparent)"
+        : "color-mix(in srgb, var(--danger) 18%, transparent)",
+      color: matched ? "var(--accent)" : "var(--danger)",
       marginLeft: 8,
     }) as const,
-  logBox: {
-    background: "#0f0f0f",
-    borderRadius: 12,
-    border: "1px solid #222",
-    maxHeight: 360,
-    overflowY: "auto" as const,
-  },
   logEntry: {
     padding: "10px 16px",
-    borderBottom: "1px solid #1a1a1a",
+    borderBottom: "1px solid var(--border)",
     fontSize: 13,
     display: "flex",
     justifyContent: "space-between",
@@ -235,7 +135,7 @@ const s = {
     flex: 1,
   },
   logTs: {
-    color: "#555",
+    color: "var(--text-faint)",
     fontSize: 11,
     fontVariantNumeric: "tabular-nums" as const,
     flexShrink: 0,
@@ -248,17 +148,8 @@ const s = {
   logEmpty: {
     padding: "24px 16px",
     textAlign: "center" as const,
-    color: "#555",
+    color: "var(--text-faint)",
     fontSize: 13,
-  },
-  errorBox: {
-    background: "#2a0a0a",
-    border: "1px solid #ef4444",
-    borderRadius: 8,
-    padding: "12px 16px",
-    color: "#ef4444",
-    marginBottom: "1rem",
-    fontSize: 14,
   },
 };
 
@@ -445,30 +336,20 @@ export default function ScanPage() {
 
   // ---------- Render ----------
   return (
-    <div style={s.page}>
-      {/* Header */}
-      <header style={s.header}>
-        <div style={s.headerInner}>
-          <a href="/" style={s.logo}>
-            Image Portal
-          </a>
-          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-            <a href="/dashboard" style={s.navLink}>
-              Dashboard
-            </a>
-            <a href="/scan" style={{ ...s.navLink, color: "#ededed" }}>
-              Scan
-            </a>
-          </div>
-        </div>
-      </header>
-
-      <main style={s.main}>
+    <MarketingPage>
+      <main className="ip-scan-main">
+        <PageIntro
+          title="Live scan"
+          lines={[
+            "Point your camera at a portal image",
+            "& match against the catalog.",
+          ]}
+        />
         {/* Hidden canvas for frame extraction */}
         <canvas ref={canvasRef} style={{ display: "none" }} />
 
         {/* Camera preview */}
-        <div style={s.videoBox}>
+        <div className="ip-scan-video-box">
           <video
             ref={videoRef}
             autoPlay
@@ -480,19 +361,25 @@ export default function ScanPage() {
             }}
           />
           {cameraState === "idle" && (
-            <div style={s.videoPlaceholder}>
-              Camera not started
-            </div>
+            <BalancedText
+              className="ip-muted ip-text-block"
+              style={s.videoPlaceholder}
+              lines={["Camera not started."]}
+            />
           )}
           {cameraState === "starting" && (
-            <div style={s.videoPlaceholder}>
-              Starting camera…
-            </div>
+            <BalancedText
+              className="ip-muted ip-text-block"
+              style={s.videoPlaceholder}
+              lines={["Starting camera…"]}
+            />
           )}
           {cameraState === "error" && (
-            <div style={{ ...s.videoPlaceholder, color: "#ef4444" }}>
-              {cameraError}
-            </div>
+            <BalancedText
+              className="ip-text-block"
+              style={{ ...s.videoPlaceholder, color: "var(--danger)" }}
+              lines={[cameraError ?? "Camera error."]}
+            />
           )}
 
           {/* Overlay badges */}
@@ -511,45 +398,49 @@ export default function ScanPage() {
         </div>
 
         {/* Controls */}
-        <div style={s.controls}>
+        <div className="ip-scan-controls">
           {cameraState === "idle" && (
-            <button style={s.btnPrimary} onClick={startCamera}>
+            <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
               Start Camera
             </button>
           )}
           {cameraState === "error" && (
-            <button style={s.btnPrimary} onClick={startCamera}>
+            <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
               Retry Camera
             </button>
           )}
           {cameraState === "starting" && (
-            <button style={s.btn} disabled>
+            <button type="button" className="ip-btn ip-btn-secondary" disabled>
               Starting…
             </button>
           )}
           {cameraState === "ready" && !scanning && (
-            <button style={s.btnPrimary} onClick={startScanning}>
+            <button type="button" className="ip-btn ip-btn-primary" onClick={startScanning}>
               Start Scanning
             </button>
           )}
           {cameraState === "ready" && scanning && (
-            <button style={s.btnDanger} onClick={stopScanning}>
+            <button type="button" className="ip-btn ip-btn-danger" onClick={stopScanning}>
               Stop Scanning
             </button>
           )}
           {cameraState === "ready" && (
-            <button style={s.btn} onClick={stopCamera}>
+            <button type="button" className="ip-btn ip-btn-secondary" onClick={stopCamera}>
               Stop Camera
             </button>
           )}
         </div>
 
         {/* API error */}
-        {error && <div style={s.errorBox}>{error}</div>}
+        {error && (
+          <div className="ip-card" style={{ color: "var(--danger)", borderColor: "var(--danger)", marginBottom: "1rem" }}>
+            {error}
+          </div>
+        )}
 
         {/* Last scan result */}
         {lastResult && (
-          <div style={s.statusCard}>
+          <div className="ip-card" style={{ marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
             <div style={s.statusLabel}>Last Scan</div>
             <div>
               {lastResult.matched && lastResult.portal ? (
@@ -559,7 +450,7 @@ export default function ScanPage() {
                   <span style={s.matchBadge(true)}>
                     {lastResult.band.toUpperCase()} {(lastResult.confidence * 100).toFixed(0)}%
                   </span>
-                  <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
+                  <div className="ip-faint" style={{ fontSize: 12, marginTop: 4 }}>
                     {lastResult.portal.destinationDomain}
                   </div>
                 </>
@@ -570,7 +461,7 @@ export default function ScanPage() {
                     {(lastResult.confidence * 100).toFixed(0)}%
                   </span>
                   {lastResult.message && (
-                    <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>
+                    <div className="ip-faint" style={{ fontSize: 12, marginTop: 4 }}>
                       {lastResult.message}
                     </div>
                   )}
@@ -590,27 +481,29 @@ export default function ScanPage() {
               marginBottom: 10,
             }}
           >
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                color: "#ededed",
-              }}
-            >
-              Scan Log
-            </h3>
-            <span style={{ color: "#555", fontSize: 12 }}>
+            <h3 className="ip-scan-log-title">Scan Log</h3>
+            <span className="ip-faint" style={{ fontSize: 12 }}>
               {log.length > 0 ? `Last ${log.length}` : ""}
             </span>
           </div>
 
-          <div style={s.logBox}>
+          <div className="ip-card" style={{ maxHeight: 360, overflowY: "auto", padding: 0 }}>
             {log.length === 0 ? (
               <div style={s.logEmpty}>
-                {scanning
-                  ? "Waiting for results…"
-                  : "Start scanning to see results here."}
+                {scanning ? (
+                  <BalancedText
+                    className="ip-muted ip-text-block"
+                    lines={["Waiting for results…"]}
+                  />
+                ) : (
+                  <BalancedText
+                    className="ip-muted ip-text-block"
+                    lines={[
+                      "Start scanning",
+                      "to see results here.",
+                    ]}
+                  />
+                )}
               </div>
             ) : (
               log.map((entry) => (
@@ -619,11 +512,11 @@ export default function ScanPage() {
                     <span style={s.logTs}>{entry.ts}</span>
                     {entry.response.matched && entry.response.portal ? (
                       <span style={s.logPortal}>
-                        <span style={{ color: "#7df" }}>✓</span>{" "}
+                        <span style={{ color: "var(--accent)" }}>✓</span>{" "}
                         {entry.response.portal.title}
                       </span>
                     ) : (
-                      <span style={{ color: "#888" }}>
+                      <span className="ip-faint">
                         {entry.error ? "✗ Error" : "— No match"}
                       </span>
                     )}
@@ -643,6 +536,6 @@ export default function ScanPage() {
           </div>
         </div>
       </main>
-    </div>
+    </MarketingPage>
   );
 }

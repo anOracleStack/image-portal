@@ -1,10 +1,29 @@
 import type { Metadata, Viewport } from "next";
+import { Syne, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { getAppUrl } from "@/lib/app-url";
+import { themeScript } from "@/lib/theme";
+import "./globals.css";
 
-const appUrl =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
+const appUrl = getAppUrl();
 
 export const metadata: Metadata = {
   title: {
@@ -12,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s · Image Portal",
   },
   description:
-    "Turn posters, stickers, and photos into programmable doorways. Visual scan matching, QR exports, analytics, and API access.",
+    "Turn posters, stickers, & photos into programmable doorways. Visual scan matching, QR exports, analytics, & API access.",
   metadataBase: new URL(appUrl),
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -26,7 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Image Portal",
-    description: "Scan visuals to open destinations — built for creators and brands.",
+    description: "Scan visuals to open destinations — built for creators & brands.",
   },
   appleWebApp: {
     capable: true,
@@ -36,16 +55,22 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f7f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#060608" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body style={{ fontFamily: "system-ui, sans-serif", margin: 0, background: "#0a0a0a", color: "#ededed" }}>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className={`${syne.variable} ${dmSans.variable} ${jetbrains.variable}`}>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

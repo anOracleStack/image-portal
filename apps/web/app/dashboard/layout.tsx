@@ -25,11 +25,9 @@ export default async function DashboardLayout({
   );
 
   return (
-    <>
+    <div className="ip-page">
       <Navbar user={user} />
-      <main style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 1rem" }}>
-        {children}
-      </main>
-    </>
+      <main className="ip-dash-main">{children}</main>
+    </div>
   );
 }

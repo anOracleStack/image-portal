@@ -8,4 +8,14 @@ export default {
   transpilePackages: ["@ip/shared", "@ip/vision"],
   serverExternalPackages: ["sharp"],
   outputFileTracingRoot: path.join(__dirname, "../.."),
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.rub.pub" }],
+        destination: "https://rub.pub/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };

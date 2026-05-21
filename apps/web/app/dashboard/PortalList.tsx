@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import PortalCard from "@/components/PortalCard";
+import { BalancedText } from "@/components/ui/BalancedText";
 import type { PortalRow } from "@/lib/types";
 
 interface Props {
@@ -33,7 +34,12 @@ export default function PortalList({ initial }: Props) {
 
   const handleDelete = useCallback(
     async (id: string) => {
-      if (!confirm("Delete this portal? This cannot be undone.")) return;
+      if (
+        !confirm(
+          "Delete this portal?\n\nThis permanently removes images & fingerprints.\nThis cannot be undone."
+        )
+      )
+        return;
       try {
         const res = await fetch(`/api/portals/${id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Delete failed");
@@ -51,24 +57,14 @@ export default function PortalList({ initial }: Props) {
       {/* Search */}
       {portals.length > 0 && (
         <input
+          className="ip-input"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
             setPage(1);
           }}
           placeholder="Search portals by title or slug…"
-          style={{
-            width: "100%",
-            background: "#141414",
-            border: "1px solid #333",
-            borderRadius: 8,
-            padding: "10px 14px",
-            fontSize: "0.9rem",
-            color: "#ededed",
-            outline: "none",
-            marginBottom: "1rem",
-            boxSizing: "border-box",
-          }}
+          style={{ marginBottom: "1rem" }}
         />
       )}
 
@@ -85,26 +81,21 @@ export default function PortalList({ initial }: Props) {
       </div>
 
       {filtered.length === 0 && search && (
-        <p style={{ color: "#888", textAlign: "center", marginTop: "2rem" }}>
-          No portals match &ldquo;{search}&rdquo;
-        </p>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ marginTop: "2rem" }}
+          lines={["No portals match", `“${search}”`]}
+        />
       )}
 
       {hasMore && (
         <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
           <button
+            type="button"
+            className="ip-btn ip-btn-secondary"
             onClick={() => setPage((p) => p + 1)}
-            style={{
-              background: "#1a1a1a",
-              border: "1px solid #333",
-              borderRadius: 8,
-              padding: "10px 24px",
-              color: "#ccc",
-              cursor: "pointer",
-              fontSize: "0.9rem",
-            }}
           >
-            Load More ({filtered.length - visible.length} remaining)
+            Load more ({filtered.length - visible.length} remaining)
           </button>
         </div>
       )}

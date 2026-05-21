@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
+import { getAppUrl } from "@/lib/app-url";
 import { createAdminClient } from "@/lib/supabase-admin";
 
-const appUrl =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
+const appUrl = getAppUrl();
 
 export async function generateMetadata({
   params,

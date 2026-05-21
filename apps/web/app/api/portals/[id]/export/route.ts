@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { getAppUrl } from "@/lib/app-url";
 import QRCode from "qrcode";
 import sharp from "sharp";
 
-const SITE_ORIGIN =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
+const SITE_ORIGIN = getAppUrl();
 
 export async function POST(
   req: NextRequest,

@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { MarketingPage } from "@/components/marketing/MarketingPage";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -30,70 +32,33 @@ export default async function PublicPortalPage({ params }: Props) {
   })();
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0a0a0a",
-        color: "#ededed",
-        fontFamily: "system-ui, sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem 1rem",
-      }}
-    >
-      <div
+    <MarketingPage>
+      <section
+        className="ip-section-center"
         style={{
-          maxWidth: 480,
-          width: "100%",
-          textAlign: "center",
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "3rem 1rem",
         }}
       >
-        <div
-          style={{
-            background: "#141414",
-            border: "1px solid #222",
-            borderRadius: 16,
-            padding: "2.5rem 2rem",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: 700,
-              margin: "0 0 0.5rem",
-              color: "#ededed",
-            }}
-          >
+        <div className="ip-card ip-public-card">
+          <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: "0 0 0.5rem" }}>
             {portal.title}
           </h1>
-          <p
-            style={{
-              fontSize: "0.85rem",
-              color: "#666",
-              margin: "0 0 1.5rem",
-            }}
-          >
-            {domain}
-          </p>
+          <BalancedText
+            className="ip-muted ip-text-block"
+            style={{ margin: "0 0 1.5rem", fontSize: "0.85rem" }}
+            lines={[domain]}
+          />
 
           <a
             href={portal.destination_url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: "inline-block",
-              background: "#7df",
-              color: "#0a0a0a",
-              border: "none",
-              borderRadius: 10,
-              padding: "14px 36px",
-              fontSize: "1rem",
-              fontWeight: 600,
-              textDecoration: "none",
-              marginBottom: "1.5rem",
-            }}
+            className="ip-btn ip-btn-primary"
+            style={{ marginBottom: "1.5rem", display: "inline-block" }}
           >
             Visit Destination
           </a>
@@ -104,30 +69,23 @@ export default async function PublicPortalPage({ params }: Props) {
               justifyContent: "center",
               gap: "1rem",
               fontSize: "0.82rem",
+              flexWrap: "wrap",
             }}
           >
-            <a
-              href="/gallery"
-              style={{
-                color: "#888",
-                textDecoration: "none",
-              }}
-            >
-              &larr; Browse Gallery
+            <a href="/gallery" className="ip-muted" style={{ textDecoration: "none" }}>
+              ← Browse Gallery
             </a>
-            <span style={{ color: "#444" }}>&middot;</span>
+            <span className="ip-faint">·</span>
             <a
               href={`/p/${portal.slug}/report`}
-              style={{
-                color: "#888",
-                textDecoration: "none",
-              }}
+              className="ip-muted"
+              style={{ textDecoration: "none" }}
             >
               Report Abuse
             </a>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </MarketingPage>
   );
 }

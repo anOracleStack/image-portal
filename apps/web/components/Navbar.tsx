@@ -5,66 +5,13 @@ import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { SubscriptionBadge } from "@/components/SubscriptionBadge";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useEffect, useState } from "react";
 import type { PlanTier } from "@/lib/subscription";
 
 interface Props {
   user: User;
 }
-
-const styles = {
-  header: {
-    background: "#0f0f0f",
-    borderBottom: "1px solid #222",
-    position: "sticky" as const,
-    top: 0,
-    zIndex: 50,
-  },
-  inner: {
-    maxWidth: 1200,
-    margin: "0 auto",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 1rem",
-    height: 56,
-  },
-  left: {
-    display: "flex",
-    alignItems: "center",
-    gap: 28,
-  },
-  logo: {
-    fontSize: "1.1rem",
-    fontWeight: 700,
-    color: "#7df",
-    textDecoration: "none",
-  },
-  link: {
-    fontSize: "0.875rem",
-    color: "#aaa",
-    textDecoration: "none",
-    transition: "color 0.15s",
-  },
-  right: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-  },
-  email: {
-    fontSize: "0.8125rem",
-    color: "#888",
-  },
-  logoutBtn: {
-    background: "#222",
-    border: "none",
-    borderRadius: 8,
-    padding: "6px 14px",
-    fontSize: "0.8125rem",
-    color: "#ededed",
-    cursor: "pointer",
-  },
-} as const;
 
 export function Navbar({ user }: Props) {
   const router = useRouter();
@@ -99,39 +46,43 @@ export function Navbar({ user }: Props) {
   }
 
   return (
-    <header style={styles.header}>
-      <div style={styles.inner}>
-        <div style={styles.left}>
-          <Link href="/" style={styles.logo}>
+    <header className="ip-dash-header">
+      <div className="ip-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+          <Link href="/dashboard" className="ip-logo" style={{ fontSize: "1rem" }}>
+            <span className="ip-logo-mark" style={{ width: 22, height: 22 }} aria-hidden />
             Image Portal
           </Link>
-          <Link href="/dashboard" style={styles.link}>
-            Dashboard
+          <Link href="/dashboard" className="ip-nav-link">
+            Portals
           </Link>
-          <Link href="/dashboard/scan-history" style={styles.link}>
+          <Link href="/dashboard/scan-history" className="ip-nav-link">
             History
           </Link>
-          <Link href="/dashboard/api-keys" style={styles.link}>
+          <Link href="/dashboard/api-keys" className="ip-nav-link">
             API
           </Link>
-          <Link href="/gallery" style={styles.link}>
+          <Link href="/gallery" className="ip-nav-link">
             Gallery
           </Link>
-          <Link href="/scan" style={styles.link}>
+          <Link href="/scan" className="ip-nav-link">
             Scan
           </Link>
-          <Link href="/pricing" style={styles.link}>
+          <Link href="/pricing" className="ip-nav-link">
             Pricing
           </Link>
-          <Link href="/dashboard/settings" style={styles.link}>
+          <Link href="/dashboard/settings" className="ip-nav-link">
             Settings
           </Link>
         </div>
 
-        <div style={styles.right}>
-          <span style={styles.email}>{user.email}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <ThemeToggle compact />
+          <span className="ip-faint" style={{ fontSize: "0.75rem", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {user.email}
+          </span>
           <SubscriptionBadge tier={tier} />
-          <button style={styles.logoutBtn} onClick={handleLogout}>
+          <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm" onClick={handleLogout}>
             Logout
           </button>
         </div>

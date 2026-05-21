@@ -25,7 +25,7 @@ function slugify(text: string): string {
 
 function toggleStyle(active: boolean): React.CSSProperties {
   return {
-    background: active ? "#7df" : "#333",
+    background: active ? "var(--accent)" : "var(--border-strong)",
     border: "none",
     borderRadius: 999,
     width: 48,
@@ -40,7 +40,7 @@ function toggleDotStyle(active: boolean): React.CSSProperties {
     width: 20,
     height: 20,
     borderRadius: "50%",
-    background: "#0a0a0a",
+    background: "var(--accent-foreground)",
     position: "absolute",
     top: 3,
     left: active ? 25 : 3,
@@ -49,24 +49,24 @@ function toggleDotStyle(active: boolean): React.CSSProperties {
 }
 function submitStyle(disabled: boolean): React.CSSProperties {
   return {
-    background: disabled ? "#333" : "#7df",
+    background: disabled ? "var(--border-strong)" : "var(--accent)",
     border: "none",
     borderRadius: 10,
     padding: "12px 24px",
     fontSize: "1rem",
     fontWeight: 600,
-    color: disabled ? "#666" : "#0a0a0a",
+    color: disabled ? "var(--text-faint)" : "var(--accent-foreground)",
     cursor: disabled ? "not-allowed" : "pointer",
     marginTop: 8,
   };
 }
 const pStyles = {
   group: { display: "flex", flexDirection: "column" as const, gap: 6 },
-  label: { fontSize: "0.85rem", fontWeight: 500, color: "#bbb" },
-  input: { background: "#1a1a1a", border: "1px solid #333", borderRadius: 8, padding: "10px 14px", fontSize: "0.95rem", color: "#ededed", outline: "none" },
-  select: { background: "#1a1a1a", border: "1px solid #333", borderRadius: 8, padding: "10px 14px", fontSize: "0.95rem", color: "#ededed", outline: "none" },
-  error: { fontSize: "0.8rem", color: "#ef4444" },
-  slugPreview: { fontSize: "0.82rem", color: "#7df", marginTop: -4, fontFamily: "monospace" },
+  label: { fontSize: "0.85rem", fontWeight: 500, color: "var(--text-muted)" },
+  input: {},
+  select: {},
+  error: { fontSize: "0.8rem", color: "var(--danger)" },
+  slugPreview: { fontSize: "0.82rem", color: "var(--accent)", marginTop: -4, fontFamily: "var(--font-mono)" },
   toggleRow: { display: "flex", gap: 12, alignItems: "center" },
 };
 
@@ -139,7 +139,7 @@ export default function PortalForm({
       <div style={pStyles.group}>
         <label style={pStyles.label}>Title</label>
         <input
-          style={pStyles.input}
+          className="ip-input"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="My Portal"
@@ -154,7 +154,7 @@ export default function PortalForm({
       <div style={pStyles.group}>
         <label style={pStyles.label}>Destination URL</label>
         <input
-          style={pStyles.input}
+          className="ip-input"
           value={destinationUrl}
           onChange={(e) => setDestinationUrl(e.target.value)}
           placeholder="https://example.com"
@@ -168,7 +168,7 @@ export default function PortalForm({
       <div style={pStyles.group}>
         <label style={pStyles.label}>Scan Mode</label>
         <select
-          style={pStyles.select}
+          className="ip-input"
           value={scanMode}
           onChange={(e) => setScanMode(e.target.value as "image" | "hybrid")}
         >
@@ -190,7 +190,7 @@ export default function PortalForm({
           >
             <div style={toggleDotStyle(visibility === "public")} />
           </button>
-          <span style={{ fontSize: "0.9rem", color: "#ccc" }}>
+          <span className="ip-muted" style={{ fontSize: "0.9rem" }}>
             {visibility === "public" ? "Public" : "Private"}
           </span>
         </div>

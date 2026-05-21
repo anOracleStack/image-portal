@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type CSSProperties } from "react";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 interface ScanEvent {
   id: string;
@@ -28,74 +30,21 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-const s = {
-  page: { color: "#ededed" },
-  heading: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    margin: "0 0 1.5rem",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse" as const,
-    fontSize: "0.85rem",
-  },
-  th: {
-    textAlign: "left" as const,
-    padding: "10px 8px",
-    color: "#888",
-    borderBottom: "1px solid #222",
-    fontWeight: 600,
-    whiteSpace: "nowrap" as const,
-  },
-  td: {
-    padding: "10px 8px",
-    borderBottom: "1px solid #1a1a1a",
-    color: "#ccc",
-  },
-  matchBadge: (matched: boolean) => ({
+const PAGE_SIZE = 20;
+
+function matchBadgeStyle(matched: boolean): CSSProperties {
+  return {
     display: "inline-block",
     padding: "2px 8px",
     borderRadius: 999,
     fontSize: "0.75rem",
     fontWeight: 600,
-    background: matched ? "#22c55e22" : "#ef444422",
-    color: matched ? "#22c55e" : "#ef4444",
-  }),
-  section: {
-    background: "#141414",
-    border: "1px solid #222",
-    borderRadius: 12,
-    padding: "1.5rem",
-    overflowX: "auto" as const,
-  },
-  empty: {
-    textAlign: "center" as const,
-    padding: "3rem 1rem",
-    color: "#666",
-  },
-  loading: {
-    textAlign: "center" as const,
-    padding: "3rem 1rem",
-    color: "#666",
-  },
-  loadMoreWrap: {
-    textAlign: "center" as const,
-    marginTop: "1rem",
-  },
-  loadMoreBtn: {
-    background: "#222",
-    border: "none",
-    borderRadius: 8,
-    padding: "10px 24px",
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    color: "#ededed",
-    cursor: "pointer",
-  },
-};
-
-const PAGE_SIZE = 20;
+    background: matched
+      ? "color-mix(in srgb, var(--success) 15%, transparent)"
+      : "color-mix(in srgb, var(--danger) 15%, transparent)",
+    color: matched ? "var(--success)" : "var(--danger)",
+  };
+}
 
 export default function ScanHistoryPage() {
   const [events, setEvents] = useState<ScanEvent[]>([]);
@@ -134,61 +83,72 @@ export default function ScanHistoryPage() {
   const hasMore = events.length < total;
 
   return (
-    <div style={s.page}>
-      <h1 style={s.heading}>Scan History</h1>
+    <div style={{ maxWidth: 960, margin: "0 auto" }}>
+      <PageIntro
+        title="Scan History"
+        lines={[
+          "Every match attempt",
+          "across your portals.",
+        ]}
+      />
 
-      <div style={s.section}>
+      <div className="ip-card ip-table-scroll">
         {events.length === 0 && !loading && (
-          <div style={s.empty}>No scan events yet</div>
+          <div className="ip-empty-state">
+            <BalancedText className="ip-muted ip-text-block" lines={["No scan events yet."]} />
+          </div>
         )}
 
         {events.length === 0 && loading && (
-          <div style={s.loading}>Loading...</div>
+          <div className="ip-empty-state">
+            <BalancedText className="ip-muted ip-text-block" lines={["Loading…"]} />
+          </div>
         )}
 
         {events.length > 0 && (
           <div>
-            <table style={s.table}>
+            <table className="ip-data-table">
               <thead>
                 <tr>
-                  <th style={s.th}>Portal</th>
-                  <th style={s.th}>Status</th>
-                  <th style={s.th}>Confidence</th>
-                  <th style={s.th}>Device</th>
-                  <th style={s.th}>Source</th>
-                  <th style={s.th}>When</th>
+                  <th>Portal</th>
+                  <th>Status</th>
+                  <th>Confidence</th>
+                  <th>Device</th>
+                  <th>Source</th>
+                  <th>When</th>
                 </tr>
               </thead>
               <tbody>
                 {events.map((e) => (
                   <tr key={e.id}>
-                    <td style={s.td}>{e.portals?.title ?? "—"}</td>
-                    <td style={s.td}>
-                      <span style={s.matchBadge(e.matched)}>
+                    <td>{e.portals?.title ?? "—"}</td>
+                    <td>
+                      <span style={matchBadgeStyle(e.matched)}>
                         {e.matched ? "Matched" : "No Match"}
                       </span>
                     </td>
-                    <td style={s.td}>
+                    <td>
                       {e.confidence != null
                         ? `${(e.confidence * 100).toFixed(1)}%`
                         : "—"}
                     </td>
-                    <td style={s.td}>{e.device_platform ?? "—"}</td>
-                    <td style={s.td}>{e.source ?? "—"}</td>
-                    <td style={s.td}>{timeAgo(e.created_at)}</td>
+                    <td>{e.device_platform ?? "—"}</td>
+                    <td>{e.source ?? "—"}</td>
+                    <td>{timeAgo(e.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
             {hasMore && (
-              <div style={s.loadMoreWrap}>
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
                 <button
-                  style={s.loadMoreBtn}
+                  type="button"
+                  className="ip-btn ip-btn-secondary"
                   onClick={loadMore}
                   disabled={loading}
                 >
-                  {loading ? "Loading..." : `Load More (${events.length} of ${total})`}
+                  {loading ? "Loading…" : `Load More (${events.length} of ${total})`}
                 </button>
               </div>
             )}

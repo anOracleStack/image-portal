@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { PortalRow } from "@/lib/types";
+import { MarketingPage } from "@/components/marketing/MarketingPage";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 interface GalleryPortal {
   id: string;
@@ -26,87 +27,6 @@ function timeAgo(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-const s = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0a0a",
-    color: "#ededed",
-    fontFamily: "system-ui, sans-serif",
-  },
-  header: {
-    textAlign: "center" as const,
-    padding: "3rem 1rem 2rem",
-  },
-  title: { fontSize: "2rem", fontWeight: 700, margin: "0 0 0.5rem" },
-  subtitle: { fontSize: "0.95rem", color: "#888", margin: 0 },
-  searchWrap: {
-    maxWidth: 480,
-    margin: "0 auto 2rem",
-    padding: "0 1rem",
-  },
-  input: {
-    width: "100%",
-    padding: "12px 16px",
-    borderRadius: 10,
-    border: "1px solid #333",
-    background: "#141414",
-    color: "#ededed",
-    fontSize: "0.95rem",
-    outline: "none",
-    boxSizing: "border-box" as const,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "1rem",
-    maxWidth: 960,
-    margin: "0 auto",
-    padding: "0 1rem 3rem",
-  },
-  card: {
-    background: "#141414",
-    border: "1px solid #222",
-    borderRadius: 12,
-    padding: "1.25rem 1.5rem",
-    textDecoration: "none",
-    color: "inherit",
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 8,
-    transition: "border-color 0.15s",
-  },
-  cardTitle: { fontSize: "1.1rem", fontWeight: 600, color: "#ededed", margin: 0 },
-  cardSlug: { fontSize: "0.82rem", color: "#7df" },
-  cardDomain: { fontSize: "0.82rem", color: "#888" },
-  cardScans: { fontSize: "0.82rem", color: "#666" },
-  empty: {
-    textAlign: "center" as const,
-    padding: "4rem 1rem",
-    color: "#888",
-  },
-  loading: {
-    textAlign: "center" as const,
-    padding: "4rem 1rem",
-    color: "#666",
-  },
-  error: {
-    background: "#2a0a0a",
-    border: "1px solid #ef4444",
-    borderRadius: 8,
-    padding: "12px 16px",
-    color: "#ef4444",
-    maxWidth: 480,
-    margin: "0 auto 1rem",
-  },
-  topLink: {
-    display: "inline-block",
-    color: "#888",
-    textDecoration: "none",
-    fontSize: "0.85rem",
-    marginBottom: "1rem",
-  },
-};
-
 export default function GalleryPage() {
   const [portals, setPortals] = useState<GalleryPortal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,79 +37,107 @@ export default function GalleryPage() {
     fetch("/api/portals/public")
       .then((r) => r.json())
       .then((data) => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setPortals(data.portals ?? []);
-        }
+        if (data.error) setError(data.error);
+        else setPortals(data.portals ?? []);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
   const filtered = useMemo(
-    () =>
-      portals.filter((p) =>
-        p.title.toLowerCase().includes(search.toLowerCase())
-      ),
+    () => portals.filter((p) => p.title.toLowerCase().includes(search.toLowerCase())),
     [portals, search]
   );
 
   return (
-    <div style={s.page}>
-      <div style={s.header}>
-        <a href="/" style={s.topLink}>&larr; Back to Home</a>
-        <h1 style={s.title}>Portal Gallery</h1>
-        <p style={s.subtitle}>Browse public image portals</p>
-      </div>
+    <MarketingPage>
+      <section className="ip-section" style={{ textAlign: "center", paddingTop: "2.5rem" }}>
+        <h1 className="ip-display" style={{ fontSize: "clamp(1.75rem, 4vw, 2.25rem)", margin: "0 0 0.5rem" }}>
+          Portal Gallery
+        </h1>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ margin: 0, maxWidth: 280 }}
+          lines={["Browse public image portals"]}
+        />
+      </section>
 
-      <div style={s.searchWrap}>
+      <section className="ip-section" style={{ paddingTop: 0, maxWidth: 480, margin: "0 auto" }}>
         <input
-          style={s.input}
+          className="ip-input"
           type="text"
-          placeholder="Search portals by title..."
+          placeholder="Search portals by title…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-      </div>
+      </section>
 
-      {error && <div style={s.error}>{error}</div>}
+      {error && (
+        <section className="ip-section" style={{ paddingTop: 0 }}>
+          <div className="ip-card" style={{ color: "var(--danger)", maxWidth: 480, margin: "0 auto" }}>
+            {error}
+          </div>
+        </section>
+      )}
 
-      {loading && <div style={s.loading}>Loading portals...</div>}
+      {loading && (
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ padding: "3rem 1rem" }}
+          lines={["Loading portals…"]}
+        />
+      )}
 
       {!loading && !error && filtered.length === 0 && (
-        <div style={s.empty}>
-          <p style={{ fontSize: "1.1rem", marginBottom: 8 }}>
-            {search ? "No portals match your search" : "No public portals yet"}
-          </p>
-        </div>
+        <BalancedText
+          className="ip-muted ip-text-block"
+          style={{ padding: "3rem 1rem" }}
+          lines={
+            search
+              ? ["No portals match", "your search."]
+              : ["No public portals yet."]
+          }
+        />
       )}
 
       {!loading && filtered.length > 0 && (
-        <div style={s.grid}>
+        <section
+          className="ip-section"
+          style={{
+            paddingTop: 0,
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: "1rem",
+            maxWidth: 960,
+          }}
+        >
           {filtered.map((p) => {
-            const domain = (() => {
-              try {
-                return new URL(p.destination_url).hostname;
-              } catch {
-                return p.destination_url;
-              }
-            })();
-
+            let domain = p.destination_url;
+            try {
+              domain = new URL(p.destination_url).hostname;
+            } catch {
+              /* keep raw */
+            }
             return (
-              <a key={p.id} href={`/p/${p.slug}`} style={s.card}>
-                <h3 style={s.cardTitle}>{p.title}</h3>
-                <span style={s.cardSlug}>/p/{p.slug}</span>
-                <span style={s.cardDomain}>{domain}</span>
-                <span style={s.cardScans}>
-                  {p.total_scans} scan{p.total_scans !== 1 ? "s" : ""} &middot;{" "}
-                  {timeAgo(p.last_scanned_at)}
+              <a
+                key={p.id}
+                href={`/p/${p.slug}`}
+                className="ip-card ip-card-interactive"
+                style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", gap: 8 }}
+              >
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: 0 }}>{p.title}</h3>
+                <span className="ip-mono" style={{ fontSize: "0.82rem", color: "var(--accent)" }}>
+                  /p/{p.slug}
+                </span>
+                <span className="ip-muted" style={{ fontSize: "0.82rem" }}>{domain}</span>
+                <span className="ip-faint" style={{ fontSize: "0.82rem" }}>
+                  {p.total_scans} scan{p.total_scans !== 1 ? "s" : ""} · {timeAgo(p.last_scanned_at)}
                 </span>
               </a>
             );
           })}
-        </div>
+        </section>
       )}
-    </div>
+    </MarketingPage>
   );
 }

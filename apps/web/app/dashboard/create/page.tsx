@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import PortalForm from "@/components/PortalForm";
+import { PageIntro } from "@/components/ui/PageIntro";
 
 interface PortalValues {
   title: string;
@@ -20,7 +21,6 @@ export default function CreatePortalPage() {
       setError(null);
 
       try {
-        // Get the session user ID by calling the session endpoint
         const sessionRes = await fetch("/api/auth/session");
         if (!sessionRes.ok) throw new Error("Not authenticated");
         const sessionData = await sessionRes.json();
@@ -49,28 +49,18 @@ export default function CreatePortalPage() {
   );
 
   return (
-    <div>
-      <h1
-        style={{
-          fontSize: "1.5rem",
-          fontWeight: 700,
-          marginBottom: "1.5rem",
-        }}
-      >
-        Create Portal
-      </h1>
+    <div className="ip-form-shell">
+      <PageIntro
+        title="Create Portal"
+        lines={[
+          "Name your portal,",
+          "set a destination,",
+          "& choose how visitors scan.",
+        ]}
+      />
 
       {error && (
-        <div
-          style={{
-            background: "#2a0a0a",
-            border: "1px solid #ef4444",
-            borderRadius: 8,
-            padding: "12px 16px",
-            color: "#ef4444",
-            marginBottom: "1rem",
-          }}
-        >
+        <div className="ip-card" style={{ color: "var(--danger)", marginBottom: "1rem" }}>
           {error}
         </div>
       )}

@@ -2,7 +2,16 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 import PortalDetailClient from "./PortalDetailClient";
+import { BalancedText } from "@/components/ui/BalancedText";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
+
+function ErrorPanel({ lines }: { lines: readonly string[] }) {
+  return (
+    <div className="ip-card" style={{ color: "var(--danger)", borderColor: "var(--danger)", maxWidth: 420, margin: "4rem auto", textAlign: "center" }}>
+      <BalancedText className="ip-text-block" lines={lines} />
+    </div>
+  );
+}
 
 export default async function PortalDetailPage({
   params,
@@ -17,17 +26,7 @@ export default async function PortalDetailPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "4rem 1rem",
-          color: "#ef4444",
-        }}
-      >
-        Unauthorized. Please sign in.
-      </div>
-    );
+    return <ErrorPanel lines={["Unauthorized.", "Please sign in."]} />;
   }
 
   let portal: PortalRow | null = null;
@@ -50,17 +49,7 @@ export default async function PortalDetailPage({
 
       // Verify ownership
       if (portal.owner_id !== user.id) {
-        return (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "4rem 1rem",
-              color: "#ef4444",
-            }}
-          >
-            You do not have access to this portal.
-          </div>
-        );
+        return <ErrorPanel lines={["You do not have access", "to this portal."]} />;
       }
 
       // Fetch images
@@ -77,17 +66,7 @@ export default async function PortalDetailPage({
   }
 
   if (fetchError) {
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "4rem 1rem",
-          color: "#ef4444",
-        }}
-      >
-        {fetchError}
-      </div>
-    );
+    return <ErrorPanel lines={[fetchError]} />;
   }
 
   if (!portal) notFound();

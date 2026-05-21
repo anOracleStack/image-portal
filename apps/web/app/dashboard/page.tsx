@@ -4,6 +4,7 @@ import PortalList from "./PortalList";
 import { UsageSummary } from "@/components/UsageSummary";
 import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
 import { OnboardingStrip } from "@/components/OnboardingStrip";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -58,36 +59,24 @@ export default async function DashboardPage() {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "1.5rem",
+          flexWrap: "wrap",
+          gap: 12,
         }}
       >
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>
-          Your Portals
+        <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: 0 }}>
+          Your portals
         </h1>
-        <a
-          href="/dashboard/create"
-          style={{
-            background: "#7df",
-            border: "none",
-            borderRadius: 10,
-            padding: "10px 20px",
-            fontSize: "0.9rem",
-            fontWeight: 600,
-            color: "#0a0a0a",
-            textDecoration: "none",
-          }}
-        >
-          + Create Portal
+        <a href="/dashboard/create" className="ip-btn ip-btn-primary ip-btn-sm">
+          + Create portal
         </a>
       </div>
 
       {fetchError && (
         <div
+          className="ip-card"
           style={{
-            background: "#2a0a0a",
-            border: "1px solid #ef4444",
-            borderRadius: 8,
-            padding: "12px 16px",
-            color: "#ef4444",
+            color: "var(--danger)",
+            borderColor: "var(--danger)",
             marginBottom: "1rem",
           }}
         >
@@ -96,19 +85,24 @@ export default async function DashboardPage() {
       )}
 
       {portals.length === 0 && !fetchError ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "4rem 1rem",
-            color: "#888",
-          }}
-        >
-          <p style={{ fontSize: "1.1rem", marginBottom: 8 }}>
-            Create your first portal to get started
+        <div className="ip-card ip-card-glow" style={{ textAlign: "center", padding: "4rem 2rem" }}>
+          <div className="ip-portal-thumb" style={{ width: 80, height: 80, margin: "0 auto 20px", fontSize: "2rem" }}>
+            ◫
+          </div>
+          <p className="ip-display" style={{ fontSize: "1.15rem", marginBottom: 8 }}>
+            Create your first portal
           </p>
-          <p style={{ fontSize: "0.85rem" }}>
-            Portals let you monitor images submitted to your endpoint.
-          </p>
+          <BalancedText
+            className="ip-muted ip-text-block"
+            style={{ fontSize: "0.9rem", marginBottom: 24, maxWidth: 320 }}
+            lines={[
+              "Upload an image, set a destination,",
+              "& share a scannable link anywhere.",
+            ]}
+          />
+          <a href="/dashboard/create" className="ip-btn ip-btn-primary">
+            Create portal
+          </a>
         </div>
       ) : (
         <PortalList initial={portals} />

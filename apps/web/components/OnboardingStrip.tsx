@@ -1,5 +1,7 @@
 "use client";
 
+import { BalancedText } from "@/components/ui/BalancedText";
+
 const steps = [
   { n: 1, title: "Create a portal", href: "/dashboard/create", desc: "Title + HTTPS destination" },
   { n: 2, title: "Upload your visual", href: "/dashboard/create", desc: "Poster, sticker, or photo" },
@@ -10,20 +12,24 @@ const steps = [
 export function OnboardingStrip() {
   return (
     <div
+      className="ip-card ip-card-glow ip-card-copy"
       style={{
-        background: "linear-gradient(135deg, #0f1f1f 0%, #141414 100%)",
-        border: "1px solid #2a3a3a",
-        borderRadius: 14,
-        padding: "1.25rem 1.5rem",
         marginBottom: "1.5rem",
+        background: `linear-gradient(135deg, var(--accent-dim) 0%, var(--bg-card) 100%)`,
       }}
     >
-      <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.1rem", color: "#7df" }}>
+      <h2 className="ip-display" style={{ margin: "0 0 0.5rem", fontSize: "1.1rem", color: "var(--accent)" }}>
         Launch in 4 steps
       </h2>
-      <p style={{ margin: "0 0 1rem", color: "#888", fontSize: "0.85rem" }}>
-        Image Portal turns any visual into a scannable doorway — with safety checks and analytics built in.
-      </p>
+      <BalancedText
+        className="ip-muted ip-text-block"
+        style={{ margin: "0 0 1rem", fontSize: "0.85rem", maxWidth: 520 }}
+        lines={[
+          "Turn any visual into a scannable doorway —",
+          "safety checks",
+          "& analytics built in.",
+        ]}
+      />
       <div
         style={{
           display: "grid",
@@ -35,20 +41,16 @@ export function OnboardingStrip() {
           <a
             key={s.n}
             href={s.href}
-            style={{
-              background: "#0a0a0a",
-              border: "1px solid #222",
-              borderRadius: 10,
-              padding: "12px",
-              textDecoration: "none",
-              color: "inherit",
-            }}
+            className="ip-card ip-card-interactive"
+            style={{ padding: 12, textDecoration: "none", color: "inherit" }}
           >
-            <div style={{ color: "#7df", fontWeight: 700, fontSize: "0.75rem" }}>
-              STEP {s.n}
+            <div className="ip-mono" style={{ color: "var(--accent)", fontWeight: 700, fontSize: "0.7rem" }}>
+              Step {s.n}
             </div>
             <div style={{ fontWeight: 600, fontSize: "0.9rem", marginTop: 4 }}>{s.title}</div>
-            <div style={{ color: "#666", fontSize: "0.75rem", marginTop: 4 }}>{s.desc}</div>
+            <div className="ip-faint" style={{ fontSize: "0.75rem", marginTop: 4 }}>
+              {s.desc}
+            </div>
           </a>
         ))}
       </div>

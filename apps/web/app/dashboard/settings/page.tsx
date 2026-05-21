@@ -3,6 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { createBrowserClient_ } from "@/lib/supabase-browser";
 import type { PlanTier } from "@/lib/subscription";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 export default function SettingsPage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -89,84 +92,112 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 640 }}>
-      <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-        Settings
-      </h1>
-      <p style={{ color: "#888", marginBottom: "2rem", fontSize: "0.9rem" }}>
-        Account, billing, and growth tools.
-      </p>
+    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      <PageIntro
+        title="Settings"
+        lines={["Account, billing, appearance,", "& growth tools."]}
+      />
 
       {msg && (
         <div
+          className="ip-card"
           style={{
-            background: "#1a2a1a",
-            border: "1px solid #4ade80",
-            borderRadius: 8,
-            padding: "10px 14px",
             marginBottom: "1rem",
             fontSize: "0.85rem",
-            color: "#4ade80",
+            color: "var(--success)",
+            borderColor: "color-mix(in srgb, var(--success) 40%, var(--border))",
           }}
         >
           {msg}
         </div>
       )}
 
-      <section style={card}>
-        <h2 style={h2}>Account</h2>
-        <p style={row}>
-          <span style={label}>Email</span>
+      <section className="ip-card" style={{ marginBottom: "1.25rem" }}>
+        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Appearance</h2>
+        <BalancedText
+          className="ip-muted ip-text-block ip-card-copy"
+          style={{ fontSize: "0.85rem", marginBottom: 14 }}
+          lines={[
+            "Choose dark, light,",
+            "or match your system setting.",
+            "Saved on this device.",
+          ]}
+        />
+        <ThemeToggle />
+      </section>
+
+      <section className="ip-card" style={{ marginBottom: "1.25rem" }}>
+        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Account</h2>
+        <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
+          <span className="ip-faint" style={{ marginRight: 12 }}>
+            Email
+          </span>
           {email}
         </p>
-        <p style={row}>
-          <span style={label}>Plan</span>
+        <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
+          <span className="ip-faint" style={{ marginRight: 12 }}>
+            Plan
+          </span>
           <span style={{ textTransform: "capitalize" }}>{tier}</span>
         </p>
         {tier !== "free" && tier !== "enterprise" && (
-          <button type="button" onClick={openBillingPortal} disabled={billingLoading} style={btn}>
+          <button
+            type="button"
+            onClick={openBillingPortal}
+            disabled={billingLoading}
+            className="ip-btn ip-btn-primary ip-btn-sm"
+            style={{ marginTop: 8 }}
+          >
             {billingLoading ? "Opening…" : "Manage billing (Stripe)"}
           </button>
         )}
         {tier === "free" && (
-          <a href="/pricing" style={{ ...btn, display: "inline-block", textAlign: "center" as const }}>
+          <a href="/pricing" className="ip-btn ip-btn-primary ip-btn-sm" style={{ marginTop: 8, display: "inline-flex" }}>
             Upgrade plan
           </a>
         )}
       </section>
 
-      <section style={card}>
-        <h2 style={h2}>Referrals</h2>
-        <p style={{ color: "#888", fontSize: "0.85rem", marginBottom: 12 }}>
-          Share Image Portal. When someone signs up with your link, you both get credited on
-          future referral rewards.
+      <section className="ip-card" style={{ marginBottom: "1.25rem" }}>
+        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Referrals</h2>
+        <BalancedText
+          className="ip-muted ip-text-block ip-card-copy"
+          style={{ fontSize: "0.85rem", marginBottom: 12 }}
+          lines={[
+            "Share Image Portal.",
+            "When someone signs up with your link,",
+            "you both get credited on",
+            "future referral rewards.",
+          ]}
+        />
+        <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
+          <span className="ip-faint" style={{ marginRight: 12 }}>
+            Your code
+          </span>
+          <code className="ip-mono" style={{ color: "var(--accent)" }}>
+            {referralCode || "…"}
+          </code>
         </p>
-        <p style={row}>
-          <span style={label}>Your code</span>
-          <code style={{ color: "#7df" }}>{referralCode || "…"}</code>
-        </p>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button
-            type="button"
-            onClick={() => copy(referralLink, "Referral link")}
-            style={btnSecondary}
-            disabled={!referralLink}
-          >
-            Copy referral link
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => copy(referralLink, "Referral link")}
+          className="ip-btn ip-btn-secondary ip-btn-sm"
+          disabled={!referralLink}
+        >
+          Copy referral link
+        </button>
       </section>
 
-      <section style={card}>
-        <h2 style={h2}>Quick links</h2>
+      <section className="ip-card">
+        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Quick links</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <a href="/dashboard/api-keys" style={link}>
+          <a href="/dashboard/api-keys" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "0.9rem" }}>
             API keys →
           </a>
-          <a href="/dashboard/scan-history" style={link}>
+          <a href="/dashboard/scan-history" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "0.9rem" }}>
             Scan history →
           </a>
-          <a href="/scan" style={link}>
+          <a href="/scan" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "0.9rem" }}>
             Open scanner →
           </a>
         </div>
@@ -174,37 +205,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-const card = {
-  background: "#141414",
-  border: "1px solid #222",
-  borderRadius: 12,
-  padding: "1.25rem",
-  marginBottom: "1.25rem",
-} as const;
-
-const h2 = { fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" } as const;
-const row = { margin: "0 0 8px", fontSize: "0.9rem" } as const;
-const label = { color: "#666", marginRight: 12 } as const;
-const btn = {
-  marginTop: 8,
-  background: "#7df",
-  color: "#0a0a0a",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 18px",
-  fontWeight: 600,
-  cursor: "pointer",
-  fontSize: "0.875rem",
-  textDecoration: "none",
-} as const;
-const btnSecondary = {
-  background: "#222",
-  color: "#ededed",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 18px",
-  fontSize: "0.875rem",
-  cursor: "pointer",
-} as const;
-const link = { color: "#7df", textDecoration: "none", fontSize: "0.9rem" } as const;

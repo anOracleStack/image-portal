@@ -3,16 +3,14 @@
 import { createBrowserClient_ } from "@/lib/supabase-browser";
 import { STRIPE_PRICE_IDS } from "@/lib/stripe-plans";
 import { useState, useEffect, useCallback } from "react";
+import { MarketingPage } from "@/components/marketing/MarketingPage";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 const s = {
-  page: {
-    background: "#0a0a0a",
-    color: "#ededed",
-    fontFamily:
-      'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    minHeight: "100vh",
-  },
-  dim: "rgba(237,237,237,0.55)" as const,
+  dim: "var(--text-muted)" as const,
+  text: "var(--text)" as const,
+  accent: "var(--accent)" as const,
+  accentFg: "var(--accent-foreground)" as const,
   section: (py: number) =>
     ({
       maxWidth: 1100,
@@ -35,10 +33,10 @@ const plans = [
     name: "Indie",
     price: "$19",
     period: "/mo",
-    desc: "For creators and small teams.",
+    desc: "For creators & small teams.",
     ctas: {
       label: "Subscribe",
-      href: "mailto:sales@imageportal.dev?subject=Indie Plan",
+      href: "mailto:sales@rub.pub?subject=Indie Plan",
     },
     features: [
       "25 portals",
@@ -56,7 +54,7 @@ const plans = [
     desc: "For growing businesses.",
     ctas: {
       label: "Subscribe",
-      href: "mailto:sales@imageportal.dev?subject=Pro Plan",
+      href: "mailto:sales@rub.pub?subject=Pro Plan",
     },
     features: [
       "100 portals",
@@ -74,7 +72,7 @@ const plans = [
     desc: "For organizations at scale.",
     ctas: {
       label: "Contact Us",
-      href: "mailto:sales@imageportal.dev?subject=Enterprise Plan",
+      href: "mailto:sales@rub.pub?subject=Enterprise Plan",
     },
     features: [
       "Unlimited portals",
@@ -145,7 +143,7 @@ function Navbar() {
       <a
         href="/"
         style={{
-          color: "#ededed",
+          color: "var(--text)",
           textDecoration: "none",
           fontWeight: 700,
           fontSize: 18,
@@ -166,7 +164,7 @@ function Navbar() {
               fontSize: 14,
               transition: "color 0.2s",
             }}
-            onMouseOver={(e) => (e.currentTarget.style.color = "#ededed")}
+            onMouseOver={(e) => (e.currentTarget.style.color = "var(--text)")}
             onMouseOut={(e) => (e.currentTarget.style.color = s.dim)}
           >
             {label}
@@ -175,8 +173,8 @@ function Navbar() {
         <a
           href="/dashboard"
           style={{
-            background: "#7df",
-            color: "#0a0a0a",
+            background: "var(--accent)",
+            color: "var(--accent-foreground)",
             textDecoration: "none",
             borderRadius: 8,
             padding: "8px 18px",
@@ -231,7 +229,7 @@ function Footer() {
                 fontSize: 14,
                 transition: "color 0.2s",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.color = "#ededed")}
+              onMouseOver={(e) => (e.currentTarget.style.color = "var(--text)")}
               onMouseOut={(e) => (e.currentTarget.style.color = s.dim)}
             >
               {label}
@@ -291,8 +289,8 @@ function CheckoutButton({ plan }: { plan: string }) {
         textDecoration: "none",
         transition: "transform 0.2s",
         ...(plan === "pro"
-          ? { background: "#7df", color: "#0a0a0a" }
-          : { background: "transparent", color: "#ededed", boxShadow: "0 0 0 1px rgba(237,237,237,0.2)" }),
+          ? { background: "var(--accent)", color: "var(--accent-foreground)" }
+          : { background: "transparent", color: "var(--text)", boxShadow: "0 0 0 1px rgba(237,237,237,0.2)" }),
       }}
     >
       Subscribe
@@ -302,9 +300,7 @@ function CheckoutButton({ plan }: { plan: string }) {
 
 export default function PricingPage() {
   return (
-    <div style={s.page}>
-      <Navbar />
-
+    <MarketingPage>
       {/* ---- HEADER ---- */}
       <section style={{ ...s.section(60), textAlign: "center" as const }}>
         <h1
@@ -317,9 +313,11 @@ export default function PricingPage() {
         >
           Simple, Usage-Based Pricing
         </h1>
-        <p style={{ color: s.dim, fontSize: "clamp(1rem, 2vw, 1.15rem)" }}>
-          Free to start. Scale as you grow.
-        </p>
+        <BalancedText
+          className="ip-text-block"
+          style={{ color: s.dim, fontSize: "clamp(1rem, 2vw, 1.15rem)", maxWidth: 320 }}
+          lines={["Free to start.", "Scale as you grow."]}
+        />
       </section>
 
       {/* ---- PRICING CARDS ---- */}
@@ -357,8 +355,8 @@ export default function PricingPage() {
                     top: -12,
                     left: "50%",
                     transform: "translateX(-50%)",
-                    background: "#7df",
-                    color: "#0a0a0a",
+                    background: "var(--accent)",
+                    color: "var(--accent-foreground)",
                     fontSize: 11,
                     fontWeight: 700,
                     padding: "4px 14px",
@@ -417,7 +415,7 @@ export default function PricingPage() {
                       gap: 8,
                     }}
                   >
-                    <span style={{ color: "#7df", fontSize: 14 }}>&#10003;</span>
+                    <span style={{ color: "var(--accent)", fontSize: 14 }}>&#10003;</span>
                     {f}
                   </li>
                 ))}
@@ -439,12 +437,12 @@ export default function PricingPage() {
                     transition: "transform 0.2s",
                     ...(plan.popular
                       ? {
-                          background: "#7df",
-                          color: "#0a0a0a",
+                          background: "var(--accent)",
+                          color: "var(--accent-foreground)",
                         }
                       : {
                           background: "transparent",
-                          color: "#ededed",
+                          color: "var(--text)",
                           boxShadow: "0 0 0 1px rgba(237,237,237,0.2)",
                         }),
                   }}
@@ -511,7 +509,7 @@ export default function PricingPage() {
                       borderBottom: "1px solid rgba(237,237,237,0.1)",
                       fontWeight: 700,
                       fontSize: 14,
-                      color: p.popular ? "#7df" : "#ededed",
+                      color: p.popular ? "var(--accent)" : "var(--text)",
                     }}
                   >
                     {p.name}
@@ -526,7 +524,7 @@ export default function PricingPage() {
                     style={{
                       padding: "14px 16px",
                       borderBottom: "1px solid rgba(237,237,237,0.05)",
-                      color: "#ededed",
+                      color: "var(--text)",
                       fontWeight: 500,
                     }}
                   >
@@ -544,11 +542,11 @@ export default function PricingPage() {
                       }}
                     >
                       {detail ? (
-                        <span style={{ color: "#ededed", fontSize: 12 }}>
+                        <span style={{ color: "var(--text)", fontSize: 12 }}>
                           {detail}
                         </span>
                       ) : has ? (
-                        <span style={{ color: "#7df", fontSize: 16 }}>
+                        <span style={{ color: "var(--accent)", fontSize: 16 }}>
                           &#10003;
                         </span>
                       ) : (
@@ -593,7 +591,7 @@ export default function PricingPage() {
                   cursor: "pointer",
                   fontWeight: 600,
                   fontSize: 15,
-                  color: "#ededed",
+                  color: "var(--text)",
                   listStyle: "none",
                   display: "flex",
                   justifyContent: "space-between",
@@ -618,8 +616,6 @@ export default function PricingPage() {
           ))}
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </MarketingPage>
   );
 }

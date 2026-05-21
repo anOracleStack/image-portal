@@ -8,10 +8,22 @@ interface Props {
 }
 
 const colors: Record<PlanTier, { bg: string; text: string }> = {
-  free:       { bg: "#2a2a2a", text: "#999" },
-  indie:      { bg: "#14253d", text: "#5b8def" },
-  pro:        { bg: "#2a2010", text: "#f0b429" },
-  enterprise: { bg: "#1f1030", text: "#a78bfa" },
+  free: {
+    bg: "var(--bg-elevated)",
+    text: "var(--text-muted)",
+  },
+  indie: {
+    bg: "color-mix(in srgb, var(--accent) 18%, transparent)",
+    text: "var(--accent)",
+  },
+  pro: {
+    bg: "color-mix(in srgb, var(--warning, #facc15) 18%, transparent)",
+    text: "var(--warning, #facc15)",
+  },
+  enterprise: {
+    bg: "color-mix(in srgb, var(--success) 18%, transparent)",
+    text: "var(--success)",
+  },
 };
 
 const styles = {
@@ -35,7 +47,7 @@ const styles = {
   },
   upgradeLink: {
     fontSize: "0.75rem",
-    color: "#7df",
+    color: "var(--accent)",
     textDecoration: "none",
     fontWeight: 600,
   },
