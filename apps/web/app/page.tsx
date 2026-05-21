@@ -10,8 +10,7 @@ const useCases = [
     icon: "◫",
     title: "Posters & Flyers",
     lines: [
-      "Printed materials that change",
-      "with your content.",
+      "Printed materials that change with your content.",
       "Update the link without reprinting.",
     ],
   },
@@ -20,26 +19,23 @@ const useCases = [
     title: "Restaurant Menus",
     lines: [
       "The menu image itself is scannable —",
-      "change prices,",
-      "& items instantly.",
+      "change prices & items instantly.",
     ],
   },
   {
     icon: "◇",
     title: "Event Tickets",
     lines: [
-      "Link tickets to pages that update",
-      "in real time — schedule, venue,",
-      "& refunds.",
+      "Link tickets in real time —",
+      "schedule, venue, & refunds.",
     ],
   },
   {
     icon: "▣",
     title: "Product Packaging",
     lines: [
-      "Packaging becomes a channel",
-      "to your brand — manuals, offers,",
-      "& unboxing.",
+      "Packaging becomes a channel to your brand —",
+      "manuals, offers, & unboxing.",
     ],
   },
   {
@@ -62,28 +58,24 @@ const useCases = [
 
 const whyItems = [
   {
-    title: "No QR codes needed",
+    title: "No QR Codes Needed",
     lines: [
       "QR codes require a printed code.",
-      "Image Portal uses the image itself —",
-      "any existing printed material works.",
+      "Image Portal uses the image itself — any existing printed material works.",
     ],
   },
   {
-    title: "Update anytime, never reprint",
+    title: "Update Anytime, Never Reprint",
     lines: [
       "Change the destination whenever you want.",
-      "The printed image stays the same;",
-      "the link does not.",
+      "The printed image stays the same; the link does not.",
     ],
   },
   {
-    title: "Reliable scanning",
+    title: "Reliable Scanning",
     lines: [
-      "Copy-detection embeddings plus",
-      "geometric verification — works on print,",
-      "glare,",
-      "& low light.",
+      "Copy-detection embeddings plus geometric verification —",
+      "works on print, glare, & low light.",
     ],
   },
 ] as const;
@@ -124,26 +116,34 @@ export default function LandingPage() {
           Visual scan · programmable links
         </p>
         <h1 className="ip-hero-title ip-animate-in ip-animate-in-delay-1">
-          Turn any image
+          Turn any Image
           <br />
-          <span>into a doorway</span>
+          <span>into a Doorway</span>
         </h1>
+        <p className="ip-hero-subtitle ip-animate-in ip-animate-in-delay-1">
+          Next generation QR code
+        </p>
         <BalancedText
           className="ip-muted ip-text-block ip-animate-in ip-animate-in-delay-1"
-          style={{ fontSize: "1.125rem", maxWidth: 480, lineHeight: 1.7 }}
+          style={{ fontSize: "1.125rem", maxWidth: 520, lineHeight: 1.7, margin: "0 auto" }}
           lines={[
             "Upload an image. Link it anywhere.",
-            "The image is the key — not",
-            "the destination.",
-            "Anyone with a phone camera",
-            "can open your link in seconds.",
+            "The image is the key — not the destination.",
           ]}
         />
+        <p
+          className="ip-muted ip-text-block ip-animate-in ip-animate-in-delay-1"
+          style={{ fontSize: "1.125rem", maxWidth: 640, lineHeight: 1.7, margin: "12px auto 0" }}
+        >
+          <span className="ip-text-block-line ip-text-block-line-nowrap">
+            Anyone with a camera phone can open your link in seconds.
+          </span>
+        </p>
         <div className="ip-hero-actions ip-animate-in ip-animate-in-delay-2">
-          <Button href="/login" variant="primary">
+          <Button href="/login" variant="primary" className="ip-btn-hero">
             Get started free
           </Button>
-          <Button href="#how-it-works" variant="secondary">
+          <Button href="#how-it-works" variant="secondary" className="ip-btn-hero">
             See how it works ↓
           </Button>
         </div>
@@ -201,9 +201,21 @@ export default function LandingPage() {
         <h2 className="ip-display ip-section-title" style={{ marginBottom: 40 }}>
           Why Image Portal?
         </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 28,
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
           {whyItems.map((item) => (
-            <div key={item.title} className="ip-card ip-card-copy">
+            <div
+              key={item.title}
+              className="ip-card ip-card-copy"
+              style={{ width: "100%", maxWidth: 480 }}
+            >
               <h3 className="ip-display" style={{ margin: "0 0 12px", fontSize: "1rem" }}>
                 {item.title}
               </h3>

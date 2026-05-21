@@ -181,6 +181,72 @@ a {
   text-align: center;
 }
 
+.ip-card-copy h3 {
+  text-align: center;
+}
+
+.ip-hero-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--accent);
+}
+
+.ip-btn-hero {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ip-text-block-line-nowrap {
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .ip-text-block-line-nowrap {
+    white-space: normal;
+  }
+}
+
+.ip-demo-stage {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.ip-demo-stage-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.ip-demo-stage-sub {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  max-width: 280px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.ip-demo-open-preview {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
 .ip-faint {
   color: var(--text-faint);
 }
