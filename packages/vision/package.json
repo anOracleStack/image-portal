@@ -6,7 +6,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "pnpm exec vitest run --config ../../vitest.config.ts"
   },
   "dependencies": {
     "sharp": "^0.33.5",

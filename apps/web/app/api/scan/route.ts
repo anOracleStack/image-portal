@@ -13,6 +13,11 @@ import crypto from "node:crypto";
 const RATE = new Map<string, { n: number; t: number }>();
 function rateLimited(key: string, max = 30, windowMs = 60_000): boolean {
   const now = Date.now();
+  if (RATE.size > 512) {
+    for (const [k, v] of RATE) {
+      if (now - v.t > windowMs) RATE.delete(k);
+    }
+  }
   const e = RATE.get(key);
   if (!e || now - e.t > windowMs) {
     RATE.set(key, { n: 1, t: now });
