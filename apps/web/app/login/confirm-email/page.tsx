@@ -69,8 +69,12 @@ function ConfirmEmailContent() {
               "to show inbox shortcuts.",
             ]}
           />
-          <Link href="/login" className="ip-nav-link" style={{ marginTop: 16, display: "inline-block" }}>
-            Back to sign in
+          <Link
+            href="/login"
+            className="ip-nav-link ip-auth-toggle-caps"
+            style={{ marginTop: 16, display: "inline-block" }}
+          >
+            Sign In
           </Link>
         </div>
       </AuthShell>
@@ -154,8 +158,8 @@ function ConfirmEmailContent() {
 
         <p className="ip-faint" style={{ fontSize: "0.8rem", marginTop: "1rem", lineHeight: 1.5 }}>
           Links expire after a while. Already confirmed?{" "}
-          <Link href="/login" style={{ color: "var(--accent)" }}>
-            Sign in
+          <Link href="/login" className="ip-auth-toggle-caps" style={{ color: "var(--accent)" }}>
+            Sign In
           </Link>
           .
         </p>
