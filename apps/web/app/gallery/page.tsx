@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { MarketingPage } from "@/components/marketing/MarketingPage";
+import { PageIntro } from "@/components/ui/PageIntro";
 import { BalancedText } from "@/components/ui/BalancedText";
 
 interface GalleryPortal {
@@ -51,18 +52,14 @@ export default function GalleryPage() {
 
   return (
     <MarketingPage>
-      <section className="ip-section" style={{ textAlign: "center", paddingTop: "2.5rem" }}>
-        <h1 className="ip-display" style={{ fontSize: "clamp(1.75rem, 4vw, 2.25rem)", margin: "0 0 0.5rem" }}>
-          Portal Gallery
-        </h1>
-        <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ margin: 0, maxWidth: 280 }}
-          lines={["Browse public image portals"]}
+      <section className="ip-section ip-section-center">
+        <PageIntro
+          title="Portal Gallery"
+          lines={["Browse public image portals", "from the community."]}
         />
       </section>
 
-      <section className="ip-section" style={{ paddingTop: 0, maxWidth: 480, margin: "0 auto" }}>
+      <section className="ip-section ip-gallery-search-wrap">
         <input
           className="ip-input"
           type="text"
@@ -73,25 +70,21 @@ export default function GalleryPage() {
       </section>
 
       {error && (
-        <section className="ip-section" style={{ paddingTop: 0 }}>
-          <div className="ip-card" style={{ color: "var(--danger)", maxWidth: 480, margin: "0 auto" }}>
-            {error}
-          </div>
+        <section className="ip-section ip-gallery-search-wrap">
+          <div className="ip-card ip-card-danger">{error}</div>
         </section>
       )}
 
       {loading && (
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ padding: "3rem 1rem" }}
+          className="ip-muted ip-text-block ip-gallery-state"
           lines={["Loading portals…"]}
         />
       )}
 
       {!loading && !error && filtered.length === 0 && (
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ padding: "3rem 1rem" }}
+          className="ip-muted ip-text-block ip-gallery-state"
           lines={
             search
               ? ["No portals match", "your search."]
@@ -101,16 +94,7 @@ export default function GalleryPage() {
       )}
 
       {!loading && filtered.length > 0 && (
-        <section
-          className="ip-section"
-          style={{
-            paddingTop: 0,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: "1rem",
-            maxWidth: 960,
-          }}
-        >
+        <section className="ip-section ip-gallery-grid">
           {filtered.map((p) => {
             let domain = p.destination_url;
             try {
@@ -122,15 +106,12 @@ export default function GalleryPage() {
               <a
                 key={p.id}
                 href={`/p/${p.slug}`}
-                className="ip-card ip-card-interactive"
-                style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", gap: 8 }}
+                className="ip-card ip-card-interactive ip-gallery-card"
               >
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: 0 }}>{p.title}</h3>
-                <span className="ip-mono" style={{ fontSize: "0.82rem", color: "var(--accent)" }}>
-                  /p/{p.slug}
-                </span>
-                <span className="ip-muted" style={{ fontSize: "0.82rem" }}>{domain}</span>
-                <span className="ip-faint" style={{ fontSize: "0.82rem" }}>
+                <h3 className="ip-gallery-card-title">{p.title}</h3>
+                <span className="ip-mono ip-gallery-card-slug">/p/{p.slug}</span>
+                <span className="ip-muted ip-gallery-card-meta">{domain}</span>
+                <span className="ip-faint ip-gallery-card-meta">
                   {p.total_scans} scan{p.total_scans !== 1 ? "s" : ""} · {timeAgo(p.last_scanned_at)}
                 </span>
               </a>

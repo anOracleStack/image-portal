@@ -7,7 +7,7 @@ export function MarketingPage({ children }: { children: React.ReactNode }) {
     <div className="ip-page">
       <GlowBackground />
       <MarketingNav />
-      <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+      <div className="ip-main-content">{children}</div>
       <MarketingFooter />
     </div>
   );

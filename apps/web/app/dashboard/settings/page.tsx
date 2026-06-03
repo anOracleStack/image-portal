@@ -92,31 +92,20 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+    <div className="ip-dash-page">
       <PageIntro
         title="Settings"
         lines={["Account, billing, appearance,", "& growth tools."]}
       />
 
       {msg && (
-        <div
-          className="ip-card"
-          style={{
-            marginBottom: "1rem",
-            fontSize: "0.85rem",
-            color: "var(--success)",
-            borderColor: "color-mix(in srgb, var(--success) 40%, var(--border))",
-          }}
-        >
-          {msg}
-        </div>
+        <div className="ip-card ip-card-success-msg ip-card-spaced">{msg}</div>
       )}
 
-      <section className="ip-card" style={{ marginBottom: "1.25rem" }}>
-        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Appearance</h2>
+      <section className="ip-card ip-card-spaced">
+        <h2 className="ip-card-section-title">Appearance</h2>
         <BalancedText
-          className="ip-muted ip-text-block ip-card-copy"
-          style={{ fontSize: "0.85rem", marginBottom: 14 }}
+          className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
           lines={[
             "Choose dark, light,",
             "or match your system setting.",
@@ -126,43 +115,40 @@ export default function SettingsPage() {
         <ThemeToggle />
       </section>
 
-      <section className="ip-card" style={{ marginBottom: "1.25rem" }}>
-        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Account</h2>
-        <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
-          <span className="ip-faint" style={{ marginRight: 12 }}>
-            Email
-          </span>
+      <section className="ip-card ip-card-spaced">
+        <h2 className="ip-card-section-title">Account</h2>
+        <p className="ip-account-row">
+          <span className="ip-faint ip-account-label">Email</span>
           {email}
         </p>
-        <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
-          <span className="ip-faint" style={{ marginRight: 12 }}>
-            Plan
-          </span>
-          <span style={{ textTransform: "capitalize" }}>{tier}</span>
+        <p className="ip-account-row">
+          <span className="ip-faint ip-account-label">Plan</span>
+          <span className="ip-capitalize">{tier}</span>
         </p>
         {tier !== "free" && tier !== "enterprise" && (
           <button
             type="button"
             onClick={openBillingPortal}
             disabled={billingLoading}
-            className="ip-btn ip-btn-primary ip-btn-sm"
-            style={{ marginTop: 8 }}
+            className="ip-btn ip-btn-primary ip-btn-sm ip-btn-mt-sm"
           >
             {billingLoading ? "Opening…" : "Manage billing (Stripe)"}
           </button>
         )}
         {tier === "free" && (
-          <a href="/pricing" className="ip-btn ip-btn-primary ip-btn-sm" style={{ marginTop: 8, display: "inline-flex" }}>
+          <a
+            href="/pricing"
+            className="ip-btn ip-btn-primary ip-btn-sm ip-btn-mt-sm"
+          >
             Upgrade plan
           </a>
         )}
       </section>
 
-      <section className="ip-card" style={{ marginBottom: "1.25rem" }}>
-        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Referrals</h2>
+      <section className="ip-card ip-card-spaced">
+        <h2 className="ip-card-section-title">Referrals</h2>
         <BalancedText
-          className="ip-muted ip-text-block ip-card-copy"
-          style={{ fontSize: "0.85rem", marginBottom: 12 }}
+          className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
           lines={[
             "Share Image Portal.",
             "When someone signs up with your link,",
@@ -170,11 +156,9 @@ export default function SettingsPage() {
             "future referral rewards.",
           ]}
         />
-        <p style={{ margin: "0 0 8px", fontSize: "0.9rem" }}>
-          <span className="ip-faint" style={{ marginRight: 12 }}>
-            Your code
-          </span>
-          <code className="ip-mono" style={{ color: "var(--accent)" }}>
+        <p className="ip-account-row">
+          <span className="ip-faint ip-account-label">Your code</span>
+          <code className="ip-mono ip-text-accent-mono">
             {referralCode || "…"}
           </code>
         </p>
@@ -189,17 +173,11 @@ export default function SettingsPage() {
       </section>
 
       <section className="ip-card">
-        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 1rem" }}>Quick links</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <a href="/dashboard/api-keys" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "0.9rem" }}>
-            API keys →
-          </a>
-          <a href="/dashboard/scan-history" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "0.9rem" }}>
-            Scan history →
-          </a>
-          <a href="/scan" style={{ color: "var(--accent)", textDecoration: "none", fontSize: "0.9rem" }}>
-            Open scanner →
-          </a>
+        <h2 className="ip-card-section-title">Quick links</h2>
+        <div className="ip-stack-links ip-stack-links-start">
+          <a href="/dashboard/api-keys">API keys →</a>
+          <a href="/dashboard/scan-history">Scan history →</a>
+          <a href="/scan">Open scanner →</a>
         </div>
       </section>
     </div>

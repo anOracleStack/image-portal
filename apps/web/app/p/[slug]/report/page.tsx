@@ -55,35 +55,23 @@ export default function ReportAbusePage() {
 
   return (
     <MarketingPage>
-      <section
-        className="ip-section-center"
-        style={{
-          padding: "3rem 1rem",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <section className="ip-marketing-section ip-marketing-section-tight ip-section-center ip-report-wrap">
         <form
           onSubmit={submit}
-          className="ip-card ip-auth-card-center"
-          style={{ maxWidth: 420, width: "100%" }}
+          className="ip-card ip-auth-card-center ip-report-form"
         >
-          <h1 className="ip-display" style={{ fontSize: "1.25rem", margin: "0 0 0.5rem" }}>
-            Report abuse
-          </h1>
+          <h1 className="ip-display ip-auth-title">Report abuse</h1>
           <BalancedText
-            className="ip-muted ip-text-block"
-            style={{ marginBottom: "1.5rem", fontSize: "0.85rem" }}
+            className="ip-muted ip-text-block ip-copy-sm ip-card-spaced"
             lines={[`Portal: ${slug}`]}
           />
 
-          <label className="ip-label" style={{ display: "block", marginBottom: "1rem", textAlign: "left" }}>
+          <label className="ip-label ip-report-label">
             Reason
             <select
-              className="ip-input"
+              className="ip-input ip-report-field"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              style={{ width: "100%", marginTop: 6 }}
             >
               {REASONS.map((r) => (
                 <option key={r} value={r}>
@@ -93,43 +81,35 @@ export default function ReportAbusePage() {
             </select>
           </label>
 
-          <label className="ip-label" style={{ display: "block", marginBottom: "1.5rem", textAlign: "left" }}>
+          <label className="ip-label ip-report-label">
             Details (optional)
             <textarea
-              className="ip-input"
+              className="ip-input ip-report-field ip-report-textarea"
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               rows={4}
-              style={{ width: "100%", marginTop: 6, resize: "vertical" }}
             />
           </label>
 
           <button
             type="submit"
-            className="ip-btn ip-btn-primary"
+            className="ip-btn ip-btn-primary ip-auth-btn-full"
             disabled={status === "loading" || status === "done"}
-            style={{ width: "100%", cursor: status === "loading" ? "wait" : "pointer" }}
           >
             {status === "loading" ? "Submitting…" : status === "done" ? "Submitted" : "Submit report"}
           </button>
 
           {msg && (
             <BalancedText
-              className="ip-text-block"
-              style={{
-                marginTop: 12,
-                fontSize: "0.85rem",
-                color: status === "error" ? "var(--danger)" : "var(--success)",
-              }}
+              className={`ip-text-block ip-status-msg ${status === "error" ? "ip-status-msg-error" : "ip-status-msg-success"}`}
               lines={[msg]}
             />
           )}
 
           <button
             type="button"
-            className="ip-btn ip-btn-ghost"
+            className="ip-btn ip-btn-ghost ip-auth-btn-full ip-btn-mt-lg"
             onClick={() => router.push(`/p/${slug}`)}
-            style={{ marginTop: 16, width: "100%" }}
           >
             ← Back to portal
           </button>

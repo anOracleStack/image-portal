@@ -171,41 +171,25 @@ function LoginForm() {
   return (
     <AuthShell>
       <form onSubmit={handleSubmit} className="ip-auth-card ip-auth-card-center">
-        <p className="ip-mono ip-badge ip-badge-accent" style={{ marginBottom: 12 }}>
+        <p className="ip-mono ip-badge ip-badge-accent ip-auth-badge">
           {isSignUp ? "New here" : "Welcome back"}
         </p>
-        <h1 className="ip-display" style={{ margin: "0 0 0.25rem", fontSize: "1.5rem" }}>
+        <h1 className="ip-display ip-auth-title">
           {isSignUp ? "Create Account" : "Sign In"}
         </h1>
         {isSignUp ? (
           <BalancedText
-            className="ip-muted ip-text-block"
-            style={{ margin: "0 0 1.25rem", fontSize: "0.875rem" }}
+            className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
             lines={["Confirm your email,", "then start building portals."]}
           />
         ) : (
           <BalancedText
-            className="ip-muted ip-text-block"
-            style={{ margin: "0 0 1.25rem", fontSize: "0.875rem" }}
+            className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
             lines={["Pick up where you left off."]}
           />
         )}
 
-        {error && (
-          <div
-            style={{
-              padding: "0.5rem 0.75rem",
-              marginBottom: "1rem",
-              borderRadius: 8,
-              background: "color-mix(in srgb, var(--danger) 12%, transparent)",
-              border: "1px solid color-mix(in srgb, var(--danger) 40%, transparent)",
-              color: "var(--danger)",
-              fontSize: "0.8125rem",
-            }}
-          >
-            {error}
-          </div>
-        )}
+        {error && <div className="ip-auth-error">{error}</div>}
 
         <button
           type="button"
@@ -221,34 +205,32 @@ function LoginForm() {
           <span>or use email</span>
         </div>
 
-        <label className="ip-mono ip-faint ip-auth-label" style={{ marginBottom: 4, fontSize: "0.7rem" }} htmlFor="email">
+        <label className="ip-mono ip-faint ip-auth-label" htmlFor="email">
           Email
         </label>
         <input
           id="email"
           type="email"
-          className={inputClass}
+          className={`${inputClass} ip-auth-input-gap`}
           placeholder="you@example.com"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ marginBottom: "1rem" }}
           autoComplete="email"
         />
 
-        <label className="ip-mono ip-faint ip-auth-label" style={{ marginBottom: 4, fontSize: "0.7rem" }} htmlFor="password">
+        <label className="ip-mono ip-faint ip-auth-label" htmlFor="password">
           Password
         </label>
         <input
           id="password"
           type="password"
-          className={inputClass}
+          className={`${inputClass} ip-auth-input-gap-sm`}
           placeholder="At least 6 characters"
           required
           minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ marginBottom: "0.75rem" }}
           autoComplete={isSignUp ? "new-password" : "current-password"}
         />
 
@@ -266,33 +248,23 @@ function LoginForm() {
         <button
           type="submit"
           disabled={busy}
-          className="ip-btn ip-btn-primary ip-auth-submit-caps"
-          style={{ width: "100%" }}
+          className="ip-btn ip-btn-primary ip-auth-submit-caps ip-auth-btn-full"
         >
           {loading ? "Please wait…" : isSignUp ? "Sign Up" : "Sign In"}
         </button>
 
         {isSignUp && (
           <BalancedText
-            className="ip-faint ip-text-block"
-            style={{ marginTop: "0.75rem", marginBottom: 0, fontSize: "0.8rem" }}
+            className="ip-faint ip-text-block ip-auth-hint"
             lines={["Confirm via email before signing in."]}
           />
         )}
 
-        <p className="ip-muted" style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.8125rem" }}>
+        <p className="ip-muted ip-auth-footer">
           {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             type="button"
-            className="ip-auth-toggle-caps"
-            style={{
-              background: "none",
-              border: "none",
-              color: "var(--accent)",
-              cursor: "pointer",
-              textDecoration: "underline",
-              font: "inherit",
-            }}
+            className="ip-auth-toggle-caps ip-auth-link-btn"
             onClick={() => {
               setIsSignUp(!isSignUp);
               setError(null);
@@ -311,8 +283,8 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <AuthShell>
-          <div className="ip-auth-card">
-            <p className="ip-muted">Loading…</p>
+          <div className="ip-auth-card ip-auth-card-center">
+            <BalancedText className="ip-muted ip-text-block" lines={["Loading…"]} />
           </div>
         </AuthShell>
       }

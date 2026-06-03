@@ -183,38 +183,7 @@ export function ScanDemo() {
 
   return (
     <div className="ip-demo ip-animate-in ip-animate-in-delay-2">
-      <div className="ip-demo-guide" aria-label="Quick step guide">
-        <p className="ip-demo-guide-label">Quick guide</p>
-        <div className="ip-demo-guide-table">
-          {QUICK_GUIDE.map((row, i) => (
-            <button
-              key={row.label}
-              type="button"
-              className="ip-demo-guide-row"
-              data-active={active === i ? "true" : "false"}
-              onClick={() => setActive(i)}
-              aria-current={active === i ? "step" : undefined}
-            >
-              <span className="ip-demo-guide-step">{row.label}</span>
-              <span className="ip-demo-guide-summary">{row.summary}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="ip-demo-body">
-        <header className="ip-demo-header">
-          <p className="ip-demo-kicker">Step {active + 1} of {steps.length}</p>
-          <h3 className="ip-demo-title">
-            <span className="ip-demo-stage-word">{step.stage}</span>
-            <span className="ip-demo-stage-sub">{step.subtitle}</span>
-          </h3>
-          <BalancedText
-            className="ip-muted ip-text-block ip-demo-desc ip-demo-desc-numbered"
-            lines={step.description}
-          />
-        </header>
-
         <figure className="ip-demo-figure">
           <div className={`ip-demo-frame ip-demo-frame-${step.variant}`}>
             {step.image ? (
@@ -251,6 +220,43 @@ export function ScanDemo() {
           </div>
           <figcaption className="ip-demo-example">{step.example}</figcaption>
         </figure>
+
+        <div className="ip-demo-guide ip-demo-guide-compact" aria-label="Quick step guide">
+          <p className="ip-demo-guide-label">Quick guide</p>
+          <div className="ip-demo-guide-pills" role="group" aria-label="Jump to step">
+            {QUICK_GUIDE.map((row, i) => (
+              <button
+                key={row.label}
+                type="button"
+                className="ip-demo-guide-pill"
+                data-active={active === i ? "true" : "false"}
+                onClick={() => setActive(i)}
+                aria-current={active === i ? "step" : undefined}
+                aria-label={`${row.label}: ${row.summary}`}
+                title={row.summary}
+              >
+                {row.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="ip-demo-works">
+          <p className="ip-demo-works-label">How it works</p>
+          <header className="ip-demo-header">
+            <p className="ip-demo-kicker">
+              Step {active + 1} of {steps.length}
+            </p>
+            <h3 className="ip-demo-title">
+              <span className="ip-demo-stage-word">{step.stage}</span>
+              <span className="ip-demo-stage-sub">{step.subtitle}</span>
+            </h3>
+            <BalancedText
+              className="ip-muted ip-text-block ip-demo-desc ip-demo-desc-numbered"
+              lines={step.description}
+            />
+          </header>
+        </div>
       </div>
 
       <div className="ip-demo-controls">

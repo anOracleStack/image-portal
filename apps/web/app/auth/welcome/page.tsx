@@ -8,15 +8,12 @@ export default function AuthWelcomePage() {
   return (
     <AuthShell>
       <div className="ip-auth-card ip-auth-card-center">
-        <p className="ip-mono ip-badge ip-badge-success" style={{ marginBottom: 16 }}>
+        <p className="ip-mono ip-badge ip-badge-success ip-auth-badge-lg">
           Email confirmed
         </p>
-        <h1 className="ip-display" style={{ fontSize: "1.6rem", margin: "0 0 0.75rem" }}>
-          You are in
-        </h1>
+        <h1 className="ip-display ip-auth-title">You are in</h1>
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ margin: "0 0 1.5rem", maxWidth: 340, lineHeight: 1.55 }}
+          className="ip-muted ip-text-block ip-copy-sm ip-card-spaced-lg"
           lines={[
             "Create your first visual portal",
             "& start linking camera scans",

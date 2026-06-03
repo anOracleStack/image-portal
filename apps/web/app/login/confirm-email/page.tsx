@@ -58,22 +58,16 @@ function ConfirmEmailContent() {
   if (!email) {
     return (
       <AuthShell>
-        <div className="ip-auth-card">
-          <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: "0 0 0.5rem" }}>
-            Check your email
-          </h1>
+        <div className="ip-auth-card ip-auth-card-center">
+          <h1 className="ip-display ip-auth-title">Check your email</h1>
           <BalancedText
-            className="ip-muted ip-text-block"
+            className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
             lines={[
               "We need your email address",
               "to show inbox shortcuts.",
             ]}
           />
-          <Link
-            href="/login"
-            className="ip-nav-link ip-auth-toggle-caps"
-            style={{ marginTop: 16, display: "inline-block" }}
-          >
+          <Link href="/login" className="ip-nav-link ip-auth-toggle-caps ip-btn-mt-lg">
             Sign In
           </Link>
         </div>
@@ -84,12 +78,9 @@ function ConfirmEmailContent() {
   return (
     <AuthShell>
       <div className="ip-auth-card ip-auth-card-center">
-        <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: "0 0 0.5rem" }}>
-          Confirm your email
-        </h1>
+        <h1 className="ip-display ip-auth-title">Confirm your email</h1>
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ marginBottom: "1.25rem", maxWidth: 360, lineHeight: 1.55 }}
+          className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
           lines={[
             "We sent a confirmation link to the",
             "address below. Confirm before",
@@ -97,21 +88,9 @@ function ConfirmEmailContent() {
           ]}
         />
 
-        <div className="ip-input" style={{ marginBottom: "1.25rem", wordBreak: "break-all" }}>
-          {email}
-        </div>
+        <div className="ip-input ip-confirm-email-display">{email}</div>
 
-        <ol
-          className="ip-muted"
-          style={{
-            margin: "0 auto 1.25rem",
-            paddingLeft: "1.25rem",
-            fontSize: "0.875rem",
-            lineHeight: 1.6,
-            maxWidth: 340,
-            textAlign: "left",
-          }}
-        >
+        <ol className="ip-muted ip-confirm-steps">
           <li>Open your inbox (button below if we recognize your provider).</li>
           <li>
             Find the message from Image Portal & tap <strong>Confirm email</strong>.
@@ -120,45 +99,43 @@ function ConfirmEmailContent() {
         </ol>
 
         {status && (
-          <div className="ip-badge ip-badge-success" style={{ marginBottom: "1rem", display: "block", padding: "0.5rem 0.75rem" }}>
+          <div className="ip-badge ip-badge-success ip-card-spaced">
             {status}
           </div>
         )}
-        {error && (
-          <div style={{ marginBottom: "1rem", color: "var(--danger)", fontSize: "0.8125rem" }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="ip-auth-error">{error}</div>}
 
         {inbox && (
           <a
             href={inbox.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="ip-btn ip-btn-primary"
-            style={{ width: "100%", marginBottom: "0.75rem" }}
+            className="ip-btn ip-btn-primary ip-auth-btn-full ip-auth-input-gap-sm"
           >
             {inbox.label}
           </a>
         )}
 
-        <button type="button" className="ip-btn ip-btn-secondary" style={{ width: "100%", marginBottom: "0.5rem" }} onClick={() => void resend()}>
+        <button
+          type="button"
+          className="ip-btn ip-btn-secondary ip-auth-btn-full ip-auth-input-gap-sm"
+          onClick={() => void resend()}
+        >
           Resend confirmation email
         </button>
 
         <button
           type="button"
-          className="ip-btn ip-btn-ghost"
-          style={{ width: "100%" }}
+          className="ip-btn ip-btn-ghost ip-auth-btn-full"
           disabled={checking}
           onClick={() => void checkConfirmed()}
         >
           {checking ? "Checking…" : "I confirmed — continue"}
         </button>
 
-        <p className="ip-faint" style={{ fontSize: "0.8rem", marginTop: "1rem", lineHeight: 1.5 }}>
+        <p className="ip-faint ip-auth-hint">
           Links expire after a while. Already confirmed?{" "}
-          <Link href="/login" className="ip-auth-toggle-caps" style={{ color: "var(--accent)" }}>
+          <Link href="/login" className="ip-link-accent ip-auth-toggle-caps">
             Sign In
           </Link>
           .
@@ -173,8 +150,8 @@ export default function ConfirmEmailPage() {
     <Suspense
       fallback={
         <AuthShell>
-          <div className="ip-auth-card">
-            <p className="ip-muted">Loading…</p>
+          <div className="ip-auth-card ip-auth-card-center">
+            <BalancedText className="ip-muted ip-text-block" lines={["Loading…"]} />
           </div>
         </AuthShell>
       }

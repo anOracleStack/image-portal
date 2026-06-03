@@ -6,17 +6,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="ip-page">
       <GlowBackground showGrid={false} />
-      <div
-        style={{
-          position: "fixed",
-          top: 16,
-          right: 16,
-          zIndex: 10,
-          display: "flex",
-          gap: 12,
-          alignItems: "center",
-        }}
-      >
+      <div className="ip-auth-toolbar">
         <ThemeToggle />
         <Link href="/" className="ip-nav-link">
           Home

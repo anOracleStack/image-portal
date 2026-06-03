@@ -33,23 +33,11 @@ export default async function PublicPortalPage({ params }: Props) {
 
   return (
     <MarketingPage>
-      <section
-        className="ip-section-center"
-        style={{
-          minHeight: "60vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "3rem 1rem",
-        }}
-      >
+      <section className="ip-section-center ip-public-hero">
         <div className="ip-card ip-public-card">
-          <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: "0 0 0.5rem" }}>
-            {portal.title}
-          </h1>
+          <h1 className="ip-display ip-public-title">{portal.title}</h1>
           <BalancedText
-            className="ip-muted ip-text-block"
-            style={{ margin: "0 0 1.5rem", fontSize: "0.85rem" }}
+            className="ip-muted ip-text-block ip-copy-sm ip-public-domain"
             lines={[domain]}
           />
 
@@ -57,30 +45,17 @@ export default async function PublicPortalPage({ params }: Props) {
             href={portal.destination_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="ip-btn ip-btn-primary"
-            style={{ marginBottom: "1.5rem", display: "inline-block" }}
+            className="ip-btn ip-btn-primary ip-public-cta"
           >
             Visit Destination
           </a>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "1rem",
-              fontSize: "0.82rem",
-              flexWrap: "wrap",
-            }}
-          >
-            <a href="/gallery" className="ip-muted" style={{ textDecoration: "none" }}>
+          <div className="ip-public-links">
+            <a href="/gallery" className="ip-muted ip-public-link">
               ← Browse Gallery
             </a>
             <span className="ip-faint">·</span>
-            <a
-              href={`/p/${portal.slug}/report`}
-              className="ip-muted"
-              style={{ textDecoration: "none" }}
-            >
+            <a href={`/p/${portal.slug}/report`} className="ip-muted ip-public-link">
               Report Abuse
             </a>
           </div>
