@@ -57,24 +57,19 @@ export default function PortalList({ initial }: Props) {
       {/* Search */}
       {portals.length > 0 && (
         <input
-          className="ip-input"
+          className="ip-input ip-search-mb"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
             setPage(1);
           }}
           placeholder="Search portals by title or slug…"
-          style={{ marginBottom: "1rem" }}
         />
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className="ip-stack-col-sm">
         {visible.map((portal) => (
-          <a
-            key={portal.id}
-            href={`/dashboard/${portal.id}`}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
+          <a key={portal.id} href={`/dashboard/${portal.id}`} className="ip-portal-card">
             <PortalCard portal={portal} onDelete={handleDelete} />
           </a>
         ))}
@@ -82,14 +77,13 @@ export default function PortalList({ initial }: Props) {
 
       {filtered.length === 0 && search && (
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ marginTop: "2rem" }}
+          className="ip-muted ip-text-block ip-mt-xl"
           lines={["No portals match", `“${search}”`]}
         />
       )}
 
       {hasMore && (
-        <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
+        <div className="ip-load-more">
           <button
             type="button"
             className="ip-btn ip-btn-secondary"

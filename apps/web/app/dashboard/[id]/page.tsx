@@ -7,7 +7,7 @@ import type { PortalRow, PortalImageRow } from "@/lib/types";
 
 function ErrorPanel({ lines }: { lines: readonly string[] }) {
   return (
-    <div className="ip-card" style={{ color: "var(--danger)", borderColor: "var(--danger)", maxWidth: 420, margin: "4rem auto", textAlign: "center" }}>
+    <div className="ip-card ip-card-danger ip-error-panel-centered">
       <BalancedText className="ip-text-block" lines={lines} />
     </div>
   );

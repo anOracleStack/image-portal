@@ -70,7 +70,7 @@ export default function ApiKeysPage() {
   const dismissNewKey = () => setNewKey(null);
 
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto" }}>
+    <div className="ip-dash-page-wide">
       <PageIntro
         title="API Keys"
         lines={[
@@ -82,24 +82,12 @@ export default function ApiKeysPage() {
       {newKey && (
         <div className="ip-key-reveal">
           <BalancedText
-            className="ip-text-block"
-            style={{ color: "var(--success)", fontSize: "0.82rem", marginBottom: 8 }}
+            className="ip-text-block ip-key-reveal-title"
             lines={["Your new API key", "(shown once)"]}
           />
-          <div
-            style={{
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              wordBreak: "break-all",
-              fontFamily: "monospace",
-              marginBottom: 8,
-            }}
-          >
-            {newKey}
-          </div>
+          <div className="ip-key-display">{newKey}</div>
           <BalancedText
-            className="ip-faint ip-text-block"
-            style={{ fontSize: "0.78rem", color: "var(--warning, #facc15)" }}
+            className="ip-faint ip-text-block ip-key-reveal-warn"
             lines={[
               "Save this key —",
               "you will not see it again.",
@@ -107,8 +95,7 @@ export default function ApiKeysPage() {
           />
           <button
             type="button"
-            className="ip-btn ip-btn-primary"
-            style={{ marginTop: 10 }}
+            className="ip-btn ip-btn-primary ip-btn-mt-md"
             onClick={dismissNewKey}
           >
             I&apos;ve saved it
@@ -116,18 +103,17 @@ export default function ApiKeysPage() {
         </div>
       )}
 
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <label className="ip-label" style={{ display: "block", marginBottom: 6 }}>
+      <div className="ip-card ip-card-spaced-lg">
+        <label className="ip-label ip-auth-label">
           Key name (optional)
         </label>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="ip-form-row">
           <input
-            className="ip-input"
+            className="ip-input ip-form-row-grow"
             type="text"
             placeholder="e.g. CI pipeline"
             value={keyName}
             onChange={(e) => setKeyName(e.target.value)}
-            style={{ flex: "1 1 200px" }}
           />
           <button type="button" className="ip-btn ip-btn-primary" onClick={generateKey}>
             Generate Key
@@ -137,11 +123,11 @@ export default function ApiKeysPage() {
 
       <div className="ip-card ip-table-scroll">
         {loading ? (
-          <div className="ip-empty-state" style={{ padding: "2rem" }}>
+          <div className="ip-empty-state ip-empty-state-compact">
             <BalancedText className="ip-muted ip-text-block" lines={["Loading…"]} />
           </div>
         ) : keys.length === 0 ? (
-          <div className="ip-empty-state" style={{ padding: "2rem" }}>
+          <div className="ip-empty-state ip-empty-state-compact">
             <BalancedText className="ip-muted ip-text-block" lines={["No API keys yet."]} />
           </div>
         ) : (
@@ -160,7 +146,7 @@ export default function ApiKeysPage() {
                 <tr key={k.id}>
                   <td>{k.name}</td>
                   <td>
-                    <span className="ip-mono" style={{ color: "var(--accent)" }}>
+                    <span className="ip-mono ip-text-accent-mono">
                       {k.key_prefix}...
                     </span>
                   </td>
@@ -169,13 +155,7 @@ export default function ApiKeysPage() {
                   <td>
                     <button
                       type="button"
-                      className="ip-btn ip-btn-ghost"
-                      style={{
-                        borderColor: "var(--danger)",
-                        color: "var(--danger)",
-                        padding: "4px 10px",
-                        fontSize: "0.78rem",
-                      }}
+                      className="ip-btn ip-btn-ghost ip-revoke-btn"
                       onClick={() => revokeKey(k.id)}
                     >
                       Revoke

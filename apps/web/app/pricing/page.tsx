@@ -267,10 +267,7 @@ export default function PricingPage() {
                 {q}
                 <span className="ip-faint">+</span>
               </summary>
-              <p
-                className="ip-faq-answer"
-                dangerouslySetInnerHTML={{ __html: a }}
-              />
+              <p className="ip-faq-answer">{a}</p>
             </details>
           ))}
         </div>

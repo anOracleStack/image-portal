@@ -2527,10 +2527,49 @@ a {
   justify-content: center;
 }
 
-.ip-copy-link-code {
-  font-size: 0.8rem;
-  word-break: break-all;
+.ip-scan-placeholder-danger {
+  color: var(--danger);
 }
+
+.ip-error-panel-centered {
+  max-width: 420px;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+.ip-share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.ip-modal-title-danger {
+  color: var(--danger);
+  margin-top: 0;
+}
+
+.ip-detail-slug {
+  color: var(--accent);
+}
+
+.ip-meta-muted-sm {
+  font-size: 0.85rem;
+}
+
+.ip-actions-divider {
+  font-size: 0.75rem;
+}
+
+.ip-mb-sm {
+  margin-bottom: 12px;
+}
+
+.ip-mb-lg {
+  margin-bottom: 24px;
+}
+
 
 .ip-status-msg {
   margin-top: 12px;
@@ -2603,6 +2642,128 @@ a {
   margin: 0 auto 28px;
   max-width: 36ch;
   line-height: 1.65;
+}
+
+.ip-use-case-icon {
+  font-size: 1.5rem;
+  color: var(--accent);
+  display: block;
+}
+
+.ip-why-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+  width: 100%;
+}
+
+.ip-why-card {
+  width: 100%;
+  max-width: 480px;
+}
+
+.ip-portal-card-pad {
+  padding: 1.25rem 1.5rem;
+}
+
+.ip-portal-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ip-portal-card-main {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.ip-portal-card-body {
+  min-width: 0;
+}
+
+.ip-portal-card-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+}
+
+.ip-portal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.ip-portal-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ip-slug-accent {
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.ip-stack-col-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ip-search-mb {
+  margin-bottom: 1rem;
+}
+
+.ip-mt-xl {
+  margin-top: 2rem;
+}
+
+.ip-analytics-card {
+  margin-bottom: 1.5rem;
+}
+
+.ip-analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .ip-analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ip-analytics-subsection {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.ip-analytics-subsection-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ip-analytics-subsection-spaced {
+  margin-top: 1rem;
+}
+
+.ip-text-center-pad {
+  text-align: center;
+  padding: 1rem;
 }
 
 /* Animations */

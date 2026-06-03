@@ -89,7 +89,7 @@ export default function EditPortalPage() {
 
   if (error) {
     return (
-      <div className="ip-empty-state" style={{ color: "var(--danger)" }}>
+      <div className="ip-empty-state ip-card-danger">
         <BalancedText className="ip-text-block" lines={[error]} />
       </div>
     );
@@ -111,16 +111,7 @@ export default function EditPortalPage() {
       />
 
       {submitError && (
-        <div
-          className="ip-card"
-          style={{
-            color: "var(--danger)",
-            borderColor: "var(--danger)",
-            marginBottom: "1rem",
-          }}
-        >
-          {submitError}
-        </div>
+        <div className="ip-card ip-card-danger">{submitError}</div>
       )}
 
       <PortalForm

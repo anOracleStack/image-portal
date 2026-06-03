@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, type CSSProperties } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { PageIntro } from "@/components/ui/PageIntro";
 import { BalancedText } from "@/components/ui/BalancedText";
 
@@ -31,20 +31,6 @@ function timeAgo(dateStr: string): string {
 }
 
 const PAGE_SIZE = 20;
-
-function matchBadgeStyle(matched: boolean): CSSProperties {
-  return {
-    display: "inline-block",
-    padding: "2px 8px",
-    borderRadius: 999,
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    background: matched
-      ? "color-mix(in srgb, var(--success) 15%, transparent)"
-      : "color-mix(in srgb, var(--danger) 15%, transparent)",
-    color: matched ? "var(--success)" : "var(--danger)",
-  };
-}
 
 export default function ScanHistoryPage() {
   const [events, setEvents] = useState<ScanEvent[]>([]);
@@ -83,7 +69,7 @@ export default function ScanHistoryPage() {
   const hasMore = events.length < total;
 
   return (
-    <div style={{ maxWidth: 960, margin: "0 auto" }}>
+    <div className="ip-dash-page-wide">
       <PageIntro
         title="Scan History"
         lines={[
@@ -123,7 +109,9 @@ export default function ScanHistoryPage() {
                   <tr key={e.id}>
                     <td>{e.portals?.title ?? "—"}</td>
                     <td>
-                      <span style={matchBadgeStyle(e.matched)}>
+                      <span
+                        className={`ip-match-pill ${e.matched ? "ip-match-pill-yes" : "ip-match-pill-no"}`}
+                      >
                         {e.matched ? "Matched" : "No Match"}
                       </span>
                     </td>
@@ -141,7 +129,7 @@ export default function ScanHistoryPage() {
             </table>
 
             {hasMore && (
-              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+              <div className="ip-load-more">
                 <button
                   type="button"
                   className="ip-btn ip-btn-secondary"

@@ -60,9 +60,7 @@ export default function CreatePortalPage() {
       />
 
       {error && (
-        <div className="ip-card" style={{ color: "var(--danger)", marginBottom: "1rem" }}>
-          {error}
-        </div>
+        <div className="ip-card ip-card-danger">{error}</div>
       )}
 
       <PortalForm onSubmit={handleSubmit} submitLabel="Create Portal" />

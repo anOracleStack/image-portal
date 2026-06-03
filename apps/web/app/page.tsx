@@ -149,12 +149,9 @@ export default function LandingPage() {
           {howSteps.map((step, i) => (
             <div key={step.title} className="ip-step-block">
               <span className="ip-step-num">{i + 1}</span>
-              <h3 className="ip-display" style={{ margin: 0, fontSize: "1.125rem" }}>
-                {step.title}
-              </h3>
+              <h3 className="ip-display ip-card-title-sm">{step.title}</h3>
               <BalancedText
                 className="ip-muted ip-text-block ip-copy-md"
-                style={{ margin: 0, maxWidth: "38ch", lineHeight: 1.65 }}
                 lines={step.lines}
               />
             </div>
@@ -167,19 +164,12 @@ export default function LandingPage() {
         <div className="ip-grid-3">
           {useCases.map((c) => (
             <div key={c.title} className="ip-card ip-card-interactive ip-card-glow ip-card-copy">
-              <span
-                className="ip-mono"
-                style={{ fontSize: "1.5rem", color: "var(--accent)", display: "block" }}
-                aria-hidden
-              >
+              <span className="ip-mono ip-use-case-icon" aria-hidden>
                 {c.icon}
               </span>
-              <h3 className="ip-display" style={{ margin: "16px 0 8px", fontSize: "1.05rem" }}>
-                {c.title}
-              </h3>
+              <h3 className="ip-display ip-card-title-md">{c.title}</h3>
               <BalancedText
                 className="ip-muted ip-text-block ip-copy-sm"
-                style={{ margin: 0, maxWidth: "32ch", lineHeight: 1.6 }}
                 lines={c.lines}
               />
             </div>
@@ -187,31 +177,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="ip-container ip-section ip-section-center" style={{ maxWidth: 640 }}>
-        <h2 className="ip-display ip-section-title" style={{ marginBottom: 40 }}>
-          Why Image Portal?
-        </h2>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 28,
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
+      <section className="ip-container ip-section ip-section-center ip-landing-narrow">
+        <h2 className="ip-display ip-section-title">Why Image Portal?</h2>
+        <div className="ip-why-stack">
           {whyItems.map((item) => (
-            <div
-              key={item.title}
-              className="ip-card ip-card-copy"
-              style={{ width: "100%", maxWidth: 480 }}
-            >
-              <h3 className="ip-display" style={{ margin: "0 0 12px", fontSize: "1rem" }}>
-                {item.title}
-              </h3>
+            <div key={item.title} className="ip-card ip-card-copy ip-why-card">
+              <h3 className="ip-display ip-card-section-title">{item.title}</h3>
               <BalancedText
                 className="ip-muted ip-text-block ip-copy-sm"
-                style={{ margin: 0, maxWidth: "36ch", lineHeight: 1.65 }}
                 lines={item.lines}
               />
             </div>
@@ -222,8 +195,7 @@ export default function LandingPage() {
       <section className="ip-container ip-section ip-section-center">
         <h2 className="ip-display ip-section-title-sm">Pricing</h2>
         <BalancedText
-          className="ip-muted ip-text-block ip-copy-md"
-          style={{ margin: "0 0 24px", maxWidth: "34ch" }}
+          className="ip-muted ip-text-block ip-copy-md ip-mb-lg"
           lines={[
             "Free for 3 portals & 200 scans/month.",
             "Pro plans start at $19 per month.",
@@ -234,14 +206,13 @@ export default function LandingPage() {
         </Button>
       </section>
 
-      <section className="ip-container ip-section-center" style={{ paddingBottom: 80 }}>
-        <div className="ip-card ip-card-glow ip-card-copy" style={{ padding: "3rem 2rem" }}>
-          <h2 className="ip-hero-title" style={{ fontSize: "clamp(1.75rem, 4vw, 2.25rem)", marginBottom: 16 }}>
+      <section className="ip-container ip-section-center ip-landing-cta-section">
+        <div className="ip-card ip-card-glow ip-card-copy ip-landing-cta-card">
+          <h2 className="ip-hero-title ip-landing-cta-title">
             Ready to <span>open the door</span>?
           </h2>
           <BalancedText
-            className="ip-muted ip-text-block ip-copy-md"
-            style={{ margin: "0 auto 28px", maxWidth: "36ch", lineHeight: 1.65 }}
+            className="ip-muted ip-text-block ip-copy-md ip-landing-cta-copy"
             lines={[
               "Create your first portal in under a minute.",
               "Dark or light theme — your choice in the nav.",

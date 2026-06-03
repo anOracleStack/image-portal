@@ -62,22 +62,13 @@ export default async function DashboardPage() {
         </div>
 
       {fetchError && (
-        <div
-          className="ip-card"
-          style={{
-            color: "var(--danger)",
-            borderColor: "var(--danger)",
-            marginBottom: "1rem",
-          }}
-        >
-          {fetchError}
-        </div>
+        <div className="ip-card ip-card-danger">{fetchError}</div>
       )}
 
       {portals.length === 0 && !fetchError ? (
         <div className="ip-card ip-card-glow ip-card-copy ip-dash-empty">
           <div className="ip-portal-thumb ip-dash-empty-icon">◫</div>
-          <p className="ip-dash-section-title-sm" style={{ marginBottom: 12 }}>
+          <p className="ip-dash-section-title-sm ip-mb-sm">
             Create your first portal
           </p>
           <BalancedText

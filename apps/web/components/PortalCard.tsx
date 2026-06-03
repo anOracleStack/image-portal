@@ -38,20 +38,16 @@ export default function PortalCard({ portal, onDelete }: Props) {
   const status = statusClass[portal.status] ?? "ip-badge-muted";
 
   return (
-    <div className="ip-card" style={{ padding: "1.25rem 1.5rem" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-        <div style={{ display: "flex", gap: 16, alignItems: "center", minWidth: 0, flex: 1 }}>
+    <div className="ip-card ip-portal-card-pad">
+      <div className="ip-portal-card-row">
+        <div className="ip-portal-card-main">
           <div className="ip-portal-thumb" aria-hidden>
             ◫
           </div>
-          <div style={{ minWidth: 0 }}>
-            <h3 className="ip-display" style={{ fontSize: "1.1rem", margin: "0 0 8px" }}>
-              {portal.title}
-            </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", fontSize: "0.82rem" }}>
-              <span className="ip-mono" style={{ color: "var(--accent)" }}>
-                /p/{portal.slug}
-              </span>
+          <div className="ip-portal-card-body">
+            <h3 className="ip-display ip-portal-card-title">{portal.title}</h3>
+            <div className="ip-portal-meta">
+              <span className="ip-slug-accent">/p/{portal.slug}</span>
               <span className={`ip-badge ${status}`}>{portal.status}</span>
               <span className="ip-muted">{domain}</span>
               <span className="ip-muted">
@@ -62,7 +58,7 @@ export default function PortalCard({ portal, onDelete }: Props) {
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, flexShrink: 0 }} onClick={(e) => e.preventDefault()}>
+        <div className="ip-portal-actions" onClick={(e) => e.preventDefault()}>
           <a href={`/dashboard/${portal.id}/edit`} className="ip-btn ip-btn-ghost ip-btn-sm">
             Edit
           </a>

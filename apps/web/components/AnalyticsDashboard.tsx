@@ -64,15 +64,8 @@ export function AnalyticsDashboard() {
   // Error state
   if (error) {
     return (
-      <div
-        className="ip-card"
-        style={{
-          marginBottom: "1.5rem",
-          color: "var(--danger)",
-          borderColor: "var(--danger)",
-        }}
-      >
-        <BalancedText className="ip-text-block" style={{ padding: "1rem" }} lines={[error]} />
+      <div className="ip-card ip-card-danger ip-error-panel-centered">
+        <BalancedText className="ip-text-block" lines={[error]} />
       </div>
     );
   }
@@ -99,26 +92,19 @@ export function AnalyticsDashboard() {
   const totalScans = data!.matchRate.matched + data!.matchRate.unmatched;
 
   return (
-    <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
+    <div className="ip-card ip-analytics-card">
       <h3 className="ip-section-title">Scan analytics</h3>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "1.5rem",
-          marginTop: "1rem",
-        }}
-      >
+      <div className="ip-analytics-grid">
         {/* ── Daily scans bar chart ── */}
-        <div style={subsectionStyle}>
-          <h4 style={subsectionTitleStyle}>Daily Scans (Last 30 Days)</h4>
+        <div className="ip-analytics-subsection">
+          <h4 className="ip-analytics-subsection-title">Daily Scans (Last 30 Days)</h4>
           <BarChart data={data!.dailyScans} />
         </div>
 
         {/* ── Match rate donut ── */}
-        <div style={subsectionStyle}>
-          <h4 style={subsectionTitleStyle}>Match Rate</h4>
+        <div className="ip-analytics-subsection">
+          <h4 className="ip-analytics-subsection-title">Match Rate</h4>
           <DonutChart
             matched={data!.matchRate.matched}
             unmatched={data!.matchRate.unmatched}
@@ -127,8 +113,8 @@ export function AnalyticsDashboard() {
         </div>
 
         {/* ── Device platform ── */}
-        <div style={subsectionStyle}>
-          <h4 style={subsectionTitleStyle}>Device Platform</h4>
+        <div className="ip-analytics-subsection">
+          <h4 className="ip-analytics-subsection-title">Device Platform</h4>
           <BreakdownList
             entries={data!.devicePlatforms}
             total={totalScans}
@@ -137,8 +123,8 @@ export function AnalyticsDashboard() {
         </div>
 
         {/* ── Source ── */}
-        <div style={subsectionStyle}>
-          <h4 style={subsectionTitleStyle}>Source</h4>
+        <div className="ip-analytics-subsection">
+          <h4 className="ip-analytics-subsection-title">Source</h4>
           <BreakdownList
             entries={data!.sources}
             total={totalScans}
@@ -149,8 +135,8 @@ export function AnalyticsDashboard() {
 
       {/* ── Top portals ── */}
       {data!.topPortals.length > 0 && (
-        <div style={{ ...subsectionStyle, marginTop: "1rem" }}>
-          <h4 style={subsectionTitleStyle}>Top Scanned Portals</h4>
+        <div className="ip-analytics-subsection ip-analytics-subsection-spaced">
+          <h4 className="ip-analytics-subsection-title">Top Scanned Portals</h4>
           <TopPortalsList portals={data!.topPortals} total={totalScans} />
         </div>
       )}
@@ -233,9 +219,7 @@ function DonutChart({
 }) {
   if (total === 0) {
     return (
-      <div className="ip-muted ip-text-block" style={{ textAlign: "center", padding: "1rem" }}>
-        No data
-      </div>
+      <div className="ip-muted ip-text-block ip-text-center-pad">No data</div>
     );
   }
 
@@ -315,9 +299,7 @@ function BreakdownList({
 }) {
   if (entries.length === 0) {
     return (
-      <div className="ip-muted ip-text-block" style={{ textAlign: "center", padding: "1rem" }}>
-        No data
-      </div>
+      <div className="ip-muted ip-text-block ip-text-center-pad">No data</div>
     );
   }
 
@@ -454,18 +436,3 @@ function TopPortalsList({
     </div>
   );
 }
-
-const subsectionStyle: React.CSSProperties = {
-  background: "var(--bg-elevated)",
-  border: "1px solid var(--border)",
-  borderRadius: 8,
-  padding: "1rem",
-};
-
-const subsectionTitleStyle: React.CSSProperties = {
-  fontSize: "0.8rem",
-  fontWeight: 600,
-  margin: 0,
-  color: "var(--text-muted)",
-  marginBottom: 8,
-};

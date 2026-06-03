@@ -10,7 +10,6 @@ import { BalancedText } from "@/components/ui/BalancedText";
 const THROTTLE_MS = 500;
 const MAX_LOG = 50;
 
-// ---------- browser-side perceptual hash (difference hash, 8x8) ----------
 function computeDHash(
   data: Uint8ClampedArray,
   width: number,
@@ -39,7 +38,6 @@ function computeDHash(
   return bits;
 }
 
-// ---------- 16x16 RGB grid → 768-dim pixel embedding ----------
 function computeEmbedding(
   data: Uint8ClampedArray,
   width: number,
@@ -58,99 +56,11 @@ function computeEmbedding(
   return emb;
 }
 
-// ---------- types ----------
 type LogEntry = {
   id: number;
   ts: string;
   response: ScanResponse;
   error?: string;
-};
-
-// ---------- inline styles ----------
-const s = {
-  video: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain" as const,
-    display: "block",
-  },
-  videoPlaceholder: {
-    color: "var(--text-faint)",
-    fontSize: 14,
-    textAlign: "center" as const,
-    padding: "0 1rem",
-  },
-  overlay: {
-    position: "absolute" as const,
-    bottom: 12,
-    left: 12,
-    right: 12,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-  },
-  overlayBadge: {
-    background: "rgba(0,0,0,0.75)",
-    borderRadius: 8,
-    padding: "4px 10px",
-    fontSize: 12,
-    color: "var(--accent)",
-    fontVariantNumeric: "tabular-nums" as const,
-  },
-  statusLabel: {
-    color: "var(--text-muted)",
-    fontSize: 12,
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    marginBottom: 6,
-  },
-  matchBadge: (matched: boolean) =>
-    ({
-      display: "inline-block",
-      padding: "2px 8px",
-      borderRadius: 4,
-      fontSize: 11,
-      fontWeight: 600,
-      background: matched
-        ? "color-mix(in srgb, var(--accent) 18%, transparent)"
-        : "color-mix(in srgb, var(--danger) 18%, transparent)",
-      color: matched ? "var(--accent)" : "var(--danger)",
-      marginLeft: 8,
-    }) as const,
-  logEntry: {
-    padding: "10px 16px",
-    borderBottom: "1px solid var(--border)",
-    fontSize: 13,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-  },
-  logLeft: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    minWidth: 0,
-    flex: 1,
-  },
-  logTs: {
-    color: "var(--text-faint)",
-    fontSize: 11,
-    fontVariantNumeric: "tabular-nums" as const,
-    flexShrink: 0,
-  },
-  logPortal: {
-    whiteSpace: "nowrap" as const,
-    overflow: "hidden" as const,
-    textOverflow: "ellipsis" as const,
-  },
-  logEmpty: {
-    padding: "24px 16px",
-    textAlign: "center" as const,
-    color: "var(--text-faint)",
-    fontSize: 13,
-  },
 };
 
 export default function ScanPage() {
@@ -171,7 +81,6 @@ export default function ScanPage() {
   const [lastResult, setLastResult] = useState<ScanResponse | null>(null);
   const [captureCount, setCaptureCount] = useState(0);
 
-  // ---------- Camera ----------
   const startCamera = useCallback(async () => {
     setCameraState("starting");
     setCameraError(null);
@@ -221,17 +130,15 @@ export default function ScanPage() {
     setCameraState("idle");
   }, []);
 
-  // ---------- Scan loop ----------
   const captureAndScan = useCallback(async () => {
     if (busyRef.current) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
-    if (video.readyState < 2) return; // not enough data yet
+    if (video.readyState < 2) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Match canvas to video dimensions
     const w = video.videoWidth;
     const h = video.videoHeight;
     if (w === 0 || h === 0) return;
@@ -291,7 +198,6 @@ export default function ScanPage() {
     }
   }, []);
 
-  // Start/stop scanning
   const startScanning = useCallback(() => {
     setScanning(true);
     setLog([]);
@@ -303,7 +209,6 @@ export default function ScanPage() {
     setScanning(false);
   }, []);
 
-  // Timer for capture loop
   useEffect(() => {
     if (!scanning) {
       if (intervalRef.current !== null) {
@@ -323,7 +228,6 @@ export default function ScanPage() {
     };
   }, [scanning, captureAndScan]);
 
-  // ---------- Cleanup on unmount ----------
   useEffect(() => {
     return () => {
       stopCamera();
@@ -334,7 +238,6 @@ export default function ScanPage() {
     };
   }, [stopCamera]);
 
-  // ---------- Render ----------
   return (
     <MarketingPage>
       <main className="ip-scan-main">
@@ -345,51 +248,45 @@ export default function ScanPage() {
             "& match against the catalog.",
           ]}
         />
-        {/* Hidden canvas for frame extraction */}
-        <canvas ref={canvasRef} style={{ display: "none" }} />
+        <canvas ref={canvasRef} className="ip-hidden-canvas" aria-hidden />
 
-        {/* Camera preview */}
         <div className="ip-scan-video-box">
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
-            style={s.video}
+            className="ip-scan-video"
             onLoadedMetadata={() => {
               if (cameraState === "starting") setCameraState("ready");
             }}
           />
           {cameraState === "idle" && (
             <BalancedText
-              className="ip-muted ip-text-block"
-              style={s.videoPlaceholder}
+              className="ip-muted ip-text-block ip-scan-placeholder"
               lines={["Camera not started."]}
             />
           )}
           {cameraState === "starting" && (
             <BalancedText
-              className="ip-muted ip-text-block"
-              style={s.videoPlaceholder}
+              className="ip-muted ip-text-block ip-scan-placeholder"
               lines={["Starting camera…"]}
             />
           )}
           {cameraState === "error" && (
             <BalancedText
-              className="ip-text-block"
-              style={{ ...s.videoPlaceholder, color: "var(--danger)" }}
+              className="ip-text-block ip-scan-placeholder ip-scan-placeholder-danger"
               lines={[cameraError ?? "Camera error."]}
             />
           )}
 
-          {/* Overlay badges */}
           {cameraState === "ready" && (
-            <div style={s.overlay}>
-              <span style={s.overlayBadge}>
+            <div className="ip-scan-overlay">
+              <span className="ip-scan-overlay-badge">
                 {scanning ? "SCANNING" : "PAUSED"}
               </span>
               {captureCount > 0 && (
-                <span style={s.overlayBadge}>
+                <span className="ip-scan-overlay-badge">
                   {captureCount} scans
                 </span>
               )}
@@ -397,7 +294,6 @@ export default function ScanPage() {
           )}
         </div>
 
-        {/* Controls */}
         <div className="ip-scan-controls">
           {cameraState === "idle" && (
             <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
@@ -431,37 +327,35 @@ export default function ScanPage() {
           )}
         </div>
 
-        {/* API error */}
         {error && (
-          <div className="ip-card" style={{ color: "var(--danger)", borderColor: "var(--danger)", marginBottom: "1rem" }}>
-            {error}
-          </div>
+          <div className="ip-card ip-card-danger">{error}</div>
         )}
 
-        {/* Last scan result */}
         {lastResult && (
-          <div className="ip-card" style={{ marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
-            <div style={s.statusLabel}>Last Scan</div>
+          <div className="ip-card ip-scan-result-card">
+            <div className="ip-scan-status-label">Last Scan</div>
             <div>
               {lastResult.matched && lastResult.portal ? (
                 <>
                   Matched{" "}
                   <strong>{lastResult.portal.title}</strong>
-                  <span style={s.matchBadge(true)}>
+                  <span
+                    className={`ip-match-badge ${lastResult.matched ? "ip-match-badge-yes" : "ip-match-badge-no"}`}
+                  >
                     {lastResult.band.toUpperCase()} {(lastResult.confidence * 100).toFixed(0)}%
                   </span>
-                  <div className="ip-faint" style={{ fontSize: 12, marginTop: 4 }}>
+                  <div className="ip-faint ip-scan-result-detail">
                     {lastResult.portal.destinationDomain}
                   </div>
                 </>
               ) : (
                 <>
                   No match
-                  <span style={s.matchBadge(false)}>
+                  <span className="ip-match-badge ip-match-badge-no">
                     {(lastResult.confidence * 100).toFixed(0)}%
                   </span>
                   {lastResult.message && (
-                    <div className="ip-faint" style={{ fontSize: 12, marginTop: 4 }}>
+                    <div className="ip-faint ip-scan-result-detail">
                       {lastResult.message}
                     </div>
                   )}
@@ -471,25 +365,17 @@ export default function ScanPage() {
           </div>
         )}
 
-        {/* Scan log */}
         <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
+          <div className="ip-scan-log-header">
             <h3 className="ip-scan-log-title">Scan Log</h3>
-            <span className="ip-faint" style={{ fontSize: 12 }}>
+            <span className="ip-faint ip-copy-sm">
               {log.length > 0 ? `Last ${log.length}` : ""}
             </span>
           </div>
 
-          <div className="ip-card" style={{ maxHeight: 360, overflowY: "auto", padding: 0 }}>
+          <div className="ip-card ip-scan-log-scroll">
             {log.length === 0 ? (
-              <div style={s.logEmpty}>
+              <div className="ip-scan-log-empty">
                 {scanning ? (
                   <BalancedText
                     className="ip-muted ip-text-block"
@@ -507,12 +393,12 @@ export default function ScanPage() {
               </div>
             ) : (
               log.map((entry) => (
-                <div key={entry.id} style={s.logEntry}>
-                  <div style={s.logLeft}>
-                    <span style={s.logTs}>{entry.ts}</span>
+                <div key={entry.id} className="ip-scan-log-entry">
+                  <div className="ip-scan-log-row">
+                    <span className="ip-scan-log-ts">{entry.ts}</span>
                     {entry.response.matched && entry.response.portal ? (
-                      <span style={s.logPortal}>
-                        <span style={{ color: "var(--accent)" }}>✓</span>{" "}
+                      <span className="ip-scan-log-portal">
+                        <span className="ip-text-accent-mono">✓</span>{" "}
                         {entry.response.portal.title}
                       </span>
                     ) : (
@@ -522,10 +408,7 @@ export default function ScanPage() {
                     )}
                   </div>
                   <span
-                    style={{
-                      ...s.matchBadge(entry.response.matched),
-                      flexShrink: 0,
-                    }}
+                    className={`ip-match-badge ip-scan-log-match ${entry.response.matched ? "ip-match-badge-yes" : "ip-match-badge-no"}`}
                   >
                     {(entry.response.confidence * 100).toFixed(0)}%{" "}
                     {entry.response.band.toUpperCase()}

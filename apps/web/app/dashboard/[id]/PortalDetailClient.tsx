@@ -18,34 +18,6 @@ const statusBadgeClass: Record<string, string> = {
   suspended: "ip-badge-danger",
 };
 
-const s = {
-  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "2rem", flexWrap: "wrap" as const },
-  title: { fontSize: "1.5rem", fontWeight: 700, margin: 0 },
-  metaRow: { display: "flex", alignItems: "center", gap: 12, marginTop: 4, flexWrap: "wrap" as const },
-  sectionTitle: { fontSize: "1rem", fontWeight: 600, marginTop: 0, marginBottom: "0.75rem" },
-  label: { fontSize: "0.85rem", fontWeight: 500, color: "var(--muted)" },
-  value: { fontSize: "0.95rem", color: "var(--foreground)", marginBottom: "0.5rem", opacity: 0.9 },
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 8 },
-  thumb: {
-    width: "100%",
-    aspectRatio: "1",
-    objectFit: "cover" as const,
-    borderRadius: 6,
-    background: "var(--bg-elevated)",
-  },
-  overlay: {
-    position: "fixed" as const,
-    inset: 0,
-    background: "color-mix(in srgb, var(--background) 30%, transparent)",
-    backdropFilter: "blur(6px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  },
-  confirmBox: { maxWidth: 400, textAlign: "center" as const },
-};
-
 export default function PortalDetailClient({ portal, images, userId }: Props) {
   const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -79,7 +51,7 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
 
       router.refresh();
     },
-    [portal.id, router]
+    [portal.id, router, userId]
   );
 
   const handleDelete = useCallback(async () => {
@@ -121,8 +93,7 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Export failed");
-        setExportMsg(`Exported — download started`);
-        // Trigger browser download
+        setExportMsg("Exported — download started");
         const a = document.createElement("a");
         a.href = data.url;
         a.download = `${portal.slug}-${type}.png`;
@@ -138,23 +109,27 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
     [portal.id, portal.slug]
   );
 
+  const exportMsgClass =
+    exportMsg?.startsWith("Exported") || exportMsg === "Link copied"
+      ? "ip-export-msg ip-export-msg-success"
+      : "ip-export-msg ip-export-msg-error";
+
   return (
-    <div>
-      {/* Header */}
-      <div style={s.header}>
-        <div>
-          <h1 style={s.title}>{portal.title}</h1>
-          <div style={s.metaRow}>
-            <span style={{ color: "var(--accent)" }}>/p/{portal.slug}</span>
+    <div className="ip-dash-page-wide">
+      <div className="ip-detail-header">
+        <div className="ip-detail-title-wrap">
+          <h1 className="ip-detail-title">{portal.title}</h1>
+          <div className="ip-detail-meta">
+            <span className="ip-detail-slug ip-mono">/p/{portal.slug}</span>
             <span className={`ip-badge ${statusBadgeClass[status] ?? "ip-badge-muted"}`}>
               {status}
             </span>
-            <span className="ip-muted" style={{ fontSize: "0.85rem" }}>
+            <span className="ip-muted ip-meta-muted-sm">
               {portal.visibility === "public" ? "Public" : "Private"}
             </span>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        <div className="ip-detail-actions">
           <a href={`/dashboard/${portal.id}/edit`} className="ip-btn ip-btn-ghost ip-btn-sm">
             Edit
           </a>
@@ -164,7 +139,7 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
           <button type="button" onClick={() => setShowConfirm(true)} className="ip-btn ip-btn-danger ip-btn-sm">
             Delete
           </button>
-          <span className="ip-faint" style={{ fontSize: "0.75rem" }} aria-hidden>
+          <span className="ip-faint ip-actions-divider" aria-hidden>
             |
           </span>
           <button
@@ -192,54 +167,43 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
             {exporting === "image_qr" ? "…" : "Image + QR"}
           </button>
           {exportMsg && (
-            <span
-              className="ip-muted"
-              style={{
-                color: exportMsg.startsWith("Exported") ? "var(--success)" : "var(--danger)",
-                fontSize: "0.8rem",
-                marginLeft: 8,
-              }}
-            >
-              {exportMsg}
-            </span>
+            <span className={exportMsgClass}>{exportMsg}</span>
           )}
         </div>
       </div>
 
-      {/* Info Section */}
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <h2 className="ip-display" style={s.sectionTitle}>Details</h2>
-        <div style={s.label}>Destination URL</div>
-        <div style={s.value}>
+      <div className="ip-card ip-card-spaced-lg">
+        <h2 className="ip-card-section-title">Details</h2>
+        <div className="ip-detail-label">Destination URL</div>
+        <div className="ip-detail-value">
           <a
             href={portal.destination_url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "var(--accent)" }}
+            className="ip-link-accent"
           >
             {domain}
           </a>
         </div>
-        <div style={s.label}>Scan Mode</div>
-        <div style={s.value}>{portal.scan_mode}</div>
-        <div style={s.label}>Total Scans</div>
-        <div style={s.value}>{portal.total_scans}</div>
-        <div style={s.label}>Last Scanned</div>
-        <div style={s.value}>
+        <div className="ip-detail-label">Scan Mode</div>
+        <div className="ip-detail-value">{portal.scan_mode}</div>
+        <div className="ip-detail-label">Total Scans</div>
+        <div className="ip-detail-value">{portal.total_scans}</div>
+        <div className="ip-detail-label">Last Scanned</div>
+        <div className="ip-detail-value">
           {portal.last_scanned_at
             ? new Date(portal.last_scanned_at).toLocaleString()
             : "Never"}
         </div>
-        <div style={s.label}>Created</div>
-        <div style={{ ...s.value, marginBottom: 0 }}>
+        <div className="ip-detail-label">Created</div>
+        <div className="ip-detail-value ip-detail-value-last">
           {new Date(portal.created_at).toLocaleString()}
         </div>
       </div>
 
-      {/* Share & links */}
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <h2 className="ip-display" style={s.sectionTitle}>Share & distribute</h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+      <div className="ip-card ip-card-spaced-lg">
+        <h2 className="ip-card-section-title">Share & distribute</h2>
+        <div className="ip-share-actions">
           <a
             href={`/p/${portal.slug}`}
             target="_blank"
@@ -265,9 +229,9 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
             Social share card
           </a>
         </div>
-        <div style={s.label}>Copy link</div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <code className="ip-mono ip-faint" style={{ fontSize: "0.8rem", wordBreak: "break-all" }}>
+        <div className="ip-detail-label">Copy link</div>
+        <div className="ip-copy-link-row">
+          <code className="ip-mono ip-faint ip-copy-link-code">
             {typeof window !== "undefined" ? `${window.location.origin}/p/${portal.slug}` : `/p/${portal.slug}`}
           </code>
           <button
@@ -284,45 +248,40 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <h2 className="ip-display" style={s.sectionTitle}>Images ({images.length})</h2>
+      <div className="ip-card ip-card-spaced-lg">
+        <h2 className="ip-card-section-title">Images ({images.length})</h2>
         {images.length === 0 ? (
           <BalancedText
-            className="ip-muted ip-text-block ip-card-copy"
-            style={{ fontSize: "0.9rem" }}
+            className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
             lines={["No images uploaded yet."]}
           />
         ) : (
-          <div style={s.grid}>
+          <div className="ip-detail-grid">
             {images.map((img) => (
               <img
                 key={img.id}
                 src={`/api/images/${img.id}`}
                 alt="Portal image"
-                style={s.thumb}
+                className="ip-detail-thumb"
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* Upload Section */}
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <h2 className="ip-display" style={s.sectionTitle}>Upload Image</h2>
+      <div className="ip-card ip-card-spaced-lg">
+        <h2 className="ip-card-section-title">Upload Image</h2>
         <ImageUploader onUpload={handleUpload} />
       </div>
 
-      {/* Delete Confirmation Dialog */}
       {showConfirm && (
-        <div style={s.overlay} onClick={() => setShowConfirm(false)}>
-          <div className="ip-card" style={s.confirmBox} onClick={(e) => e.stopPropagation()}>
-            <h3 className="ip-display" style={{ color: "var(--danger)", marginTop: 0 }}>
+        <div className="ip-modal-overlay" onClick={() => setShowConfirm(false)}>
+          <div className="ip-card ip-modal-box" onClick={(e) => e.stopPropagation()}>
+            <h3 className="ip-display ip-modal-title-danger">
               Delete portal?
             </h3>
             <BalancedText
-              className="ip-muted ip-text-block"
-              style={{ fontSize: "0.9rem", lineHeight: 1.6 }}
+              className="ip-muted ip-text-block ip-copy-sm"
               lines={[
                 "This permanently deletes the portal,",
                 "all uploaded images,",
@@ -330,14 +289,7 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
                 "This cannot be undone.",
               ]}
             />
-            <div
-              style={{
-                display: "flex",
-                gap: 12,
-                justifyContent: "center",
-                marginTop: "1.25rem",
-              }}
-            >
+            <div className="ip-modal-actions">
               <button type="button" onClick={() => setShowConfirm(false)} className="ip-btn ip-btn-ghost">
                 Cancel
               </button>
