@@ -55,13 +55,9 @@ export function AnalyticsDashboard() {
   // Loading state
   if (loading) {
     return (
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ padding: "2rem 1rem" }}
-          lines={["Loading analytics…"]}
-        />
-      </div>
+      <section className="ip-dash-section ip-card ip-card-copy">
+        <BalancedText className="ip-muted ip-text-block ip-dash-lead" lines={["Loading analytics…"]} />
+      </section>
     );
   }
 
@@ -86,18 +82,17 @@ export function AnalyticsDashboard() {
     data && data.dailyScans.some((d) => d.count > 0);
   if (!hasData) {
     return (
-      <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-        <h3 className="ip-section-title">Scan analytics</h3>
+      <section className="ip-dash-section ip-card ip-card-copy">
+        <h2 className="ip-dash-section-title">Scan analytics</h2>
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ padding: "1.5rem 1rem 2rem" }}
+          className="ip-muted ip-text-block ip-dash-lead"
           lines={[
             "No scan data yet.",
-            "Scans appear here once people",
+            "Scans appear once people",
             "interact with your portals.",
           ]}
         />
-      </div>
+      </section>
     );
   }
 

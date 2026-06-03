@@ -13,6 +13,16 @@ interface Props {
   user: User;
 }
 
+const navLinks = [
+  { href: "/dashboard", label: "Portals" },
+  { href: "/dashboard/scan-history", label: "History" },
+  { href: "/dashboard/api-keys", label: "API" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/scan", label: "Scan" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/dashboard/settings", label: "Settings" },
+] as const;
+
 export function Navbar({ user }: Props) {
   const router = useRouter();
   const [tier, setTier] = useState<PlanTier>("free");
@@ -47,46 +57,29 @@ export function Navbar({ user }: Props) {
 
   return (
     <header className="ip-dash-header">
-      <div className="ip-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-          <Link href="/dashboard" className="ip-logo" style={{ fontSize: "1rem" }}>
-            <span className="ip-logo-mark" style={{ width: 22, height: 22 }} aria-hidden />
-            Image Portal
-          </Link>
-          <Link href="/dashboard" className="ip-nav-link">
-            Portals
-          </Link>
-          <Link href="/dashboard/scan-history" className="ip-nav-link">
-            History
-          </Link>
-          <Link href="/dashboard/api-keys" className="ip-nav-link">
-            API
-          </Link>
-          <Link href="/gallery" className="ip-nav-link">
-            Gallery
-          </Link>
-          <Link href="/scan" className="ip-nav-link">
-            Scan
-          </Link>
-          <Link href="/pricing" className="ip-nav-link">
-            Pricing
-          </Link>
-          <Link href="/dashboard/settings" className="ip-nav-link">
-            Settings
-          </Link>
-        </div>
+      <div className="ip-container ip-dash-header-top">
+        <Link href="/dashboard" className="ip-logo">
+          <span className="ip-logo-mark" aria-hidden />
+          Image Portal
+        </Link>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div className="ip-dash-header-actions">
           <ThemeToggle compact />
-          <span className="ip-faint" style={{ fontSize: "0.75rem", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {user.email}
-          </span>
+          <span className="ip-dash-user-email">{user.email}</span>
           <SubscriptionBadge tier={tier} />
           <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </div>
+
+      <nav className="ip-container ip-dash-header-nav" aria-label="Dashboard">
+        {navLinks.map((link) => (
+          <Link key={link.href} href={link.href} className="ip-nav-link">
+            {link.label}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }

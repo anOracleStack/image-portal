@@ -29,22 +29,12 @@ export async function UsageSummary({ userId }: Props) {
     const pct = max > 0 ? Math.min((used / max) * 100, 100) : 0;
     const hue = pct < 60 ? 140 : pct < 85 ? 40 : 0;
     return (
-      <div
-        style={{
-          height: 6,
-          borderRadius: 999,
-          background: "var(--border)",
-          overflow: "hidden",
-          marginTop: 4,
-        }}
-      >
+      <div className="ip-usage-bar-track">
         <div
+          className="ip-usage-bar-fill"
           style={{
             width: `${pct}%`,
-            height: "100%",
             background: `hsl(${hue}, 70%, 50%)`,
-            borderRadius: 999,
-            transition: "width 0.3s",
           }}
         />
       </div>
@@ -52,71 +42,33 @@ export async function UsageSummary({ userId }: Props) {
   };
 
   return (
-    <div className="ip-card" style={{ marginBottom: "1.5rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <h3
-          className="ip-muted"
-          style={{
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            margin: 0,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          Plan usage
-        </h3>
-        <span
-          style={{
-            fontSize: "0.8125rem",
-            color: "var(--text-muted)",
-            textTransform: "capitalize",
-          }}
-        >
-          {sub.plan_tier} plan
-        </span>
+    <section className="ip-dash-section ip-card ip-card-copy ip-usage-summary">
+      <div className="ip-usage-summary-head">
+        <h2 className="ip-dash-section-title-sm">Plan usage</h2>
+        <span className="ip-usage-plan-label">{sub.plan_tier} plan</span>
       </div>
 
-      <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 200px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "0.8125rem",
-            }}
-          >
+      <div className="ip-usage-metrics">
+        <div className="ip-usage-metric">
+          <div className="ip-usage-metric-row">
             <span className="ip-muted">Scans this month</span>
-            <span style={{ fontWeight: 600 }}>
+            <span className="ip-usage-metric-value">
               {scanUsed.toLocaleString()} / {limits.maxScansPerMonth.toLocaleString()}
             </span>
           </div>
           {bar(scanUsed, limits.maxScansPerMonth)}
         </div>
 
-        <div style={{ flex: "1 1 200px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "0.8125rem",
-            }}
-          >
+        <div className="ip-usage-metric">
+          <div className="ip-usage-metric-row">
             <span className="ip-muted">Portals created</span>
-            <span style={{ fontWeight: 600 }}>
+            <span className="ip-usage-metric-value">
               {portalUsed.toLocaleString()} / {limits.maxPortals.toLocaleString()}
             </span>
           </div>
           {bar(portalUsed, limits.maxPortals)}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

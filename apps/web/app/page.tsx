@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/Button";
 import { BalancedText } from "@/components/ui/BalancedText";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { AppDownloadStrip } from "@/components/marketing/AppDownloadStrip";
+import { HeroHeadline } from "@/components/landing/HeroHeadline";
 import { ScanDemo } from "@/components/landing/ScanDemo";
 
 const useCases = [
@@ -11,47 +13,47 @@ const useCases = [
     title: "Posters & Flyers",
     lines: [
       "Printed materials that change with your content.",
-      "Update the link without reprinting.",
+      "Update the link anytime — no reprinting needed.",
     ],
   },
   {
     icon: "◎",
     title: "Restaurant Menus",
     lines: [
-      "The menu image itself is scannable —",
-      "change prices & items instantly.",
+      "The menu image itself is scannable.",
+      "Change prices & items instantly from your dashboard.",
     ],
   },
   {
     icon: "◇",
     title: "Event Tickets",
     lines: [
-      "Link tickets in real time —",
-      "schedule, venue, & refunds.",
+      "Link tickets in real time from one image.",
+      "Update schedule, venue, & refunds on the fly.",
     ],
   },
   {
     icon: "▣",
     title: "Product Packaging",
     lines: [
-      "Packaging becomes a channel to your brand —",
-      "manuals, offers, & unboxing.",
+      "Packaging becomes a channel to your brand.",
+      "Manuals, offers, & unboxing — one scan away.",
     ],
   },
   {
     icon: "◈",
     title: "Art & Photography",
     lines: [
-      "Every physical print becomes",
-      "a gallery link collectors can scan.",
+      "Every physical print becomes a gallery link.",
+      "Collectors scan to view, buy, or learn more.",
     ],
   },
   {
     icon: "◆",
     title: "Business Cards",
     lines: [
-      "Your card design is the key —",
-      "no separate QR block required.",
+      "Your card design is the key to your link.",
+      "No separate QR block required on the card.",
     ],
   },
 ] as const;
@@ -60,8 +62,8 @@ const whyItems = [
   {
     title: "No QR Codes Needed",
     lines: [
-      "QR codes require a printed code.",
-      "Image Portal uses the image itself — any existing printed material works.",
+      "QR codes require a printed code block.",
+      "Image Portal uses the image itself — any print works.",
     ],
   },
   {
@@ -74,8 +76,8 @@ const whyItems = [
   {
     title: "Reliable Scanning",
     lines: [
-      "Copy-detection embeddings plus geometric verification —",
-      "works on print, glare, & low light.",
+      "Copy-detection embeddings plus verification.",
+      "Works on print, glare, & low light conditions.",
     ],
   },
 ] as const;
@@ -83,21 +85,23 @@ const whyItems = [
 const howSteps = [
   {
     title: "Upload any image",
-    lines: ["Poster, flyer, menu, screenshot,", "or artwork — anything works."],
+    lines: [
+      "Poster, flyer, menu, screenshot, or artwork.",
+      "Upload a file or snap a photo — both work.",
+    ],
   },
   {
     title: "Link a destination",
     lines: [
-      "Website, profile, store, payment —",
-      "change it anytime from your dashboard.",
+      "Website, profile, store, or payment page.",
+      "Change it anytime from your dashboard.",
     ],
   },
   {
     title: "Share everywhere",
     lines: [
-      "Print, post, or display on screen.",
-      "Viewers scan with their camera —",
-      "no app install.",
+      "Print, post, or display on any screen.",
+      "Viewers scan with the web or installed app.",
     ],
   },
 ] as const;
@@ -108,37 +112,25 @@ export default function LandingPage() {
       <GlowBackground />
       <MarketingNav />
 
-      <section className="ip-container ip-hero">
-        <p
-          className="ip-mono ip-badge ip-badge-accent ip-animate-in"
-          style={{ display: "inline-flex", marginBottom: 16 }}
-        >
-          Visual scan · programmable links
-        </p>
-        <h1 className="ip-hero-title ip-animate-in ip-animate-in-delay-1">
-          Turn any Image
-          <br />
-          <span>into a Doorway</span>
-        </h1>
-        <p className="ip-hero-subtitle ip-animate-in ip-animate-in-delay-1">
-          Next generation QR code
-        </p>
-        <BalancedText
-          className="ip-muted ip-text-block ip-animate-in ip-animate-in-delay-1"
-          style={{ fontSize: "1.125rem", maxWidth: 520, lineHeight: 1.7, margin: "0 auto" }}
-          lines={[
-            "Upload an image. Link it anywhere.",
-            "The image is the key — not the destination.",
-          ]}
-        />
-        <p
-          className="ip-muted ip-text-block ip-animate-in ip-animate-in-delay-1"
-          style={{ fontSize: "1.125rem", maxWidth: 640, lineHeight: 1.7, margin: "12px auto 0" }}
-        >
-          <span className="ip-text-block-line ip-text-block-line-nowrap">
-            Anyone with a camera phone can open your link in seconds.
-          </span>
-        </p>
+      <section className="ip-container ip-hero ip-section-center">
+        <div className="ip-hero-badge-wrap ip-animate-in">
+          <p className="ip-mono ip-badge ip-badge-accent">
+            Visual scan · programmable links
+          </p>
+        </div>
+        <HeroHeadline />
+        <div className="ip-hero-body ip-animate-in ip-animate-in-delay-1">
+          <BalancedText
+            className="ip-muted ip-text-block ip-hero-lead ip-copy-md"
+            lines={[
+              "Link any image to the URL of your choice —",
+              "like a QR code, only not outdated or unattractive.",
+              "Upload your file or snap a photo on your phone.",
+              "We reimagine the visual — you approve it,",
+              "then link it to any destination you choose.",
+            ]}
+          />
+        </div>
         <div className="ip-hero-actions ip-animate-in ip-animate-in-delay-2">
           <Button href="/login" variant="primary" className="ip-btn-hero">
             Get started free
@@ -147,9 +139,7 @@ export default function LandingPage() {
             See how it works ↓
           </Button>
         </div>
-        <p className="ip-faint ip-mono" style={{ marginTop: 40, fontSize: "0.75rem" }}>
-          No app download · No QR required · Change destinations anytime
-        </p>
+        <AppDownloadStrip />
         <ScanDemo />
       </section>
 
@@ -163,8 +153,8 @@ export default function LandingPage() {
                 {step.title}
               </h3>
               <BalancedText
-                className="ip-muted ip-text-block"
-                style={{ margin: 0, fontSize: "0.9375rem", maxWidth: 400, lineHeight: 1.65 }}
+                className="ip-muted ip-text-block ip-copy-md"
+                style={{ margin: 0, maxWidth: "38ch", lineHeight: 1.65 }}
                 lines={step.lines}
               />
             </div>
@@ -188,8 +178,8 @@ export default function LandingPage() {
                 {c.title}
               </h3>
               <BalancedText
-                className="ip-muted ip-text-block"
-                style={{ margin: 0, fontSize: "0.9rem", maxWidth: 280, lineHeight: 1.6 }}
+                className="ip-muted ip-text-block ip-copy-sm"
+                style={{ margin: 0, maxWidth: "32ch", lineHeight: 1.6 }}
                 lines={c.lines}
               />
             </div>
@@ -220,8 +210,8 @@ export default function LandingPage() {
                 {item.title}
               </h3>
               <BalancedText
-                className="ip-muted ip-text-block"
-                style={{ margin: 0, fontSize: "0.9rem", maxWidth: 420, lineHeight: 1.7 }}
+                className="ip-muted ip-text-block ip-copy-sm"
+                style={{ margin: 0, maxWidth: "36ch", lineHeight: 1.65 }}
                 lines={item.lines}
               />
             </div>
@@ -232,9 +222,12 @@ export default function LandingPage() {
       <section className="ip-container ip-section ip-section-center">
         <h2 className="ip-display ip-section-title-sm">Pricing</h2>
         <BalancedText
-          className="ip-muted ip-text-block"
-          style={{ margin: "0 0 24px", maxWidth: 360, fontSize: "1rem" }}
-          lines={["Free for 3 portals", "& 200 scans/month.", "Pro plans from $19/month."]}
+          className="ip-muted ip-text-block ip-copy-md"
+          style={{ margin: "0 0 24px", maxWidth: "34ch" }}
+          lines={[
+            "Free for 3 portals & 200 scans/month.",
+            "Pro plans start at $19 per month.",
+          ]}
         />
         <Button href="/pricing" variant="secondary">
           View full pricing →
@@ -247,11 +240,11 @@ export default function LandingPage() {
             Ready to <span>open the door</span>?
           </h2>
           <BalancedText
-            className="ip-muted ip-text-block"
-            style={{ margin: "0 auto 28px", maxWidth: 400, lineHeight: 1.65 }}
+            className="ip-muted ip-text-block ip-copy-md"
+            style={{ margin: "0 auto 28px", maxWidth: "36ch", lineHeight: 1.65 }}
             lines={[
               "Create your first portal in under a minute.",
-              "Dark or light — your choice in the nav.",
+              "Dark or light theme — your choice in the nav.",
             ]}
           />
           <Button href="/login" variant="primary">

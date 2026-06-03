@@ -49,27 +49,17 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div>
+    <div className="ip-dash-shell">
       {ownerId && <UsageSummary userId={ownerId} />}
       {portals.length === 0 && <OnboardingStrip />}
       <AnalyticsDashboard />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <h1 className="ip-display" style={{ fontSize: "1.5rem", margin: 0 }}>
-          Your portals
-        </h1>
-        <a href="/dashboard/create" className="ip-btn ip-btn-primary ip-btn-sm">
-          + Create portal
-        </a>
-      </div>
+      <section className="ip-dash-section">
+        <div className="ip-dash-section-head">
+          <h1 className="ip-dash-section-title">Your portals</h1>
+          <a href="/dashboard/create" className="ip-btn ip-btn-primary ip-btn-sm">
+            + Create portal
+          </a>
+        </div>
 
       {fetchError && (
         <div
@@ -85,16 +75,13 @@ export default async function DashboardPage() {
       )}
 
       {portals.length === 0 && !fetchError ? (
-        <div className="ip-card ip-card-glow" style={{ textAlign: "center", padding: "4rem 2rem" }}>
-          <div className="ip-portal-thumb" style={{ width: 80, height: 80, margin: "0 auto 20px", fontSize: "2rem" }}>
-            ◫
-          </div>
-          <p className="ip-display" style={{ fontSize: "1.15rem", marginBottom: 8 }}>
+        <div className="ip-card ip-card-glow ip-card-copy ip-dash-empty">
+          <div className="ip-portal-thumb ip-dash-empty-icon">◫</div>
+          <p className="ip-dash-section-title-sm" style={{ marginBottom: 12 }}>
             Create your first portal
           </p>
           <BalancedText
-            className="ip-muted ip-text-block"
-            style={{ fontSize: "0.9rem", marginBottom: 24, maxWidth: 320 }}
+            className="ip-muted ip-text-block ip-dash-lead"
             lines={[
               "Upload an image, set a destination,",
               "& share a scannable link anywhere.",
@@ -107,6 +94,7 @@ export default async function DashboardPage() {
       ) : (
         <PortalList initial={portals} />
       )}
+      </section>
     </div>
   );
 }
