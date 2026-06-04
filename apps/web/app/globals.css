@@ -225,10 +225,10 @@ a {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: min(72vw, 260px);
-  height: min(72vw, 260px);
-  color: var(--accent);
-  opacity: 0.09;
+  width: min(78vw, 300px);
+  height: min(78vw, 300px);
+  color: color-mix(in srgb, var(--accent) 78%, white 22%);
+  opacity: 0.14;
   pointer-events: none;
   z-index: 0;
 }

@@ -5,7 +5,7 @@ export async function HeroHeadline() {
     await QRCode.toString("https://rub.pub", {
       type: "svg",
       margin: 0,
-      width: 260,
+      width: 300,
       color: {
         dark: "#5eead4",
         light: "#ffffff00",
