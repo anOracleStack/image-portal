@@ -48,7 +48,7 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 ### Blockers — production & auth
 
-- [ ] **T-001** Redeploy Vercel **production** from latest `main` (`3f3d49c` or newer). Confirm deployment succeeds (Dashboard or `vercel deploy --prod` with user auth).
+- [x] **T-001** Redeploy Vercel **production** from latest `main` — **done 2026-05-20** (`vercel deploy --prod`, deployment `dpl_5gLGrcJXZBLMXnxUP2ruSNWqbQq1`, aliased https://rub.pub).
 - [ ] **T-002** Verify **https://rub.pub/login** shows: “Continue with Google”, Create Account flow, centered fields, keep-signed-in behavior. Record evidence in log (screenshot note or HTML grep for `Continue with Google`).
 - [ ] **T-003** Supabase: enable **Google** provider; set redirect URLs for `https://rub.pub/auth/callback` (and local dev if needed). Document status in log (no secrets).
 - [ ] **T-004** If Google app is in **Testing** mode: ensure test users are added or app published — document in log.
@@ -115,6 +115,16 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 ## Work log (newest first)
 
 Append entries here. **Do not delete history.**
+
+### 2026-05-20 — T-001 production deploy (CLI)
+
+- **Agent:** Cursor (user: COMMIT PUSH MERGE DEPLOY)
+- **Task id(s):** T-001
+- **Done:** `vercel deploy --prod --yes` from `image-portal/`; build succeeded; production alias **https://rub.pub**
+- **Files changed:** none (working tree was clean at `2cc1051`)
+- **Commit:** none new — already on `main` `2cc1051`
+- **Verification:** Vercel status **READY**; inspector https://vercel.com/anoraclestacks-projects/image-portal/5gLGrcJXZBLMXnxUP2ruSNWqbQq1 — **T-002** (grep login HTML) pending same session
+- **Merge:** N/A — already on `main`, no open PR
 
 ### 2026-05-20 — Task list committed for Cursor restart
 
