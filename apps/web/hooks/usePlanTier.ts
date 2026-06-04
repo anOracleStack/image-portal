@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createBrowserClient_ } from "@/lib/supabase-browser";
-import type { PlanTier } from "@/lib/subscription";
+import type { PlanTier } from "@/lib/plans";
 
 /** Loads the signed-in user's subscription tier (defaults to free). */
 export function usePlanTier(): PlanTier {

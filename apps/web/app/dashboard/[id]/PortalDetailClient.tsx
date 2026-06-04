@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
 import { BalancedText } from "@/components/ui/BalancedText";
-import { canHideFromGallery, type PlanTier } from "@/lib/subscription";
+import { canHideFromGallery, type PlanTier } from "@/lib/plans";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
 
 interface Props {

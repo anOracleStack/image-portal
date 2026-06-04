@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import type { PlanTier } from "@/lib/subscription";
-import { canHideFromGallery } from "@/lib/subscription";
+import { canHideFromGallery, type PlanTier } from "@/lib/plans";
 
 interface PortalValues {
   title: string;
