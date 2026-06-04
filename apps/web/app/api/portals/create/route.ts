@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CreatePortalInput, validateDestination } from "@ip/shared";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { ensureProfile } from "@/lib/ensure-profile";
+import { ensureProfile, ProfileEnsureError } from "@/lib/ensure-profile";
 import { checkPortalLimit } from "@/lib/subscription";
 import { checkSafeBrowsing } from "@/lib/safe-browsing";
 
@@ -106,6 +106,15 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (insertErr) {
+      if (insertErr.code === "23503" && insertErr.message.includes("portals_owner_id_fkey")) {
+        return NextResponse.json(
+          {
+            error:
+              "Your account profile is missing. Sign out, sign in again, and retry. If this persists, contact support.",
+          },
+          { status: 500 }
+        );
+      }
       return NextResponse.json({ error: insertErr.message }, { status: 500 });
     }
 
@@ -119,6 +128,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ portal }, { status: 201 });
   } catch (err) {
+    if (err instanceof ProfileEnsureError) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    }
     const message = err instanceof Error ? err.message : "Internal server error";
     return NextResponse.json({ error: message }, { status: 500 });
   }
