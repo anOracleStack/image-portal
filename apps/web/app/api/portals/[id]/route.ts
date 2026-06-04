@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
+import {
+  enforceGalleryVisibility,
+  getUserSubscription,
+} from "@/lib/subscription";
 
 // ---------------------------------------------------------------------------
 // GET — fetch a single portal by ID (with ownership check)
@@ -48,9 +52,32 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = await req.json();
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    // Allowed fields to update
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const db = createAdminClient();
+
+    const { data: existing, error: loadErr } = await db
+      .from("portals")
+      .select("owner_id")
+      .eq("id", id)
+      .single();
+
+    if (loadErr || !existing) {
+      return NextResponse.json({ error: "Portal not found" }, { status: 404 });
+    }
+
+    if (existing.owner_id !== user.id) {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    }
+
     const allowed = [
       "title",
       "destination_url",
@@ -67,7 +94,14 @@ export async function PATCH(
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
-    const db = createAdminClient();
+    if (updates.visibility !== undefined) {
+      const sub = await getUserSubscription(user.id);
+      updates.visibility = enforceGalleryVisibility(
+        sub.plan_tier,
+        updates.visibility as "public" | "private"
+      );
+    }
+
     const { data: portal, error } = await db
       .from("portals")
       .update(updates)

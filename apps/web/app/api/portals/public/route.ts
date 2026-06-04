@@ -6,7 +6,9 @@ export async function GET() {
 
   const { data, error } = await db
     .from("portals")
-    .select("id, title, slug, destination_url, total_scans")
+    .select(
+      "id, title, slug, destination_url, total_scans, last_scanned_at, created_at"
+    )
     .eq("visibility", "public")
     .eq("status", "active")
     .order("total_scans", { ascending: false });
@@ -15,5 +17,5 @@ export async function GET() {
     return NextResponse.json({ error: "failed to fetch portals" }, { status: 500 });
   }
 
-  return NextResponse.json(data ?? []);
+  return NextResponse.json({ portals: data ?? [] });
 }

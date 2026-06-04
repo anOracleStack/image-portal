@@ -1,15 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
 import { BalancedText } from "@/components/ui/BalancedText";
+import { canHideFromGallery, type PlanTier } from "@/lib/subscription";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
 
 interface Props {
   portal: PortalRow;
   images: PortalImageRow[];
   userId: string;
+  planTier: PlanTier;
 }
 
 const statusBadgeClass: Record<string, string> = {
@@ -18,10 +21,18 @@ const statusBadgeClass: Record<string, string> = {
   suspended: "ip-badge-danger",
 };
 
-export default function PortalDetailClient({ portal, images, userId }: Props) {
+export default function PortalDetailClient({
+  portal,
+  images,
+  userId,
+  planTier,
+}: Props) {
   const router = useRouter();
+  const galleryEditable = canHideFromGallery(planTier);
   const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState(portal.status);
+  const [visibility, setVisibility] = useState(portal.visibility);
+  const [galleryBusy, setGalleryBusy] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null);
   const [exportMsg, setExportMsg] = useState<string | null>(null);
 
@@ -81,6 +92,27 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
     }
   }, [portal.id, router]);
 
+  const handleGalleryVisibility = useCallback(async () => {
+    if (!galleryEditable) return;
+    const next = visibility === "public" ? "private" : "public";
+    setGalleryBusy(true);
+    try {
+      const res = await fetch(`/api/portals/${portal.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ visibility: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Update failed");
+      setVisibility(data.portal.visibility);
+      router.refresh();
+    } catch {
+      alert("Failed to update gallery visibility.");
+    } finally {
+      setGalleryBusy(false);
+    }
+  }, [galleryEditable, portal.id, router, visibility]);
+
   const handleExport = useCallback(
     async (type: string) => {
       setExporting(type);
@@ -125,7 +157,7 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
               {status}
             </span>
             <span className="ip-muted ip-meta-muted-sm">
-              {portal.visibility === "public" ? "Public" : "Private"}
+              {visibility === "public" ? "In gallery" : "Hidden from gallery"}
             </span>
           </div>
         </div>
@@ -185,8 +217,34 @@ export default function PortalDetailClient({ portal, images, userId }: Props) {
             {domain}
           </a>
         </div>
-        <div className="ip-detail-label">Scan Mode</div>
+        <div className="ip-detail-label">Scan mode</div>
         <div className="ip-detail-value">{portal.scan_mode}</div>
+        <div className="ip-detail-label">Public gallery</div>
+        <div className="ip-detail-value ip-gallery-privacy-row">
+          <span>
+            {visibility === "public"
+              ? "Listed on /gallery"
+              : "Not listed on /gallery"}
+          </span>
+          {galleryEditable ? (
+            <button
+              type="button"
+              className="ip-btn ip-btn-secondary ip-btn-sm"
+              disabled={galleryBusy}
+              onClick={handleGalleryVisibility}
+            >
+              {galleryBusy
+                ? "…"
+                : visibility === "public"
+                  ? "Hide from gallery"
+                  : "Show in gallery"}
+            </button>
+          ) : (
+            <Link href="/pricing" className="ip-link-accent ip-copy-sm">
+              Upgrade to hide from gallery
+            </Link>
+          )}
+        </div>
         <div className="ip-detail-label">Total Scans</div>
         <div className="ip-detail-value">{portal.total_scans}</div>
         <div className="ip-detail-label">Last Scanned</div>

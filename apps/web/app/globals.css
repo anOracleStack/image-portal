@@ -1705,6 +1705,33 @@ a {
   z-index: 1;
 }
 
+.ip-scan-main-centered {
+  text-align: center;
+}
+
+.ip-scan-main-centered .ip-scan-log-header,
+.ip-scan-main-centered .ip-scan-result-card {
+  text-align: left;
+}
+
+.ip-scan-privacy-note {
+  max-width: 36rem;
+  margin: 0 auto 1.25rem;
+  font-size: 0.9375rem;
+}
+
+.ip-gallery-privacy-hint {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.ip-gallery-privacy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
 .ip-scan-controls {
   display: flex;
   gap: 12px;

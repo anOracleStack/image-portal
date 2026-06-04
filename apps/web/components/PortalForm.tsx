@@ -1,6 +1,9 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import type { PlanTier } from "@/lib/subscription";
+import { canHideFromGallery } from "@/lib/subscription";
 
 interface PortalValues {
   title: string;
@@ -14,6 +17,7 @@ interface Props {
   onSubmit: (values: PortalValues) => Promise<void>;
   isLoading?: boolean;
   submitLabel?: string;
+  planTier?: PlanTier;
 }
 
 function slugify(text: string): string {
@@ -23,14 +27,15 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function toggleStyle(active: boolean): React.CSSProperties {
+function toggleStyle(active: boolean, disabled?: boolean): React.CSSProperties {
   return {
     background: active ? "var(--accent)" : "var(--border-strong)",
     border: "none",
     borderRadius: 999,
     width: 48,
     height: 26,
-    cursor: "pointer",
+    cursor: disabled ? "not-allowed" : "pointer",
+    opacity: disabled ? 0.55 : 1,
     position: "relative",
     transition: "background 0.2s",
   };
@@ -53,12 +58,8 @@ function submitClass(disabled: boolean): string {
 const pStyles = {
   group: { display: "flex", flexDirection: "column" as const, gap: 8 },
   label: { fontSize: "1rem", fontWeight: 600, color: "var(--text-muted)" },
-  input: {},
-  select: {},
-  error: { fontSize: "0.9375rem", color: "var(--danger)" },
-  slugPreview: { fontSize: "0.9375rem", color: "var(--accent)", marginTop: -4, fontFamily: "var(--font-mono)" },
-  toggleRow: { display: "flex", gap: 12, alignItems: "center" },
-  visibilityLabel: { fontSize: "1rem", color: "var(--text-muted)" },
+  toggleRow: { display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" as const },
+  visibilityLabel: { fontSize: "1rem", color: "var(--text)" },
 };
 
 const URL_REGEX = /^https?:\/\/.+\..+/i;
@@ -68,7 +69,9 @@ export default function PortalForm({
   onSubmit,
   isLoading,
   submitLabel = "Save Portal",
+  planTier = "free",
 }: Props) {
+  const galleryEditable = canHideFromGallery(planTier);
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [destinationUrl, setDestinationUrl] = useState(
     initialValues?.destinationUrl ?? ""
@@ -77,10 +80,14 @@ export default function PortalForm({
     initialValues?.scanMode ?? "image"
   );
   const [visibility, setVisibility] = useState<"public" | "private">(
-    initialValues?.visibility ?? "public"
+    galleryEditable ? (initialValues?.visibility ?? "public") : "public"
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!galleryEditable) setVisibility("public");
+  }, [galleryEditable]);
 
   const slug = slugify(title);
 
@@ -110,23 +117,22 @@ export default function PortalForm({
           title: title.trim(),
           destinationUrl: destinationUrl.trim(),
           scanMode,
-          visibility,
+          visibility: galleryEditable ? visibility : "public",
         });
       } finally {
         setSubmitting(false);
       }
     },
-    [title, destinationUrl, scanMode, visibility, onSubmit]
+    [title, destinationUrl, scanMode, visibility, galleryEditable, onSubmit]
   );
 
-       const busy = !!(submitting || isLoading);
+  const busy = !!(submitting || isLoading);
 
   return (
     <form
       onSubmit={handleSubmit}
       style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 560 }}
     >
-      {/* Title */}
       <div style={pStyles.group}>
         <label style={pStyles.label}>Title</label>
         <input
@@ -136,12 +142,15 @@ export default function PortalForm({
           placeholder="My Portal"
         />
         {slug && (
-          <div style={pStyles.slugPreview}>Slug: /p/{slug}</div>
+          <div className="ip-mono ip-faint" style={{ fontSize: "0.9375rem", marginTop: -4 }}>
+            Slug: /p/{slug}
+          </div>
         )}
-        {errors.title && <div style={pStyles.error}>{errors.title}</div>}
+        {errors.title && (
+          <div style={{ fontSize: "0.9375rem", color: "var(--danger)" }}>{errors.title}</div>
+        )}
       </div>
 
-      {/* Destination URL */}
       <div style={pStyles.group}>
         <label style={pStyles.label}>Destination URL</label>
         <input
@@ -151,13 +160,14 @@ export default function PortalForm({
           placeholder="https://example.com"
         />
         {errors.destinationUrl && (
-          <div style={pStyles.error}>{errors.destinationUrl}</div>
+          <div style={{ fontSize: "0.9375rem", color: "var(--danger)" }}>
+            {errors.destinationUrl}
+          </div>
         )}
       </div>
 
-      {/* Scan Mode */}
       <div style={pStyles.group}>
-        <label style={pStyles.label}>Scan Mode</label>
+        <label style={pStyles.label}>Scan mode</label>
         <select
           className="ip-input"
           value={scanMode}
@@ -168,27 +178,39 @@ export default function PortalForm({
         </select>
       </div>
 
-      {/* Visibility */}
-      <div style={pStyles.group}>
-        <label style={pStyles.label}>Visibility</label>
+      <div style={pStyles.group} className="ip-gallery-privacy-field">
+        <label style={pStyles.label}>Public gallery</label>
+        <p className="ip-muted ip-copy-sm ip-gallery-privacy-hint">
+          {galleryEditable
+            ? "Public portals appear on the gallery. Private portals stay off the gallery but still work via scan & direct link."
+            : "Free plan portals are listed in the public gallery. Upgrade to Indie or above to hide a portal from the gallery."}
+        </p>
         <div style={pStyles.toggleRow}>
           <button
             type="button"
-            style={toggleStyle(visibility === "public")}
-            onClick={() =>
-              setVisibility(visibility === "public" ? "private" : "public")
-            }
+            style={toggleStyle(visibility === "public", !galleryEditable)}
+            disabled={!galleryEditable}
+            aria-pressed={visibility === "public"}
+            onClick={() => {
+              if (!galleryEditable) return;
+              setVisibility(visibility === "public" ? "private" : "public");
+            }}
           >
             <div style={toggleDotStyle(visibility === "public")} />
           </button>
-          <span className="ip-muted" style={pStyles.visibilityLabel}>
-            {visibility === "public" ? "Public" : "Private"}
+          <span style={pStyles.visibilityLabel}>
+            {visibility === "public" ? "Listed in gallery" : "Hidden from gallery"}
           </span>
+          {!galleryEditable && (
+            <Link href="/pricing" className="ip-link-accent ip-copy-sm">
+              Upgrade for gallery privacy
+            </Link>
+          )}
         </div>
       </div>
 
       <button type="submit" className={submitClass(busy)} disabled={busy}>
-        {busy ? "Saving..." : submitLabel}
+        {busy ? "Saving…" : submitLabel}
       </button>
     </form>
   );

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import PortalForm from "@/components/PortalForm";
 import { PageIntro } from "@/components/ui/PageIntro";
 import { BalancedText } from "@/components/ui/BalancedText";
+import { usePlanTier } from "@/hooks/usePlanTier";
 import type { PortalRow } from "@/lib/types";
 
 interface PortalValues {
@@ -16,6 +17,7 @@ interface PortalValues {
 
 export default function EditPortalPage() {
   const router = useRouter();
+  const planTier = usePlanTier();
   const params = useParams<{ id: string }>();
   const id = params.id;
 
@@ -107,7 +109,7 @@ export default function EditPortalPage() {
     <div className="ip-form-shell">
       <PageIntro
         title="Edit Portal"
-        lines={["Update title, destination,", "scan mode, & visibility."]}
+        lines={["Update title, destination,", "scan mode, & gallery listing."]}
       />
 
       {submitError && (
@@ -123,6 +125,7 @@ export default function EditPortalPage() {
         }}
         onSubmit={handleSubmit}
         submitLabel="Save Changes"
+        planTier={planTier}
       />
     </div>
   );

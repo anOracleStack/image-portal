@@ -53,6 +53,19 @@ export function getPlanLimits(tier: PlanTier): PlanLimits {
   return PLANS[tier] ?? PLANS.free;
 }
 
+/** Paid tiers (Indie+) may hide portals from the public gallery. */
+export function canHideFromGallery(tier: PlanTier): boolean {
+  return tier !== "free";
+}
+
+/** Free portals are always public in the gallery; paid may choose. */
+export function enforceGalleryVisibility(
+  tier: PlanTier,
+  visibility: "public" | "private"
+): "public" | "private" {
+  return canHideFromGallery(tier) ? visibility : "public";
+}
+
 /**
  * Check whether the user can create another portal under their current plan.
  * Returns an object with `allowed` and `reason` if denied.

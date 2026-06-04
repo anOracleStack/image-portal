@@ -51,7 +51,7 @@ export default function PortalCard({ portal, onDelete }: Props) {
               <span className={`ip-badge ${status}`}>{portal.status}</span>
               <span className="ip-muted">{domain}</span>
               <span className="ip-muted">
-                {portal.visibility === "public" ? "Public" : "Private"}
+                {portal.visibility === "public" ? "In gallery" : "Hidden"}
               </span>
               <span className="ip-muted">{portal.total_scans} scans</span>
               <span className="ip-faint">{timeAgo(portal.last_scanned_at)}</span>

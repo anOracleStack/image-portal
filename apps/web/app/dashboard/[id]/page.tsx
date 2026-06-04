@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { getUserSubscription } from "@/lib/subscription";
 import PortalDetailClient from "./PortalDetailClient";
 import { BalancedText } from "@/components/ui/BalancedText";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
@@ -71,5 +72,14 @@ export default async function PortalDetailPage({
 
   if (!portal) notFound();
 
-  return <PortalDetailClient portal={portal} images={images} userId={user.id} />;
+  const sub = await getUserSubscription(user.id);
+
+  return (
+    <PortalDetailClient
+      portal={portal}
+      images={images}
+      userId={user.id}
+      planTier={sub.plan_tier}
+    />
+  );
 }

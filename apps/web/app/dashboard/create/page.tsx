@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import PortalForm from "@/components/PortalForm";
 import { PageIntro } from "@/components/ui/PageIntro";
+import { usePlanTier } from "@/hooks/usePlanTier";
 
 interface PortalValues {
   title: string;
@@ -14,6 +15,7 @@ interface PortalValues {
 
 export default function CreatePortalPage() {
   const router = useRouter();
+  const planTier = usePlanTier();
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = useCallback(
@@ -63,7 +65,11 @@ export default function CreatePortalPage() {
         <div className="ip-card ip-card-danger">{error}</div>
       )}
 
-      <PortalForm onSubmit={handleSubmit} submitLabel="Create Portal" />
+      <PortalForm
+        onSubmit={handleSubmit}
+        submitLabel="Create Portal"
+        planTier={planTier}
+      />
     </div>
   );
 }

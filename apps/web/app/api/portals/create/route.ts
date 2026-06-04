@@ -3,7 +3,7 @@ import { CreatePortalInput, validateDestination } from "@ip/shared";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { ensureProfile, ProfileEnsureError } from "@/lib/ensure-profile";
-import { checkPortalLimit } from "@/lib/subscription";
+import { checkPortalLimit, enforceGalleryVisibility, getUserSubscription } from "@/lib/subscription";
 import { checkSafeBrowsing } from "@/lib/safe-browsing";
 
 function slugify(text: string): string {
@@ -33,8 +33,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, destinationUrl, scanMode, visibility } = parsed.data;
+    const { title, destinationUrl, scanMode, visibility: requestedVisibility } =
+      parsed.data;
     const ownerId = user.id;
+
+    const sub = await getUserSubscription(ownerId);
+    const visibility = enforceGalleryVisibility(
+      sub.plan_tier,
+      requestedVisibility
+    );
 
     await ensureProfile(ownerId, {
       displayName: user.user_metadata?.full_name ?? user.user_metadata?.name,

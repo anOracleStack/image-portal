@@ -240,7 +240,7 @@ export default function ScanPage() {
 
   return (
     <MarketingPage>
-      <main className="ip-scan-main">
+      <main className="ip-scan-main ip-scan-main-centered">
         <PageIntro
           title="Live scan"
           lines={[
@@ -325,7 +325,15 @@ export default function ScanPage() {
 
         {cameraState === "ready" && scanning && (
           <p className="ip-muted ip-scan-hint ip-text-block">
-            Each frame is checked against your portal catalog. Use Stop scanning when you are done.
+            Each frame is analyzed on this device &amp; sent only for matching — we do not store camera
+            frames unless a portal match is logged. Use Stop scanning when you are done.
+          </p>
+        )}
+
+        {cameraState === "ready" && !scanning && (
+          <p className="ip-muted ip-scan-privacy-note ip-text-block">
+            Camera preview stays in your browser. Scan frames are processed for matching, not saved as
+            a photo roll.
           </p>
         )}
 

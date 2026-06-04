@@ -10,7 +10,7 @@ const plans = [
     period: "/mo",
     desc: "Core portals & scans.",
     ctas: { label: "Get started", href: "/dashboard" },
-    features: ["3 portals", "200 scans/mo", "Basic analytics", "QR export"],
+    features: ["3 portals", "200 scans/mo", "Gallery listing", "Basic analytics", "QR export"],
     popular: false,
   },
   {
@@ -22,7 +22,7 @@ const plans = [
       label: "Subscribe",
       href: "mailto:sales@rub.pub?subject=Indie Plan",
     },
-    features: ["25 portals", "5k scans/mo", "Full analytics", "Poster export", "1 seat"],
+    features: ["25 portals", "5k scans/mo", "Gallery privacy", "Full analytics", "Poster export", "1 seat"],
     popular: true,
   },
   {
@@ -55,6 +55,8 @@ const comparisonRows: [string, boolean[], string][] = [
   ["Portal count", [true, true, true, true], "3 / 25 / 100 / Unlimited"],
   ["Monthly scans", [true, true, true, true], "200 / 5k / 50k / Unlimited"],
   ["Team seats", [false, true, true, true], "\u2014 / 1 / 3 / Unlimited"],
+  ["Public gallery listing", [true, true, true, true], ""],
+  ["Hide from gallery", [false, true, true, true], ""],
   ["QR export", [true, true, true, true], ""],
   ["Poster export", [false, true, true, true], ""],
   ["Full analytics", [false, true, true, true], ""],
