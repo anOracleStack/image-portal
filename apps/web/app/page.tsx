@@ -6,57 +6,7 @@ import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { AppDownloadStrip } from "@/components/marketing/AppDownloadStrip";
 import { HeroHeadline } from "@/components/landing/HeroHeadline";
 import { ScanDemo } from "@/components/landing/ScanDemo";
-
-const useCases = [
-  {
-    icon: "◫",
-    title: "Posters & Flyers",
-    lines: [
-      "Printed materials that change with your content.",
-      "Update the link anytime — no reprinting needed.",
-    ],
-  },
-  {
-    icon: "◎",
-    title: "Restaurant Menus",
-    lines: [
-      "The menu image itself is scannable.",
-      "Change prices & items instantly from your dashboard.",
-    ],
-  },
-  {
-    icon: "◇",
-    title: "Event Tickets",
-    lines: [
-      "Link tickets in real time from one image.",
-      "Update schedule, venue, & refunds on the fly.",
-    ],
-  },
-  {
-    icon: "▣",
-    title: "Product Packaging",
-    lines: [
-      "Packaging becomes a channel to your brand.",
-      "Manuals, offers, & unboxing — one scan away.",
-    ],
-  },
-  {
-    icon: "◈",
-    title: "Art & Photography",
-    lines: [
-      "Every physical print becomes a gallery link.",
-      "Collectors scan to view, buy, or learn more.",
-    ],
-  },
-  {
-    icon: "◆",
-    title: "Business Cards",
-    lines: [
-      "Your card design is the key to your link.",
-      "No separate QR block required on the card.",
-    ],
-  },
-] as const;
+import { UseCasesSection } from "@/components/landing/UseCasesSection";
 
 const whyItems = [
   {
@@ -161,20 +111,7 @@ export default function LandingPage() {
 
       <section className="ip-container ip-section ip-section-center">
         <h2 className="ip-display ip-section-title">Use cases</h2>
-        <div className="ip-grid-3">
-          {useCases.map((c) => (
-            <div key={c.title} className="ip-card ip-card-interactive ip-card-glow ip-card-copy">
-              <span className="ip-mono ip-use-case-icon" aria-hidden>
-                {c.icon}
-              </span>
-              <h3 className="ip-display ip-card-title-md">{c.title}</h3>
-              <BalancedText
-                className="ip-muted ip-text-block ip-copy-sm"
-                lines={c.lines}
-              />
-            </div>
-          ))}
-        </div>
+        <UseCasesSection />
       </section>
 
       <section className="ip-container ip-section ip-section-center ip-landing-narrow">

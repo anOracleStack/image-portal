@@ -1,0 +1,329 @@
+"use client";
+
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { BalancedText } from "@/components/ui/BalancedText";
+import {
+  demoAssetPath,
+  getUseCase,
+  type UseCaseSlug,
+} from "@/lib/use-cases";
+
+const QUICK_GUIDE = [
+  {
+    label: "Upload",
+    summary: "Drop .JPEG, .PNG, or .WEBP — we access, view, & analyze it.",
+  },
+  {
+    label: "Capture",
+    summary: "No file? Snap a photo on your phone. Same analysis.",
+  },
+  {
+    label: "Enhance",
+    summary: "We refine your capture & send a clean reference back.",
+  },
+  {
+    label: "Link",
+    summary: "Link the URL where viewers land after scanning.",
+  },
+  {
+    label: "Approve",
+    summary: "Preview visual + URL — nothing live until approved.",
+  },
+  {
+    label: "Scan",
+    summary: "Viewers scan your physical or digital image.",
+  },
+  {
+    label: "Open",
+    summary: "Viewers are directed to your attached URL instantly.",
+  },
+] as const;
+
+type DemoStep = {
+  id: number;
+  label: string;
+  stage: string;
+  subtitle: string;
+  description: readonly string[];
+  example: string;
+  image: string | null;
+  imageAlt: string;
+  variant: string;
+  linkBadge?: string;
+  previewUrl?: string;
+  showReticle?: boolean;
+  showEnhancedBadge?: boolean;
+};
+
+function buildSteps(slug: UseCaseSlug): DemoStep[] {
+  const config = getUseCase(slug);
+  const reference = demoAssetPath(slug, "reference");
+  const scan = demoAssetPath(slug, "scan");
+  const { destination, categoryLabel } = config;
+
+  return [
+    {
+      id: 0,
+      label: "Upload",
+      stage: "Upload",
+      subtitle: "an image file",
+      description: [
+        "Drop a .JPEG, .PNG, & .WEBP file — up to 10 MB.",
+        "We access, view, & analyze it to build your portal.",
+        "Your image becomes the key to every scan.",
+      ],
+      example: config.uploadExample,
+      image: reference,
+      imageAlt: `Clean ${categoryLabel} ready to upload`,
+      variant: "clean",
+    },
+    {
+      id: 1,
+      label: "Capture",
+      stage: "Capture",
+      subtitle: "a photo with your smart device",
+      description: [
+        "No file on hand? Take a picture instead.",
+        "We analyze the shot the same way as an upload.",
+        "Angles, glare, & everyday lighting are expected.",
+      ],
+      example: config.captureExample,
+      image: scan,
+      imageAlt: `Phone photo of a ${categoryLabel} at an angle`,
+      variant: "scan",
+      showReticle: true,
+    },
+    {
+      id: 2,
+      label: "Enhance",
+      stage: "Enhance",
+      subtitle: "we reimagine your visual for you",
+      description: [
+        "If a photo is taken, we refine your capture",
+        "for optimized & enhanced quality.",
+        "You receive a clean, high-quality reference.",
+        "Nothing goes live until you approve the image.",
+      ],
+      example: "Example: enhanced reference sent for review",
+      image: reference,
+      imageAlt: `Enhanced high-quality ${categoryLabel} reference`,
+      variant: "enhanced",
+      showEnhancedBadge: true,
+    },
+    {
+      id: 3,
+      label: "Link",
+      stage: "Link",
+      subtitle: "a URL destination to your image",
+      description: [
+        "Link the image to wherever viewers should land.",
+        "Website, store, menu, or ticket page — any URL.",
+        "Update the destination anytime without reprinting",
+        "or re-exporting anything at all.",
+      ],
+      example: `Example: ${destination}`,
+      image: reference,
+      imageAlt: `${categoryLabel} linked to a destination URL`,
+      variant: "linked",
+      linkBadge: destination,
+    },
+    {
+      id: 4,
+      label: "Approve",
+      stage: "Approve",
+      subtitle: "your portal after everything is reviewed",
+      description: [
+        "Preview the enhanced visual & linked URL.",
+        "Approve when the look & destination are correct.",
+        "Your scannable portal goes live on your OK.",
+      ],
+      example: "Example: final preview before going live",
+      image: reference,
+      imageAlt: "Portal preview awaiting approval",
+      variant: "approve",
+      linkBadge: destination,
+    },
+    {
+      id: 5,
+      label: "Scan",
+      stage: "Scan",
+      subtitle: "viewers scan your image when seen",
+      description: [
+        "Anyone points a camera at the print or screen.",
+        "Retrieve → verify — scored in milliseconds.",
+        "Real-world photos of the image still match.",
+      ],
+      example: config.scanExample,
+      image: scan,
+      imageAlt: `Camera scanning a printed ${categoryLabel}`,
+      variant: "matched",
+      showReticle: true,
+    },
+    {
+      id: 6,
+      label: "Open",
+      stage: "Open",
+      subtitle: "the viewer lands on your linked page",
+      description: [
+        "A successful match opens your URL instantly.",
+        "Every scan is logged in your dashboard.",
+        `Example destination → ${destination}`,
+      ],
+      example: "Example: visitor opens your linked page",
+      image: null,
+      imageAlt: "",
+      variant: "open",
+      previewUrl: destination,
+    },
+  ];
+}
+
+const AUTO_INTERVAL_MS = 6500;
+
+export type UseCaseDemoProps = {
+  slug: UseCaseSlug;
+  autoAdvance?: "immediate" | "after-interaction";
+  className?: string;
+  /** Hero demo prioritizes first two frames for LCP */
+  priorityFrames?: boolean;
+};
+
+export function UseCaseDemo({
+  slug,
+  autoAdvance = "immediate",
+  className = "ip-demo",
+  priorityFrames = false,
+}: UseCaseDemoProps) {
+  const steps = buildSteps(slug);
+  const [active, setActive] = useState(0);
+  const [advanceEnabled, setAdvanceEnabled] = useState(autoAdvance === "immediate");
+  const index = active % steps.length;
+  const step = steps[index]!;
+
+  const enableAdvance = useCallback(() => {
+    setAdvanceEnabled(true);
+  }, []);
+
+  useEffect(() => {
+    if (!advanceEnabled) return;
+    const id = setInterval(() => {
+      setActive((a) => (a + 1) % steps.length);
+    }, AUTO_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [advanceEnabled, steps.length]);
+
+  const handleInteraction = () => {
+    if (autoAdvance === "after-interaction" && !advanceEnabled) {
+      enableAdvance();
+    }
+  };
+
+  return (
+    <div
+      className={className}
+      onPointerDown={handleInteraction}
+      onKeyDown={handleInteraction}
+    >
+      <div className="ip-demo-body">
+        <figure className="ip-demo-figure">
+          <div className={`ip-demo-frame ip-demo-frame-${step.variant}`}>
+            {step.image ? (
+              <>
+                <Image
+                  src={step.image}
+                  alt={step.imageAlt}
+                  fill
+                  sizes="400px"
+                  className="ip-demo-frame-img"
+                  priority={priorityFrames && active <= 1}
+                />
+                {step.showReticle ? <div className="ip-demo-reticle" aria-hidden /> : null}
+                {step.showEnhancedBadge ? (
+                  <div className="ip-demo-frame-tag">Enhanced preview</div>
+                ) : null}
+                {step.linkBadge ? (
+                  <div className="ip-demo-frame-badge">{step.linkBadge}</div>
+                ) : null}
+                {step.variant === "approve" ? (
+                  <div className="ip-demo-approve-bar">
+                    <span className="ip-demo-approve-bar-label">Approve & go live</span>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <div className="ip-demo-open-card">
+                <span className="ip-demo-open-label">Destination live</span>
+                {step.previewUrl ? (
+                  <span className="ip-demo-open-url">{step.previewUrl}</span>
+                ) : null}
+              </div>
+            )}
+          </div>
+          <figcaption className="ip-demo-example">{step.example}</figcaption>
+        </figure>
+
+        <div className="ip-demo-guide ip-demo-guide-compact" aria-label="Quick step guide">
+          <p className="ip-demo-guide-label">Quick guide</p>
+          <div className="ip-demo-guide-pills" role="group" aria-label="Jump to step">
+            {QUICK_GUIDE.map((row, i) => (
+              <button
+                key={row.label}
+                type="button"
+                className="ip-demo-guide-pill"
+                data-active={active === i ? "true" : "false"}
+                onClick={() => {
+                  handleInteraction();
+                  setActive(i);
+                }}
+                aria-current={active === i ? "step" : undefined}
+                aria-label={`${row.label}: ${row.summary}`}
+                title={row.summary}
+              >
+                {row.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="ip-demo-works">
+          <p className="ip-demo-works-label">How it works</p>
+          <header className="ip-demo-header">
+            <p className="ip-demo-kicker">
+              Step {active + 1} of {steps.length}
+            </p>
+            <h3 className="ip-demo-title">
+              <span className="ip-demo-stage-word">{step.stage}</span>
+              <span className="ip-demo-stage-sub">{step.subtitle}</span>
+            </h3>
+            <BalancedText
+              className="ip-muted ip-text-block ip-demo-desc ip-demo-desc-numbered"
+              lines={step.description}
+            />
+          </header>
+        </div>
+      </div>
+
+      <div className="ip-demo-controls">
+        <div className="ip-demo-steps" role="tablist" aria-label="Demo steps">
+          {steps.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              role="tab"
+              className="ip-demo-step"
+              data-active={active === s.id ? "true" : "false"}
+              onClick={() => {
+                handleInteraction();
+                setActive(s.id);
+              }}
+              aria-selected={active === s.id}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
