@@ -60,15 +60,17 @@ export function getPlanLimits(tier: PlanTier): PlanLimits {
 export async function checkPortalLimit(userId: string) {
   const admin = createAdminClient();
 
-  // Fetch subscription + current portal count in parallel.
-  const [subResult, usageResult] = await Promise.all([
+  const [subResult, countResult] = await Promise.all([
     admin.from("subscriptions").select("plan_tier").eq("user_id", userId).maybeSingle(),
-    admin.from("subscription_usage").select("portal_count").eq("user_id", userId).maybeSingle(),
+    admin
+      .from("portals")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", userId),
   ]);
 
   const tier: PlanTier = subResult.data?.plan_tier ?? "free";
   const limits = getPlanLimits(tier);
-  const currentPortals = usageResult.data?.portal_count ?? 0;
+  const currentPortals = countResult.count ?? 0;
 
   if (currentPortals >= limits.maxPortals) {
     return {

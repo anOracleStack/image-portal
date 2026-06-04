@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { createAdminClient } from "@/lib/supabase-admin";
+import { ensureProfile } from "@/lib/ensure-profile";
 import { Navbar } from "@/components/Navbar";
 
 export default async function DashboardLayout({
@@ -17,12 +17,9 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Ensure a profiles row exists for this user.
-  const admin = createAdminClient();
-  await admin.from("profiles").upsert(
-    { id: user.id, email: user.email },
-    { onConflict: "id" },
-  );
+  await ensureProfile(user.id, {
+    displayName: user.user_metadata?.full_name ?? user.user_metadata?.name,
+  });
 
   return (
     <div className="ip-page">

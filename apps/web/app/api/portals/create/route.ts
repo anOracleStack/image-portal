@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CreatePortalInput, validateDestination } from "@ip/shared";
+import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { ensureProfile } from "@/lib/ensure-profile";
 import { checkPortalLimit } from "@/lib/subscription";
 import { checkSafeBrowsing } from "@/lib/safe-browsing";
 
@@ -13,6 +15,15 @@ function slugify(text: string): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const parsed = CreatePortalInput.safeParse(body);
     if (!parsed.success) {
@@ -23,10 +34,11 @@ export async function POST(req: NextRequest) {
     }
 
     const { title, destinationUrl, scanMode, visibility } = parsed.data;
-    const ownerId: string | undefined = body.ownerId;
-    if (!ownerId) {
-      return NextResponse.json({ error: "ownerId is required" }, { status: 400 });
-    }
+    const ownerId = user.id;
+
+    await ensureProfile(ownerId, {
+      displayName: user.user_metadata?.full_name ?? user.user_metadata?.name,
+    });
 
     const verdict = validateDestination(destinationUrl);
     if (!verdict.ok) {

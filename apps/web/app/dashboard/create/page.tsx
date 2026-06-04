@@ -30,7 +30,7 @@ export default function CreatePortalPage() {
         const res = await fetch("/api/portals/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...values, ownerId }),
+          body: JSON.stringify(values),
         });
 
         const data = await res.json();
