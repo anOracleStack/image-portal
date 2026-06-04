@@ -150,7 +150,7 @@ export default function SettingsPage() {
         <BalancedText
           className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
           lines={[
-            "Share Image Portal.",
+            "Share RQ Plus.",
             "When someone signs up with your link,",
             "you both get credited on",
             "future referral rewards.",

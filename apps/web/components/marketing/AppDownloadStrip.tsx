@@ -42,7 +42,7 @@ export function AppDownloadStrip() {
       <BalancedText
         className="ip-muted ip-text-block ip-app-download-copy"
         lines={[
-          "Use Image Portal in your browser —",
+          "Use RQ Plus in your browser —",
           "or install it as a standalone app.",
         ]}
       />

@@ -47,27 +47,18 @@ function toggleDotStyle(active: boolean): React.CSSProperties {
     transition: "left 0.2s",
   };
 }
-function submitStyle(disabled: boolean): React.CSSProperties {
-  return {
-    background: disabled ? "var(--border-strong)" : "var(--accent)",
-    border: "none",
-    borderRadius: 10,
-    padding: "12px 24px",
-    fontSize: "1rem",
-    fontWeight: 600,
-    color: disabled ? "var(--text-faint)" : "var(--accent-foreground)",
-    cursor: disabled ? "not-allowed" : "pointer",
-    marginTop: 8,
-  };
+function submitClass(disabled: boolean): string {
+  return `ip-btn ip-btn-primary ip-form-submit${disabled ? " ip-btn-disabled" : ""}`;
 }
 const pStyles = {
-  group: { display: "flex", flexDirection: "column" as const, gap: 6 },
-  label: { fontSize: "0.85rem", fontWeight: 500, color: "var(--text-muted)" },
+  group: { display: "flex", flexDirection: "column" as const, gap: 8 },
+  label: { fontSize: "1rem", fontWeight: 600, color: "var(--text-muted)" },
   input: {},
   select: {},
-  error: { fontSize: "0.8rem", color: "var(--danger)" },
-  slugPreview: { fontSize: "0.82rem", color: "var(--accent)", marginTop: -4, fontFamily: "var(--font-mono)" },
+  error: { fontSize: "0.9375rem", color: "var(--danger)" },
+  slugPreview: { fontSize: "0.9375rem", color: "var(--accent)", marginTop: -4, fontFamily: "var(--font-mono)" },
   toggleRow: { display: "flex", gap: 12, alignItems: "center" },
+  visibilityLabel: { fontSize: "1rem", color: "var(--text-muted)" },
 };
 
 const URL_REGEX = /^https?:\/\/.+\..+/i;
@@ -190,13 +181,13 @@ export default function PortalForm({
           >
             <div style={toggleDotStyle(visibility === "public")} />
           </button>
-          <span className="ip-muted" style={{ fontSize: "0.9rem" }}>
+          <span className="ip-muted" style={pStyles.visibilityLabel}>
             {visibility === "public" ? "Public" : "Private"}
           </span>
         </div>
       </div>
 
-      <button type="submit" style={submitStyle(busy)} disabled={busy}>
+      <button type="submit" className={submitClass(busy)} disabled={busy}>
         {busy ? "Saving..." : submitLabel}
       </button>
     </form>

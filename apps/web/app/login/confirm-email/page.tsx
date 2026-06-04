@@ -84,7 +84,7 @@ function ConfirmEmailContent() {
           lines={[
             "We sent a confirmation link to the",
             "address below. Confirm before",
-            "using Image Portal.",
+            "using RQ Plus.",
           ]}
         />
 
@@ -93,7 +93,7 @@ function ConfirmEmailContent() {
         <ol className="ip-muted ip-confirm-steps">
           <li>Open your inbox (button below if we recognize your provider).</li>
           <li>
-            Find the message from Image Portal & tap <strong>Confirm email</strong>.
+            Find the message from RQ Plus & tap <strong>Confirm email</strong>.
           </li>
           <li>You will return here & land on your dashboard.</li>
         </ol>

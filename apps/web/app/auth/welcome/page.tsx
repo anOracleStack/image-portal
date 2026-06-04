@@ -15,13 +15,12 @@ export default function AuthWelcomePage() {
         <BalancedText
           className="ip-muted ip-text-block ip-copy-sm ip-card-spaced-lg"
           lines={[
-            "Create your first visual portal",
-            "& start linking camera scans",
-            "to destinations.",
+            "Create a portal, attach a destination,",
+            "& share a print or QR that opens it on scan.",
           ]}
         />
         <Link href="/dashboard" className="ip-btn ip-btn-primary">
-          Go to dashboard
+          DASHBOARD
         </Link>
       </div>
     </AuthShell>

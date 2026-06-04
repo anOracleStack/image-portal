@@ -1,11 +1,11 @@
 {
-  "name": "Image Portal",
-  "short_name": "ImagePortal",
-  "description": "Any image, a programmable doorway. Scan visuals to open destinations.",
+  "name": "RQ Plus",
+  "short_name": "RQ+",
+  "description": "Enhanced QR — scan prints to open destinations.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
-  "theme_color": "#7df9ff",
+  "theme_color": "#5eead4",
   "orientation": "portrait",
   "categories": ["utilities", "productivity"],
   "screenshots": []

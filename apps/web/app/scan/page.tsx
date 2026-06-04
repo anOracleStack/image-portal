@@ -244,8 +244,8 @@ export default function ScanPage() {
         <PageIntro
           title="Live scan"
           lines={[
-            "Point your camera at a portal image",
-            "& match against the catalog.",
+            "Scan a poster, card, menu, or sticker",
+            "to open its linked destination.",
           ]}
         />
         <canvas ref={canvasRef} className="ip-hidden-canvas" aria-hidden />
@@ -262,16 +262,17 @@ export default function ScanPage() {
             }}
           />
           {cameraState === "idle" && (
-            <BalancedText
-              className="ip-muted ip-text-block ip-scan-placeholder"
-              lines={["Camera not started."]}
-            />
+            <div className="ip-scan-idle-overlay">
+              <p className="ip-muted ip-scan-placeholder">Camera not started</p>
+              <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
+                Start camera
+              </button>
+            </div>
           )}
           {cameraState === "starting" && (
-            <BalancedText
-              className="ip-muted ip-text-block ip-scan-placeholder"
-              lines={["Starting camera…"]}
-            />
+            <div className="ip-scan-idle-overlay">
+              <p className="ip-muted ip-scan-placeholder">Camera starting</p>
+            </div>
           )}
           {cameraState === "error" && (
             <BalancedText
@@ -286,8 +287,8 @@ export default function ScanPage() {
                 {scanning ? "SCANNING" : "PAUSED"}
               </span>
               {captureCount > 0 && (
-                <span className="ip-scan-overlay-badge">
-                  {captureCount} scans
+                <span className="ip-scan-overlay-badge" title="Frames analyzed this session">
+                  {captureCount} frames
                 </span>
               )}
             </div>
@@ -295,37 +296,38 @@ export default function ScanPage() {
         </div>
 
         <div className="ip-scan-controls">
-          {cameraState === "idle" && (
-            <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
-              Start Camera
-            </button>
-          )}
           {cameraState === "error" && (
             <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
-              Retry Camera
+              Retry camera
             </button>
           )}
           {cameraState === "starting" && (
             <button type="button" className="ip-btn ip-btn-secondary" disabled>
-              Starting…
+              Camera starting
             </button>
           )}
           {cameraState === "ready" && !scanning && (
             <button type="button" className="ip-btn ip-btn-primary" onClick={startScanning}>
-              Start Scanning
+              Start scanning
             </button>
           )}
           {cameraState === "ready" && scanning && (
             <button type="button" className="ip-btn ip-btn-danger" onClick={stopScanning}>
-              Stop Scanning
+              Stop scanning
             </button>
           )}
           {cameraState === "ready" && (
             <button type="button" className="ip-btn ip-btn-secondary" onClick={stopCamera}>
-              Stop Camera
+              Stop camera
             </button>
           )}
         </div>
+
+        {cameraState === "ready" && scanning && (
+          <p className="ip-muted ip-scan-hint ip-text-block">
+            Each frame is checked against your portal catalog. Use Stop scanning when you are done.
+          </p>
+        )}
 
         {error && (
           <div className="ip-card ip-card-danger">{error}</div>
@@ -333,7 +335,7 @@ export default function ScanPage() {
 
         {lastResult && (
           <div className="ip-card ip-scan-result-card">
-            <div className="ip-scan-status-label">Last Scan</div>
+            <div className="ip-scan-status-label">Latest result</div>
             <div>
               {lastResult.matched && lastResult.portal ? (
                 <>
@@ -347,6 +349,14 @@ export default function ScanPage() {
                   <div className="ip-faint ip-scan-result-detail">
                     {lastResult.portal.destinationDomain}
                   </div>
+                  {lastResult.portal.slug && (
+                    <a
+                      href={`/p/${lastResult.portal.slug}/go`}
+                      className="ip-btn ip-btn-secondary ip-btn-sm ip-scan-result-cta"
+                    >
+                      Open destination
+                    </a>
+                  )}
                 </>
               ) : (
                 <>
@@ -382,13 +392,9 @@ export default function ScanPage() {
                     lines={["Waiting for results…"]}
                   />
                 ) : (
-                  <BalancedText
-                    className="ip-muted ip-text-block"
-                    lines={[
-                      "Start scanning",
-                      "to see results here.",
-                    ]}
-                  />
+                  <p className="ip-muted ip-scan-log-empty-msg">
+                    Start scanning to see results here.
+                  </p>
                 )}
               </div>
             ) : (

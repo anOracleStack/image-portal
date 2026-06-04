@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   return {
     title: portal.title,
-    description: `Scan to open — ${portal.title} on Image Portal`,
+    description: `Scan to open — ${portal.title} on RQ Plus`,
     openGraph: {
       title: portal.title,
       description: "Scan this visual to open its destination.",

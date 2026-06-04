@@ -1,4 +1,4 @@
-/* Image Portal — design tokens (dark / light via data-theme on <html>) */
+/* RQ Plus — design tokens (dark / light via data-theme on <html>) */
 
 :root {
   --font-display: var(--font-syne), system-ui, sans-serif;
@@ -503,19 +503,23 @@ a {
   padding: 12px 22px;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   text-decoration: none;
   border: none;
   cursor: pointer;
   font-family: inherit;
   transition:
     transform var(--duration-fast) var(--ease-spring),
+    font-size var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast),
     background var(--duration-fast);
 }
 
 .ip-btn:active {
-  transform: scale(0.98);
+  transform: translateY(0);
+  font-size: 1.0625rem;
 }
 
 .ip-btn-primary {
@@ -546,8 +550,12 @@ a {
 }
 
 .ip-btn-sm {
-  padding: 8px 14px;
-  font-size: 0.8125rem;
+  padding: 10px 16px;
+  font-size: 0.9375rem;
+}
+
+.ip-btn-sm:active {
+  font-size: 1rem;
 }
 
 .ip-btn-danger {
@@ -1665,6 +1673,30 @@ a {
   margin: 0 auto;
 }
 
+.ip-form-shell .ip-input {
+  font-size: 1.0625rem;
+  padding: 12px 16px;
+}
+
+.ip-form-shell label,
+.ip-form-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ip-form-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.ip-btn-disabled,
+.ip-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .ip-scan-main {
   max-width: 800px;
   margin: 0 auto;
@@ -1889,9 +1921,66 @@ a {
 }
 
 /* Gallery */
+.ip-panel {
+  background: color-mix(in srgb, var(--bg-card) 70%, transparent);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ip-gallery-explainer {
+  max-width: 42rem;
+  margin: 0.5rem auto 0;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.ip-gallery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.ip-gallery-chip {
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast),
+    border-color var(--duration-fast),
+    background var(--duration-fast);
+}
+
+.ip-gallery-chip:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+
+.ip-gallery-chip-active {
+  color: var(--accent-foreground);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ip-gallery-search-input {
+  width: 100%;
+}
+
 .ip-gallery-search-wrap {
   padding-top: 0;
-  max-width: 480px;
+  max-width: 640px;
   margin: 0 auto;
 }
 
@@ -1999,6 +2088,71 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 20px;
   align-items: start;
+}
+
+.ip-pricing-grid-compact {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+@media (max-width: 960px) {
+  .ip-pricing-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .ip-pricing-grid-compact {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ip-pricing-card-compact {
+  padding: 18px 14px;
+}
+
+.ip-pricing-card-compact .ip-pricing-plan-name {
+  font-size: 15px;
+}
+
+.ip-pricing-card-compact .ip-pricing-plan-desc {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ip-pricing-card-compact .ip-pricing-price-row {
+  margin: 12px 0;
+}
+
+.ip-pricing-card-compact .ip-pricing-price {
+  font-size: 1.45rem;
+}
+
+.ip-pricing-card-compact .ip-pricing-period {
+  font-size: 12px;
+}
+
+.ip-pricing-card-compact .ip-pricing-features {
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.ip-pricing-card-compact .ip-pricing-feature {
+  font-size: 11px;
+}
+
+.ip-pricing-card-compact .ip-pricing-cta {
+  padding: 10px 0;
+  font-size: 12px;
+}
+
+.ip-pricing-table-wrap {
+  background: color-mix(in srgb, var(--bg-elevated) 55%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 8px 12px;
 }
 
 .ip-pricing-card {
@@ -2109,9 +2263,6 @@ a {
   box-shadow: inset 0 0 0 1px var(--border-strong);
 }
 
-.ip-pricing-table-wrap {
-  overflow-x: auto;
-}
 
 .ip-pricing-table {
   width: 100%;
@@ -2187,6 +2338,41 @@ a {
   height: 100%;
   object-fit: contain;
   display: block;
+}
+
+.ip-scan-idle-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, #000 45%, transparent);
+}
+
+.ip-scan-hint {
+  text-align: center;
+  font-size: 0.85rem;
+  max-width: 32rem;
+  margin: 0 auto 1.25rem;
+  line-height: 1.5;
+}
+
+.ip-scan-log-empty-msg {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ip-scan-result-cta {
+  display: inline-flex;
+  margin-top: 0.75rem;
 }
 
 .ip-scan-placeholder {

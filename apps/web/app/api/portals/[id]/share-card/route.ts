@@ -23,7 +23,7 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const title = (portal.title ?? "Image Portal").slice(0, 60);
+  const title = (portal.title ?? "RQ Plus").slice(0, 60);
   const scans = portal.total_scans ?? 0;
   const link = `${APP_URL}/p/${portal.slug}`;
 
@@ -36,7 +36,7 @@ export async function GET(
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#g)"/>
-  <text x="80" y="120" fill="#7df" font-family="system-ui,sans-serif" font-size="28" font-weight="600">IMAGE PORTAL</text>
+  <text x="80" y="120" fill="#7df" font-family="system-ui,sans-serif" font-size="28" font-weight="600">RQ PLUS</text>
   <text x="80" y="280" fill="#ededed" font-family="system-ui,sans-serif" font-size="52" font-weight="700">${escapeXml(title)}</text>
   <text x="80" y="360" fill="#888" font-family="system-ui,sans-serif" font-size="28">${scans} scans · Scan to open</text>
   <text x="80" y="520" fill="#4ade80" font-family="system-ui,sans-serif" font-size="22">${escapeXml(link)}</text>

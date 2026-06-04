@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
+import { RqPlusMark } from "@/components/brand/RqPlusMark";
 import { SubscriptionBadge } from "@/components/SubscriptionBadge";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useEffect, useState } from "react";
@@ -59,8 +60,8 @@ export function Navbar({ user }: Props) {
     <header className="ip-dash-header">
       <div className="ip-container ip-dash-header-top">
         <Link href="/dashboard" className="ip-logo">
-          <span className="ip-logo-mark" aria-hidden />
-          Image Portal
+          <RqPlusMark />
+          RQ Plus
         </Link>
 
         <div className="ip-dash-header-actions">

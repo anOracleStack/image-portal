@@ -27,29 +27,29 @@ const appUrl = getAppUrl();
 
 export const metadata: Metadata = {
   title: {
-    default: "Image Portal — Scan any image to open a link",
-    template: "%s · Image Portal",
+    default: "RQ Plus — Scan any print to open a link",
+    template: "%s · RQ Plus",
   },
   description:
     "Turn posters, stickers, & photos into programmable doorways. Visual scan matching, QR exports, analytics, & API access.",
   metadataBase: new URL(appUrl),
   manifest: "/manifest.webmanifest",
   openGraph: {
-    title: "Image Portal",
-    description: "Any image, a programmable doorway.",
+    title: "RQ Plus",
+    description: "Enhanced QR — any image, a programmable doorway.",
     url: appUrl,
-    siteName: "Image Portal",
+    siteName: "RQ Plus",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Image Portal",
-    description: "Scan visuals to open destinations — built for creators & brands.",
+    title: "RQ Plus",
+    description: "Scan prints to open destinations — built for creators & brands.",
   },
   appleWebApp: {
     capable: true,
-    title: "Image Portal",
+    title: "RQ Plus",
     statusBarStyle: "black-translucent",
   },
 };

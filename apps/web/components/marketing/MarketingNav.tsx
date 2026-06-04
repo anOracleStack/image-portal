@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { RqPlusMark } from "@/components/brand/RqPlusMark";
 import { Button } from "@/components/ui/Button";
 
 export function MarketingNav() {
@@ -12,8 +13,8 @@ export function MarketingNav() {
     <nav className="ip-nav">
       <div className="ip-container ip-nav-inner">
         <Link href="/" className="ip-logo">
-          <span className="ip-logo-mark" aria-hidden />
-          Image Portal
+          <RqPlusMark />
+          RQ Plus
         </Link>
 
         <div

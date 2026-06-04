@@ -63,7 +63,7 @@ const whyItems = [
     title: "No QR Codes Needed",
     lines: [
       "QR codes require a printed code block.",
-      "Image Portal uses the image itself — any print works.",
+      "RQ Plus uses the image itself — any print works.",
     ],
   },
   {
@@ -178,7 +178,7 @@ export default function LandingPage() {
       </section>
 
       <section className="ip-container ip-section ip-section-center ip-landing-narrow">
-        <h2 className="ip-display ip-section-title">Why Image Portal?</h2>
+        <h2 className="ip-display ip-section-title">Why RQ Plus?</h2>
         <div className="ip-why-stack">
           {whyItems.map((item) => (
             <div key={item.title} className="ip-card ip-card-copy ip-why-card">

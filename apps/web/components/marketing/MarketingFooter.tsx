@@ -5,7 +5,7 @@ export function MarketingFooter() {
     <footer className="ip-footer">
       <div className="ip-container ip-footer-inner">
         <span className="ip-faint ip-footer-copy">
-          © {new Date().getFullYear()} Image Portal
+          © {new Date().getFullYear()} RQ Plus
         </span>
         <div className="ip-footer-links">
           <Link href="/gallery" className="ip-nav-link">

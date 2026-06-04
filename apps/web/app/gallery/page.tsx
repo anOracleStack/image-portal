@@ -15,6 +15,26 @@ interface GalleryPortal {
   created_at: string;
 }
 
+const CATEGORIES = [
+  { id: "all", label: "All" },
+  { id: "business-cards", label: "Business cards" },
+  { id: "logos", label: "Logos" },
+  { id: "menus", label: "Menus" },
+  { id: "posters", label: "Posters" },
+  { id: "other", label: "Other" },
+] as const;
+
+type CategoryId = (typeof CATEGORIES)[number]["id"];
+
+function inferCategory(title: string, slug: string): CategoryId {
+  const hay = `${title} ${slug}`.toLowerCase();
+  if (/(card|business|contact|vcard)/.test(hay)) return "business-cards";
+  if (/(logo|brand|mark)/.test(hay)) return "logos";
+  if (/(menu|food|restaurant|cafe|bar)/.test(hay)) return "menus";
+  if (/(poster|flyer|print|billboard|ad)/.test(hay)) return "posters";
+  return "other";
+}
+
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return "never";
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -33,6 +53,7 @@ export default function GalleryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<CategoryId>("all");
 
   useEffect(() => {
     fetch("/api/portals/public")
@@ -45,25 +66,51 @@ export default function GalleryPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = useMemo(
-    () => portals.filter((p) => p.title.toLowerCase().includes(search.toLowerCase())),
-    [portals, search]
-  );
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return portals.filter((p) => {
+      const matchesSearch =
+        !q ||
+        p.title.toLowerCase().includes(q) ||
+        p.slug.toLowerCase().includes(q);
+      const matchesCategory =
+        category === "all" || inferCategory(p.title, p.slug) === category;
+      return matchesSearch && matchesCategory;
+    });
+  }, [portals, search, category]);
 
   return (
     <MarketingPage>
       <section className="ip-section ip-section-center">
         <PageIntro
-          title="Portal Gallery"
-          lines={["Browse public image portals", "from the community."]}
+          title="Public gallery"
+          lines={[
+            "Free portals appear here automatically.",
+            "Paid plans can stay public or hide from the gallery.",
+          ]}
         />
+        <p className="ip-muted ip-gallery-explainer">
+          Only portals marked <strong>public</strong> are listed. Private portals stay off this page.
+        </p>
       </section>
 
-      <section className="ip-section ip-gallery-search-wrap">
+      <section className="ip-section ip-gallery-search-wrap ip-panel">
+        <div className="ip-gallery-filters" role="group" aria-label="Categories">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className={`ip-gallery-chip${category === c.id ? " ip-gallery-chip-active" : ""}`}
+              onClick={() => setCategory(c.id)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
         <input
-          className="ip-input"
+          className="ip-input ip-gallery-search-input"
           type="text"
-          placeholder="Search portals by title…"
+          placeholder="Search by title or slug…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -86,8 +133,8 @@ export default function GalleryPage() {
         <BalancedText
           className="ip-muted ip-text-block ip-gallery-state"
           lines={
-            search
-              ? ["No portals match", "your search."]
+            search || category !== "all"
+              ? ["No portals match", "your filters."]
               : ["No public portals yet."]
           }
         />
