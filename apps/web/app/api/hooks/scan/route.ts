@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ScanRequest, decideBand, EMBED_MODEL, EMBED_VERSION } from "@ip/shared";
+import { ScanRequest, decideBand, EMBED_MODEL, EMBED_VERSION, matchRetryMessage } from "@ip/shared";
 import { preprocess, StructuralVerifier, dhash, hashSimilarity } from "@ip/vision";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { checkScanLimit } from "@/lib/subscription";
@@ -142,6 +142,16 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  let imageUrl: string | undefined;
+  if (matched && best) {
+    const { data: img } = await db
+      .from("portal_images")
+      .select("id")
+      .eq("id", best.c.portal_image_id)
+      .single();
+    if (img?.id) imageUrl = `/api/images/${img.id}`;
+  }
+
   return NextResponse.json({
     band,
     matched,
@@ -156,14 +166,11 @@ export async function POST(req: NextRequest) {
             title: best.c.title,
             slug: best.c.slug,
             destinationDomain: best.c.destination_domain,
+            imageUrl,
           }
         : null,
     usageBlocked: usageBlocked || undefined,
-    message: matched
-      ? undefined
-      : band === "medium"
-        ? "Possible match — rescan for a clearer result."
-        : "No portal found.",
+    message: matchRetryMessage(band, matched),
   });
 }
 

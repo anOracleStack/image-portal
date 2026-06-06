@@ -1,32 +1,49 @@
-import { useEffect, useRef, useState } from "react";
-import { View, Text, Pressable, Linking } from "react-native";
+import { useRef, useState } from "react";
+import { View, Text, Pressable, Linking, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import type { ScanResponse } from "@ip/shared";
 import { getEmbedder } from "./lib/embedding";
 
 const API = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
-const THROTTLE_MS = 1200; // Law: throttled capture, never continuous stream
+const MIN_EDGE = 480;
+
+type Phase = "ready" | "analyzing" | "success" | "retry";
 
 export default function App() {
   const [perm, requestPerm] = useCameraPermissions();
   const cam = useRef<CameraView>(null);
+  const [phase, setPhase] = useState<Phase>("ready");
   const [result, setResult] = useState<ScanResponse | null>(null);
+  const [retryMessage, setRetryMessage] = useState<string | null>(null);
   const busy = useRef(false);
 
-  useEffect(() => {
-    if (!perm?.granted) return;
-    const t = setInterval(scan, THROTTLE_MS);
-    return () => clearInterval(t);
-  }, [perm?.granted]);
-
-  async function scan() {
-    if (busy.current || !cam.current) return;
+  async function capturePhoto() {
+    if (busy.current || !cam.current || phase === "analyzing") return;
     busy.current = true;
+    setPhase("analyzing");
+    setRetryMessage(null);
+    setResult(null);
+
     try {
-      const shot = await cam.current.takePictureAsync({ quality: 0.6 });
-      if (!shot) return;
+      const shot = await cam.current.takePictureAsync({ quality: 0.88 });
+      if (!shot?.uri) {
+        setPhase("retry");
+        setRetryMessage("Could not take photo — capture again.");
+        return;
+      }
+
+      const w = shot.width ?? 0;
+      const h = shot.height ?? 0;
+      if (w < MIN_EDGE || h < MIN_EDGE) {
+        setPhase("retry");
+        setRetryMessage(
+          "Move closer so the image fills the frame, then capture again.",
+        );
+        return;
+      }
+
       const embedder = getEmbedder();
-      const embedding = await embedder.embed({ uri: shot.uri }); // on-device
+      const embedding = await embedder.embed({ uri: shot.uri });
       const res = await fetch(`${API}/api/scan`, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -34,19 +51,36 @@ export default function App() {
           embedding: Array.from(embedding),
           embeddingModel: embedder.model,
           embeddingVersion: embedder.version,
-          phash: "0000000000000000", // computed on-device alongside embedding
-          sourceType: "unknown",
+          phash: "0000000000000000",
+          sourceType: "print",
           source: "app",
           devicePlatform: "ios",
         }),
       });
       const json = (await res.json()) as ScanResponse;
-      if (json.matched || json.band === "medium") setResult(json);
+
+      if (json.matched && json.portal) {
+        setResult(json);
+        setPhase("success");
+      } else {
+        setResult(json);
+        setPhase("retry");
+        setRetryMessage(
+          json.message ?? "Capture again — center the image & hold steady.",
+        );
+      }
     } catch {
-      /* embedder not bundled yet, or network — stay silent on the loop */
+      setPhase("retry");
+      setRetryMessage("Analysis failed — capture again.");
     } finally {
       busy.current = false;
     }
+  }
+
+  function resetCapture() {
+    setPhase("ready");
+    setResult(null);
+    setRetryMessage(null);
   }
 
   if (!perm) return <View />;
@@ -54,7 +88,7 @@ export default function App() {
     return (
       <Centered>
         <Text style={{ color: "#fff", marginBottom: 12 }}>
-          Camera access is required to scan portals.
+          Camera access is required to capture portals.
         </Text>
         <Pressable onPress={requestPerm}>
           <Text style={{ color: "#7df" }}>Grant access</Text>
@@ -65,8 +99,28 @@ export default function App() {
   return (
     <View style={{ flex: 1, backgroundColor: "#000" }}>
       <CameraView ref={cam} style={{ flex: 1 }} />
-      {result?.portal && (
-        // Law 6: result card with destination DOMAIN, explicit tap-to-open.
+      <View style={hud}>
+        <Text style={hudLabel}>
+          {phase === "analyzing"
+            ? "Analyzing…"
+            : phase === "success"
+              ? "Matched"
+              : phase === "retry"
+                ? "Try again"
+                : "Ready"}
+        </Text>
+        {phase === "analyzing" ? (
+          <ActivityIndicator color="#7df" style={{ marginTop: 8 }} />
+        ) : (
+          <Pressable onPress={capturePhoto} style={captureBtn}>
+            <Text style={{ color: "#000", fontWeight: "700" }}>
+              {phase === "ready" ? "Capture photo" : "Capture again"}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
+      {phase === "success" && result?.portal && (
         <View style={card}>
           <Text style={{ color: "#fff", fontWeight: "700" }}>
             {result.portal.title}
@@ -74,29 +128,64 @@ export default function App() {
           <Text style={{ color: "#9af", marginVertical: 6 }}>
             {result.portal.destinationDomain}
           </Text>
+          {result.portal.imageUrl && (
+            <Pressable
+              onPress={() =>
+                Linking.openURL(`${API}${result.portal!.imageUrl!}`)
+              }
+            >
+              <Text style={{ color: "#7df", fontWeight: "600", marginBottom: 8 }}>
+                Download high-quality image
+              </Text>
+            </Pressable>
+          )}
           <Pressable
-            onPress={() =>
-              Linking.openURL(`${API}/p/${result.portal!.slug}`)
-            }
+            onPress={() => Linking.openURL(`${API}/p/${result.portal!.slug}/go`)}
           >
-            <Text style={{ color: "#7df", fontWeight: "600" }}>Open →</Text>
+            <Text style={{ color: "#7df", fontWeight: "600" }}>Open destination →</Text>
           </Pressable>
-          <Pressable onPress={() => setResult(null)}>
+          <Pressable onPress={resetCapture}>
             <Text style={{ color: "#888", marginTop: 8 }}>Dismiss</Text>
           </Pressable>
         </View>
       )}
-      {result && !result.portal && (
+
+      {phase === "retry" && (
         <View style={card}>
-          <Text style={{ color: "#ccc" }}>{result.message}</Text>
-          <Pressable onPress={() => setResult(null)}>
-            <Text style={{ color: "#888", marginTop: 8 }}>OK</Text>
-          </Pressable>
+          <Text style={{ color: "#fcc" }}>{retryMessage}</Text>
+          {result && !result.matched && result.confidence > 0 && (
+            <Text style={{ color: "#888", marginTop: 6 }}>
+              Closest: {(result.confidence * 100).toFixed(0)}%
+            </Text>
+          )}
         </View>
       )}
     </View>
   );
 }
+
+const hud = {
+  position: "absolute" as const,
+  bottom: 120,
+  left: 0,
+  right: 0,
+  alignItems: "center" as const,
+};
+
+const hudLabel = {
+  color: "#aaa",
+  fontSize: 12,
+  letterSpacing: 1,
+  textTransform: "uppercase" as const,
+  marginBottom: 12,
+};
+
+const captureBtn = {
+  backgroundColor: "#fff",
+  paddingHorizontal: 28,
+  paddingVertical: 14,
+  borderRadius: 999,
+};
 
 const card = {
   position: "absolute" as const,
@@ -107,6 +196,7 @@ const card = {
   borderRadius: 16,
   backgroundColor: "rgba(15,15,15,0.94)",
 };
+
 function Centered({ children }: { children: React.ReactNode }) {
   return (
     <View

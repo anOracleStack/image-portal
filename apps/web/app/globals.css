@@ -1741,6 +1741,15 @@ a {
   flex-wrap: wrap;
 }
 
+.ip-scan-source-toggle {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
 .ip-scan-video-box {
   position: relative;
   border-radius: var(--radius-md);

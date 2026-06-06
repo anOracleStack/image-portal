@@ -1,14 +1,17 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import type { ScanResponse } from "@ip/shared";
-import { EMBED_MODEL, EMBED_VERSION } from "@ip/shared";
+import type { ScanResponse, SourceType } from "@ip/shared";
+import {
+  EMBED_MODEL,
+  EMBED_VERSION,
+  assessFrameQuality,
+} from "@ip/shared";
 import { MarketingPage } from "@/components/marketing/MarketingPage";
 import { PageIntro } from "@/components/ui/PageIntro";
 import { BalancedText } from "@/components/ui/BalancedText";
 
-const THROTTLE_MS = 500;
-const MAX_LOG = 50;
+const CAPTURE_JPEG_QUALITY = 0.88;
 
 function computeDHash(
   data: Uint8ClampedArray,
@@ -56,34 +59,29 @@ function computeEmbedding(
   return emb;
 }
 
-type LogEntry = {
-  id: number;
-  ts: string;
-  response: ScanResponse;
-  error?: string;
-};
+type CapturePhase = "ready" | "analyzing" | "success" | "retry";
 
 export default function ScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const busyRef = useRef(false);
-  const nextIdRef = useRef(0);
 
   const [cameraState, setCameraState] = useState<
     "idle" | "starting" | "ready" | "error"
   >("idle");
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [scanning, setScanning] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [log, setLog] = useState<LogEntry[]>([]);
-  const [lastResult, setLastResult] = useState<ScanResponse | null>(null);
-  const [captureCount, setCaptureCount] = useState(0);
+  const [phase, setPhase] = useState<CapturePhase>("ready");
+  const [sourceType, setSourceType] = useState<SourceType>("print");
+  const [retryMessage, setRetryMessage] = useState<string | null>(null);
+  const [result, setResult] = useState<ScanResponse | null>(null);
 
   const startCamera = useCallback(async () => {
     setCameraState("starting");
     setCameraError(null);
+    setPhase("ready");
+    setRetryMessage(null);
+    setResult(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -128,10 +126,13 @@ export default function ScanPage() {
       videoRef.current.srcObject = null;
     }
     setCameraState("idle");
+    setPhase("ready");
+    setRetryMessage(null);
+    setResult(null);
   }, []);
 
-  const captureAndScan = useCallback(async () => {
-    if (busyRef.current) return;
+  const capturePhoto = useCallback(async () => {
+    if (busyRef.current || phase === "analyzing") return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
@@ -147,11 +148,23 @@ export default function ScanPage() {
     ctx.drawImage(video, 0, 0);
 
     const imageData = ctx.getImageData(0, 0, w, h);
+    const quality = assessFrameQuality(imageData.data, w, h);
+    if (!quality.ok) {
+      setPhase("retry");
+      setRetryMessage(quality.message ?? "Capture again with a clearer photo.");
+      setResult(null);
+      return;
+    }
+
     const embedding = computeEmbedding(imageData.data, w, h);
     const phash = computeDHash(imageData.data, w, h);
-    const frameBase64 = canvas.toDataURL("image/jpeg", 0.7).split(",")[1] ?? "";
+    const frameBase64 =
+      canvas.toDataURL("image/jpeg", CAPTURE_JPEG_QUALITY).split(",")[1] ?? "";
 
     busyRef.current = true;
+    setPhase("analyzing");
+    setRetryMessage(null);
+
     try {
       const res = await fetch("/api/scan", {
         method: "POST",
@@ -162,90 +175,63 @@ export default function ScanPage() {
           frameBase64,
           devicePlatform: "web",
           source: "pwa",
-          sourceType: "screen",
+          sourceType,
           embeddingModel: EMBED_MODEL,
           embeddingVersion: EMBED_VERSION,
         }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error((body as Record<string, unknown>).error as string ?? `Server error (${res.status})`);
+        throw new Error(
+          ((body as Record<string, unknown>).error as string) ??
+            `Server error (${res.status})`,
+        );
       }
       const data: ScanResponse = await res.json();
-      setLastResult(data);
-      setLog((prev) => {
-        const entry: LogEntry = { id: nextIdRef.current++, ts: new Date().toLocaleTimeString(), response: data };
-        return [entry, ...prev].slice(0, MAX_LOG);
-      });
+      if (data.matched && data.portal) {
+        setResult(data);
+        setPhase("success");
+        setRetryMessage(null);
+      } else {
+        setResult(data);
+        setPhase("retry");
+        setRetryMessage(
+          data.message ?? "Capture again — center the image & hold steady.",
+        );
+      }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Scan failed";
-      const fallback: ScanResponse = {
-        band: "low",
-        matched: false,
-        confidence: 0,
-        embeddingDistance: null,
-        inlierCount: null,
-        matchMethod: "error",
-        portal: null,
-        message: msg,
-      };
-      setLog((prev) => {
-        const entry: LogEntry = { id: nextIdRef.current++, ts: new Date().toLocaleTimeString(), response: fallback, error: msg };
-        return [entry, ...prev].slice(0, MAX_LOG);
-      });
+      const msg = err instanceof Error ? err.message : "Analysis failed";
+      setPhase("retry");
+      setRetryMessage(`${msg} — capture again.`);
+      setResult(null);
     } finally {
       busyRef.current = false;
     }
-  }, []);
-
-  const startScanning = useCallback(() => {
-    setScanning(true);
-    setLog([]);
-    nextIdRef.current = 0;
-    setCaptureCount(0);
-  }, []);
-
-  const stopScanning = useCallback(() => {
-    setScanning(false);
-  }, []);
-
-  useEffect(() => {
-    if (!scanning) {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
-    intervalRef.current = setInterval(() => {
-      captureAndScan().then(() => setCaptureCount((c) => c + 1));
-    }, THROTTLE_MS);
-    return () => {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [scanning, captureAndScan]);
+  }, [phase, sourceType]);
 
   useEffect(() => {
     return () => {
       stopCamera();
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
     };
   }, [stopCamera]);
+
+  const overlayLabel =
+    phase === "analyzing"
+      ? "ANALYZING"
+      : phase === "success"
+        ? "MATCHED"
+        : phase === "retry"
+          ? "RETRY"
+          : "READY";
 
   return (
     <MarketingPage>
       <main className="ip-scan-main ip-scan-main-centered">
         <PageIntro
-          title="Live scan"
+          title="Capture"
           lines={[
-            "Scan a poster, card, menu, or sticker",
-            "to open its linked destination.",
+            "Take one photo of a poster, card, menu, or sticker.",
+            "We analyze it & deliver the high-quality file when matched.",
           ]}
         />
         <canvas ref={canvasRef} className="ip-hidden-canvas" aria-hidden />
@@ -283,14 +269,7 @@ export default function ScanPage() {
 
           {cameraState === "ready" && (
             <div className="ip-scan-overlay">
-              <span className="ip-scan-overlay-badge">
-                {scanning ? "SCANNING" : "PAUSED"}
-              </span>
-              {captureCount > 0 && (
-                <span className="ip-scan-overlay-badge" title="Frames analyzed this session">
-                  {captureCount} frames
-                </span>
-              )}
+              <span className="ip-scan-overlay-badge">{overlayLabel}</span>
             </div>
           )}
         </div>
@@ -306,14 +285,18 @@ export default function ScanPage() {
               Camera starting
             </button>
           )}
-          {cameraState === "ready" && !scanning && (
-            <button type="button" className="ip-btn ip-btn-primary" onClick={startScanning}>
-              Start scanning
+          {cameraState === "ready" && phase !== "analyzing" && (
+            <button
+              type="button"
+              className="ip-btn ip-btn-primary"
+              onClick={capturePhoto}
+            >
+              {phase === "ready" ? "Capture photo" : "Capture again"}
             </button>
           )}
-          {cameraState === "ready" && scanning && (
-            <button type="button" className="ip-btn ip-btn-danger" onClick={stopScanning}>
-              Stop scanning
+          {cameraState === "ready" && phase === "analyzing" && (
+            <button type="button" className="ip-btn ip-btn-secondary" disabled>
+              Analyzing…
             </button>
           )}
           {cameraState === "ready" && (
@@ -323,115 +306,76 @@ export default function ScanPage() {
           )}
         </div>
 
-        {cameraState === "ready" && scanning && (
-          <p className="ip-muted ip-scan-hint ip-text-block">
-            Each frame is analyzed on this device &amp; sent only for matching — we do not store camera
-            frames unless a portal match is logged. Use Stop scanning when you are done.
-          </p>
+        {cameraState === "ready" && phase === "ready" && (
+          <div className="ip-scan-source-toggle">
+            <span className="ip-muted ip-copy-sm">Target type:</span>
+            <button
+              type="button"
+              className={`ip-btn ip-btn-sm ${sourceType === "print" ? "ip-btn-primary" : "ip-btn-secondary"}`}
+              onClick={() => setSourceType("print")}
+            >
+              Printed
+            </button>
+            <button
+              type="button"
+              className={`ip-btn ip-btn-sm ${sourceType === "screen" ? "ip-btn-primary" : "ip-btn-secondary"}`}
+              onClick={() => setSourceType("screen")}
+            >
+              Screen
+            </button>
+          </div>
         )}
 
-        {cameraState === "ready" && !scanning && (
+        {cameraState === "ready" && (
           <p className="ip-muted ip-scan-privacy-note ip-text-block">
-            Camera preview stays in your browser. Scan frames are processed for matching, not saved as
-            a photo roll.
+            One photo is enough. We check quality on your device first, then match against
+            our catalog. Camera frames are not saved unless a portal match is logged.
           </p>
         )}
 
-        {error && (
-          <div className="ip-card ip-card-danger">{error}</div>
+        {phase === "retry" && retryMessage && (
+          <div className="ip-card ip-card-danger ip-text-block">
+            <div className="ip-scan-status-label">Try again</div>
+            <BalancedText className="ip-text-block" lines={[retryMessage]} />
+            {result && !result.matched && result.confidence > 0 && (
+              <p className="ip-faint ip-scan-result-detail">
+                Closest match: {(result.confidence * 100).toFixed(0)}% ({result.band})
+              </p>
+            )}
+          </div>
         )}
 
-        {lastResult && (
+        {phase === "success" && result?.matched && result.portal && (
           <div className="ip-card ip-scan-result-card">
-            <div className="ip-scan-status-label">Latest result</div>
+            <div className="ip-scan-status-label">Matched</div>
             <div>
-              {lastResult.matched && lastResult.portal ? (
-                <>
-                  Matched{" "}
-                  <strong>{lastResult.portal.title}</strong>
-                  <span
-                    className={`ip-match-badge ${lastResult.matched ? "ip-match-badge-yes" : "ip-match-badge-no"}`}
-                  >
-                    {lastResult.band.toUpperCase()} {(lastResult.confidence * 100).toFixed(0)}%
-                  </span>
-                  <div className="ip-faint ip-scan-result-detail">
-                    {lastResult.portal.destinationDomain}
-                  </div>
-                  {lastResult.portal.slug && (
-                    <a
-                      href={`/p/${lastResult.portal.slug}/go`}
-                      className="ip-btn ip-btn-secondary ip-btn-sm ip-scan-result-cta"
-                    >
-                      Open destination
-                    </a>
-                  )}
-                </>
-              ) : (
-                <>
-                  No match
-                  <span className="ip-match-badge ip-match-badge-no">
-                    {(lastResult.confidence * 100).toFixed(0)}%
-                  </span>
-                  {lastResult.message && (
-                    <div className="ip-faint ip-scan-result-detail">
-                      {lastResult.message}
-                    </div>
-                  )}
-                </>
+              <strong>{result.portal.title}</strong>
+              <span className="ip-match-badge ip-match-badge-yes">
+                {result.band.toUpperCase()} {(result.confidence * 100).toFixed(0)}%
+              </span>
+              <div className="ip-faint ip-scan-result-detail">
+                {result.portal.destinationDomain}
+              </div>
+              {result.portal.imageUrl && (
+                <a
+                  href={result.portal.imageUrl}
+                  download
+                  className="ip-btn ip-btn-primary ip-btn-sm ip-scan-result-cta"
+                >
+                  Download high-quality image
+                </a>
+              )}
+              {result.portal.slug && (
+                <a
+                  href={`/p/${result.portal.slug}/go`}
+                  className="ip-btn ip-btn-secondary ip-btn-sm ip-scan-result-cta"
+                >
+                  Open destination
+                </a>
               )}
             </div>
           </div>
         )}
-
-        <div>
-          <div className="ip-scan-log-header">
-            <h3 className="ip-scan-log-title">Scan Log</h3>
-            <span className="ip-faint ip-copy-sm">
-              {log.length > 0 ? `Last ${log.length}` : ""}
-            </span>
-          </div>
-
-          <div className="ip-card ip-scan-log-scroll">
-            {log.length === 0 ? (
-              <div className="ip-scan-log-empty">
-                {scanning ? (
-                  <BalancedText
-                    className="ip-muted ip-text-block"
-                    lines={["Waiting for results…"]}
-                  />
-                ) : (
-                  <p className="ip-muted ip-scan-log-empty-msg">
-                    Start scanning to see results here.
-                  </p>
-                )}
-              </div>
-            ) : (
-              log.map((entry) => (
-                <div key={entry.id} className="ip-scan-log-entry">
-                  <div className="ip-scan-log-row">
-                    <span className="ip-scan-log-ts">{entry.ts}</span>
-                    {entry.response.matched && entry.response.portal ? (
-                      <span className="ip-scan-log-portal">
-                        <span className="ip-text-accent-mono">✓</span>{" "}
-                        {entry.response.portal.title}
-                      </span>
-                    ) : (
-                      <span className="ip-faint">
-                        {entry.error ? "✗ Error" : "— No match"}
-                      </span>
-                    )}
-                  </div>
-                  <span
-                    className={`ip-match-badge ip-scan-log-match ${entry.response.matched ? "ip-match-badge-yes" : "ip-match-badge-no"}`}
-                  >
-                    {(entry.response.confidence * 100).toFixed(0)}%{" "}
-                    {entry.response.band.toUpperCase()}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
       </main>
     </MarketingPage>
   );
