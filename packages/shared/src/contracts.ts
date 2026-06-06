@@ -87,8 +87,6 @@ export const ScanResponse = z.object({
       title: z.string(),
       slug: z.string(),
       destinationDomain: z.string(), // domain only — never the full URL pre-tap
-      /** High-quality catalog image — served after a verified match only. */
-      imageUrl: z.string().optional(),
     })
     .nullable(),
   message: z.string().optional(),

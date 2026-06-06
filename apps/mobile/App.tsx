@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { View, Text, Pressable, Linking, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import type { ScanResponse } from "@ip/shared";
-import { getEmbedder } from "./lib/embedding";
+import { EMBED_MODEL, EMBED_VERSION } from "@ip/shared";
 
 const API = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
 const MIN_EDGE = 480;
@@ -42,19 +42,38 @@ export default function App() {
         return;
       }
 
-      const embedder = getEmbedder();
-      const embedding = await embedder.embed({ uri: shot.uri });
+      const form = new FormData();
+      form.append("file", {
+        uri: shot.uri,
+        type: "image/jpeg",
+        name: "scan.jpg",
+      } as unknown as Blob);
+
+      const embedRes = await fetch(`${API}/api/embed/query`, {
+        method: "POST",
+        body: form,
+      });
+      if (!embedRes.ok) {
+        setPhase("retry");
+        setRetryMessage("Analysis failed — capture again.");
+        return;
+      }
+      const embedData = (await embedRes.json()) as {
+        embedding: number[];
+        phash: string;
+      };
+
       const res = await fetch(`${API}/api/scan`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          embedding: Array.from(embedding),
-          embeddingModel: embedder.model,
-          embeddingVersion: embedder.version,
-          phash: "0000000000000000",
+          embedding: embedData.embedding,
+          phash: embedData.phash,
           sourceType: "print",
           source: "app",
           devicePlatform: "ios",
+          embeddingModel: EMBED_MODEL,
+          embeddingVersion: EMBED_VERSION,
         }),
       });
       const json = (await res.json()) as ScanResponse;
@@ -71,7 +90,7 @@ export default function App() {
       }
     } catch {
       setPhase("retry");
-      setRetryMessage("Analysis failed — capture again.");
+      setRetryMessage("Network error — capture again.");
     } finally {
       busy.current = false;
     }
@@ -88,7 +107,7 @@ export default function App() {
     return (
       <Centered>
         <Text style={{ color: "#fff", marginBottom: 12 }}>
-          Camera access is required to capture portals.
+          Camera access is required to open linked visuals.
         </Text>
         <Pressable onPress={requestPerm}>
           <Text style={{ color: "#7df" }}>Grant access</Text>
@@ -104,7 +123,7 @@ export default function App() {
           {phase === "analyzing"
             ? "Analyzing…"
             : phase === "success"
-              ? "Matched"
+              ? "Link found"
               : phase === "retry"
                 ? "Try again"
                 : "Ready"}
@@ -122,27 +141,18 @@ export default function App() {
 
       {phase === "success" && result?.portal && (
         <View style={card}>
-          <Text style={{ color: "#fff", fontWeight: "700" }}>
-            {result.portal.title}
-          </Text>
-          <Text style={{ color: "#9af", marginVertical: 6 }}>
+          <Text style={{ color: "#9af", fontSize: 18, fontWeight: "700" }}>
             {result.portal.destinationDomain}
           </Text>
-          {result.portal.imageUrl && (
-            <Pressable
-              onPress={() =>
-                Linking.openURL(`${API}${result.portal!.imageUrl!}`)
-              }
-            >
-              <Text style={{ color: "#7df", fontWeight: "600", marginBottom: 8 }}>
-                Download high-quality image
-              </Text>
-            </Pressable>
-          )}
+          <Text style={{ color: "#fff", marginVertical: 6 }}>
+            {result.portal.title}
+          </Text>
           <Pressable
             onPress={() => Linking.openURL(`${API}/p/${result.portal!.slug}/go`)}
           >
-            <Text style={{ color: "#7df", fontWeight: "600" }}>Open destination →</Text>
+            <Text style={{ color: "#7df", fontWeight: "600", fontSize: 16 }}>
+              Open link →
+            </Text>
           </Pressable>
           <Pressable onPress={resetCapture}>
             <Text style={{ color: "#888", marginTop: 8 }}>Dismiss</Text>
@@ -153,11 +163,6 @@ export default function App() {
       {phase === "retry" && (
         <View style={card}>
           <Text style={{ color: "#fcc" }}>{retryMessage}</Text>
-          {result && !result.matched && result.confidence > 0 && (
-            <Text style={{ color: "#888", marginTop: 6 }}>
-              Closest: {(result.confidence * 100).toFixed(0)}%
-            </Text>
-          )}
         </View>
       )}
     </View>

@@ -1750,6 +1750,41 @@ a {
   flex-wrap: wrap;
 }
 
+.ip-scan-url-popup {
+  text-align: center;
+}
+
+.ip-scan-url-domain {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 8px 0;
+  word-break: break-all;
+}
+
+.ip-portal-workflow-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.ip-portal-workflow-compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.ip-portal-workflow-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
 .ip-scan-video-box {
   position: relative;
   border-radius: var(--radius-md);

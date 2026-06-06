@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
         destination_url: verdict.normalized,
         scan_mode: scanMode,
         visibility,
-        status: "active",
+        status: "inactive",
         total_scans: 0,
       })
       .select()

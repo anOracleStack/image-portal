@@ -1,8 +1,8 @@
 {
   "name": "RQ Plus",
   "short_name": "RQ+",
-  "description": "Enhanced QR — scan prints to open destinations.",
-  "start_url": "/",
+  "description": "Point at a visual to open its linked destination.",
+  "start_url": "/scan",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#5eead4",

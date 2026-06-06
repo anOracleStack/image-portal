@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
+import PortalImageWorkflow from "@/components/PortalImageWorkflow";
 import { BalancedText } from "@/components/ui/BalancedText";
 import { canHideFromGallery, type PlanTier } from "@/lib/plans";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
@@ -328,8 +329,33 @@ export default function PortalDetailClient({
       </div>
 
       <div className="ip-card ip-card-spaced-lg">
-        <h2 className="ip-card-section-title">Upload Image</h2>
-        <ImageUploader onUpload={handleUpload} />
+        <h2 className="ip-card-section-title">
+          {status === "inactive" || images.length === 0
+            ? "Prepare your visual"
+            : "Replace image"}
+        </h2>
+        {status === "inactive" || images.length === 0 ? (
+          <PortalImageWorkflow
+            portalId={portal.id}
+            isInactive={status === "inactive"}
+            onComplete={() => {
+              setStatus("active");
+              router.refresh();
+            }}
+          />
+        ) : (
+          <>
+            <BalancedText
+              className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
+              lines={[
+                "Quick replace uploads immediately.",
+                "For enhance + approve flow, deactivate portal first",
+                "or delete images in Supabase.",
+              ]}
+            />
+            <ImageUploader onUpload={handleUpload} />
+          </>
+        )}
       </div>
 
       {showConfirm && (

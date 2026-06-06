@@ -55,9 +55,9 @@ export default function CreatePortalPage() {
       <PageIntro
         title="Create Portal"
         lines={[
-          "Name your portal,",
-          "set a destination,",
-          "& choose how visitors scan.",
+          "Name your portal & set a destination.",
+          "Next: upload or capture your visual,",
+          "review the enhanced version, & approve to go live.",
         ]}
       />
 

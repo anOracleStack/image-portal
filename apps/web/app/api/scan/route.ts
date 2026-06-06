@@ -143,16 +143,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  let imageUrl: string | undefined;
-  if (matched && best) {
-    const { data: img } = await db
-      .from("portal_images")
-      .select("id")
-      .eq("id", best.c.portal_image_id)
-      .single();
-    if (img?.id) imageUrl = `/api/images/${img.id}`;
-  }
-
   return NextResponse.json({
     band,
     matched,
@@ -167,7 +157,6 @@ export async function POST(req: NextRequest) {
             title: best.c.title,
             slug: best.c.slug,
             destinationDomain: best.c.destination_domain,
-            imageUrl,
           }
         : null,
     usageBlocked: usageBlocked || undefined,

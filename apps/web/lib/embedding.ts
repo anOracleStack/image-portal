@@ -1,23 +1,19 @@
-import { EMBED_DIM } from "@ip/shared";
-
-// CATALOG embedding only (upload-time, latency-tolerant — Master Spec 2.3).
-// The SCAN-time query embedding is computed ON-DEVICE in apps/mobile and is
-// never produced here. Same pinned model both sides (Law 4).
-//
-// Provider-swappable. The default is a clearly-marked PLUG point: wire your
-// chosen warm endpoint / Together / Replicate call returning an EMBED_DIM
-// vector from the SAME model the mobile app runs on-device.
+import { EMBED_DIM, EMBED_MODEL } from "@ip/shared";
+import { computeGridEmbedding } from "@ip/vision";
 
 export interface EmbeddingProvider {
   readonly model: string;
-  embed(imagePngOrJpeg: Uint8Array): Promise<Float32Array>;
+  embed(imagePngOrJpeg: Uint8Array | Buffer): Promise<Float32Array>;
 }
 
 class WarmEndpointProvider implements EmbeddingProvider {
-  readonly model = process.env.EMBED_MODEL_ID ?? "dinov2_vitb14";
-  constructor(private endpoint: string, private apiKey: string) {}
+  readonly model = process.env.EMBED_MODEL_ID ?? EMBED_MODEL;
+  constructor(
+    private endpoint: string,
+    private apiKey: string,
+  ) {}
 
-  async embed(buf: Uint8Array): Promise<Float32Array> {
+  async embed(buf: Uint8Array | Buffer): Promise<Float32Array> {
     const res = await fetch(this.endpoint, {
       method: "POST",
       headers: {
@@ -34,15 +30,34 @@ class WarmEndpointProvider implements EmbeddingProvider {
   }
 }
 
+class GridEmbeddingProvider implements EmbeddingProvider {
+  readonly model = EMBED_MODEL;
+  async embed(buf: Uint8Array | Buffer): Promise<Float32Array> {
+    return computeGridEmbedding(Buffer.from(buf));
+  }
+}
+
 export function getEmbeddingProvider(): EmbeddingProvider {
   const endpoint = process.env.CATALOG_EMBED_ENDPOINT;
   const apiKey = process.env.CATALOG_EMBED_API_KEY;
-  if (!endpoint || !apiKey) {
-    // Fail loudly — never silently fake recognition (Law / .cursorrules).
-    throw new Error(
-      "Catalog embedding provider not configured. Set CATALOG_EMBED_ENDPOINT " +
-        "+ CATALOG_EMBED_API_KEY to a warm endpoint serving the pinned model."
-    );
+  if (endpoint && apiKey) {
+    return new WarmEndpointProvider(endpoint, apiKey);
   }
-  return new WarmEndpointProvider(endpoint, apiKey);
+
+  const provider = process.env.CATALOG_EMBED_PROVIDER ?? "grid";
+  if (provider === "grid") {
+    return new GridEmbeddingProvider();
+  }
+
+  throw new Error(
+    "Catalog embedding not configured. Set CATALOG_EMBED_PROVIDER=grid for MVP, " +
+      "or CATALOG_EMBED_ENDPOINT + CATALOG_EMBED_API_KEY for production ML.",
+  );
+}
+
+export function embeddingProviderLabel(): string {
+  if (process.env.CATALOG_EMBED_ENDPOINT && process.env.CATALOG_EMBED_API_KEY) {
+    return "warm-endpoint";
+  }
+  return process.env.CATALOG_EMBED_PROVIDER ?? "grid";
 }

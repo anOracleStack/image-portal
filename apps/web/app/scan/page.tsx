@@ -2,62 +2,12 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import type { ScanResponse, SourceType } from "@ip/shared";
-import {
-  EMBED_MODEL,
-  EMBED_VERSION,
-  assessFrameQuality,
-} from "@ip/shared";
+import { assessFrameQuality } from "@ip/shared";
 import { MarketingPage } from "@/components/marketing/MarketingPage";
 import { PageIntro } from "@/components/ui/PageIntro";
 import { BalancedText } from "@/components/ui/BalancedText";
 
 const CAPTURE_JPEG_QUALITY = 0.88;
-
-function computeDHash(
-  data: Uint8ClampedArray,
-  width: number,
-  height: number,
-): string {
-  const size = 8;
-  const scaledW = size + 1;
-  const gray = new Float64Array(scaledW * size);
-  const stepX = (width - 1) / scaledW;
-  const stepY = (height - 1) / size;
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < scaledW; x++) {
-      const px = Math.round(x * stepX);
-      const py = Math.round(y * stepY);
-      const i = (py * width + px) * 4;
-      gray[y * scaledW + x] =
-        0.299 * data[i]! + 0.587 * data[i + 1]! + 0.114 * data[i + 2]!;
-    }
-  }
-  let bits = "";
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      bits += gray[y * scaledW + x]! > gray[y * scaledW + x + 1]! ? "1" : "0";
-    }
-  }
-  return bits;
-}
-
-function computeEmbedding(
-  data: Uint8ClampedArray,
-  width: number,
-  height: number,
-): number[] {
-  const grid = 16;
-  const sx = (width - 1) / grid;
-  const sy = (height - 1) / grid;
-  const emb: number[] = [];
-  for (let y = 0; y < grid; y++) {
-    for (let x = 0; x < grid; x++) {
-      const i = (Math.round(y * sy) * width + Math.round(x * sx)) * 4;
-      emb.push(data[i]! / 255, data[i + 1]! / 255, data[i + 2]! / 255);
-    }
-  }
-  return emb;
-}
 
 type CapturePhase = "ready" | "analyzing" | "success" | "retry";
 
@@ -156,8 +106,6 @@ export default function ScanPage() {
       return;
     }
 
-    const embedding = computeEmbedding(imageData.data, w, h);
-    const phash = computeDHash(imageData.data, w, h);
     const frameBase64 =
       canvas.toDataURL("image/jpeg", CAPTURE_JPEG_QUALITY).split(",")[1] ?? "";
 
@@ -166,18 +114,36 @@ export default function ScanPage() {
     setRetryMessage(null);
 
     try {
+      const embedRes = await fetch("/api/embed/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ frameBase64 }),
+      });
+      if (!embedRes.ok) {
+        const body = await embedRes.json().catch(() => ({}));
+        throw new Error(
+          ((body as Record<string, unknown>).error as string) ?? "Embedding failed",
+        );
+      }
+      const embedData = (await embedRes.json()) as {
+        embedding: number[];
+        phash: string;
+        embeddingModel: string;
+        embeddingVersion: number;
+      };
+
       const res = await fetch("/api/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          embedding,
-          phash,
+          embedding: embedData.embedding,
+          phash: embedData.phash,
           frameBase64,
           devicePlatform: "web",
           source: "pwa",
           sourceType,
-          embeddingModel: EMBED_MODEL,
-          embeddingVersion: EMBED_VERSION,
+          embeddingModel: embedData.embeddingModel,
+          embeddingVersion: embedData.embeddingVersion,
         }),
       });
       if (!res.ok) {
@@ -228,10 +194,10 @@ export default function ScanPage() {
     <MarketingPage>
       <main className="ip-scan-main ip-scan-main-centered">
         <PageIntro
-          title="Capture"
+          title="Open link"
           lines={[
-            "Take one photo of a poster, card, menu, or sticker.",
-            "We analyze it & deliver the high-quality file when matched.",
+            "Point at a poster, card, menu, or sticker.",
+            "We recognize it & show the linked destination — like a QR code.",
           ]}
         />
         <canvas ref={canvasRef} className="ip-hidden-canvas" aria-hidden />
@@ -346,34 +312,20 @@ export default function ScanPage() {
         )}
 
         {phase === "success" && result?.matched && result.portal && (
-          <div className="ip-card ip-scan-result-card">
-            <div className="ip-scan-status-label">Matched</div>
-            <div>
-              <strong>{result.portal.title}</strong>
-              <span className="ip-match-badge ip-match-badge-yes">
-                {result.band.toUpperCase()} {(result.confidence * 100).toFixed(0)}%
-              </span>
-              <div className="ip-faint ip-scan-result-detail">
-                {result.portal.destinationDomain}
-              </div>
-              {result.portal.imageUrl && (
-                <a
-                  href={result.portal.imageUrl}
-                  download
-                  className="ip-btn ip-btn-primary ip-btn-sm ip-scan-result-cta"
-                >
-                  Download high-quality image
-                </a>
-              )}
-              {result.portal.slug && (
-                <a
-                  href={`/p/${result.portal.slug}/go`}
-                  className="ip-btn ip-btn-secondary ip-btn-sm ip-scan-result-cta"
-                >
-                  Open destination
-                </a>
-              )}
-            </div>
+          <div className="ip-card ip-scan-result-card ip-scan-url-popup">
+            <div className="ip-scan-status-label">Link found</div>
+            <div className="ip-scan-url-domain">{result.portal.destinationDomain}</div>
+            <p className="ip-faint ip-scan-result-detail">
+              {result.portal.title} · {(result.confidence * 100).toFixed(0)}% match
+            </p>
+            {result.portal.slug && (
+              <a
+                href={`/p/${result.portal.slug}/go`}
+                className="ip-btn ip-btn-primary ip-scan-result-cta"
+              >
+                Open link →
+              </a>
+            )}
           </div>
         )}
       </main>

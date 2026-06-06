@@ -63,14 +63,8 @@ export async function POST(req: NextRequest) {
   const queryPx = await preprocess(imageBuffer);
   const phash = dhash(queryPx);
 
-  const { computeWebQueryEmbedding } = await import("@/lib/query-embedding");
-  let embedding: Float32Array | number[];
-  try {
-    const { getEmbeddingProvider } = await import("@/lib/embedding");
-    embedding = await getEmbeddingProvider().embed(imageBuffer);
-  } catch {
-    embedding = await computeWebQueryEmbedding(imageBuffer);
-  }
+  const { getEmbeddingProvider } = await import("@/lib/embedding");
+  const embedding = await getEmbeddingProvider().embed(imageBuffer);
 
   // Scan the same way as the main scan endpoint
   const { data: candidates, error: candErr } = await db.rpc("match_fingerprints", {
@@ -142,16 +136,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  let imageUrl: string | undefined;
-  if (matched && best) {
-    const { data: img } = await db
-      .from("portal_images")
-      .select("id")
-      .eq("id", best.c.portal_image_id)
-      .single();
-    if (img?.id) imageUrl = `/api/images/${img.id}`;
-  }
-
   return NextResponse.json({
     band,
     matched,
@@ -166,7 +150,6 @@ export async function POST(req: NextRequest) {
             title: best.c.title,
             slug: best.c.slug,
             destinationDomain: best.c.destination_domain,
-            imageUrl,
           }
         : null,
     usageBlocked: usageBlocked || undefined,

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { persistPortalImage } from "@/lib/portal-image";
+import { enhanceImage } from "@ip/vision";
 
 const MAX_MB = Number(process.env.MAX_IMAGE_UPLOAD_MB ?? 10);
+const DRAFT_REF = "draft-reference.jpg";
+const DRAFT_ENH = "draft-enhanced.jpg";
 
 export async function POST(
   req: NextRequest,
@@ -18,10 +20,6 @@ export async function POST(
 
   const form = await req.formData();
   const file = form.get("file");
-  const ownerId = String(form.get("ownerId") ?? user.id);
-  if (ownerId !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
   if (!(file instanceof Blob)) {
     return NextResponse.json({ error: "file required" }, { status: 400 });
   }
@@ -32,27 +30,34 @@ export async function POST(
   const db = createAdminClient();
   const { data: portal } = await db
     .from("portals")
-    .select("owner_id")
+    .select("id, owner_id")
     .eq("id", portalId)
     .single();
+
   if (!portal || portal.owner_id !== user.id) {
     return NextResponse.json({ error: "Portal not found" }, { status: 404 });
   }
 
-  const buf = Buffer.from(await file.arrayBuffer());
+  const referenceBuf = Buffer.from(await file.arrayBuffer());
+  const enhancedBuf = await enhanceImage(referenceBuf);
+  const base = `${portal.owner_id}/${portalId}`;
 
-  try {
-    const { quality_score } = await persistPortalImage({
-      portalId,
-      ownerId,
-      buf,
-      mimeType: file.type || "image/png",
-      activatePortal: true,
-    });
-    return NextResponse.json({ ok: true, quality_score });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "upload failed";
-    const status = msg.includes("near-duplicate") ? 409 : 500;
-    return NextResponse.json({ error: msg }, { status });
-  }
+  await db.storage.from("portal-images").upload(`${base}/${DRAFT_REF}`, referenceBuf, {
+    contentType: "image/jpeg",
+    upsert: true,
+  });
+  await db.storage.from("portal-images").upload(`${base}/${DRAFT_ENH}`, enhancedBuf, {
+    contentType: "image/jpeg",
+    upsert: true,
+  });
+
+  const refB64 = referenceBuf.toString("base64");
+  const enhB64 = enhancedBuf.toString("base64");
+
+  return NextResponse.json({
+    ok: true,
+    referencePreview: `data:image/jpeg;base64,${refB64}`,
+    enhancedPreview: `data:image/jpeg;base64,${enhB64}`,
+    message: "Review the enhanced visual, then approve to go live.",
+  });
 }
