@@ -13,7 +13,8 @@ export function getAppUrl(): string {
   const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
   if (vercelHost) return `https://${vercelHost}`;
 
-  return "http://localhost:3000";
+  const port = process.env.PORT ?? "3004";
+  return `http://localhost:${port}`;
 }
 
 /** Production host for docs and copy (env still wins at runtime). */
