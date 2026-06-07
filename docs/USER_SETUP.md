@@ -34,6 +34,22 @@ The codebase runs end-to-end once you add secrets below. Agents have wired every
 
 Add the same three to **Vercel → Settings → Environment Variables → Production**.
 
+### 1c. Apply database migrations (after pulling latest code)
+
+New SQL migrations live in `supabase/migrations/`. Apply them so Security Advisor warnings clear & export links stay working.
+
+**Option A — Supabase CLI** (from repo root, with project linked):
+
+```bash
+cd image-portal
+supabase link --project-ref duydupyyembdttmjvsxm
+supabase db push
+```
+
+**Option B — SQL Editor:** Supabase Dashboard → **SQL** → paste & run the latest file in `supabase/migrations/` (e.g. `20260607180000_security_hardening.sql`).
+
+Then **Database → Security Advisor → Rerun linter** to confirm warnings dropped.
+
 ### 1b. Google sign-in (optional but recommended)
 
 **Why:** Login page offers “Continue with Google.”

@@ -58,10 +58,15 @@ export async function POST(
       upsert: true,
     });
 
-    const { data: urlData } = admin.storage
+    const { data: signed, error: signErr } = await admin.storage
       .from("portal-exports")
-      .getPublicUrl(storagePath);
-    const fileUrl = urlData?.publicUrl ?? "";
+      .createSignedUrl(storagePath, 60 * 60 * 24);
+
+    if (signErr || !signed?.signedUrl) {
+      return NextResponse.json({ error: "Could not create export download link" }, { status: 500 });
+    }
+
+    const fileUrl = signed.signedUrl;
 
     await admin.from("portal_exports").insert({
       portal_id: id,
