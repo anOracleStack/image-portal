@@ -181,6 +181,13 @@ export default function ScanPage() {
     };
   }, [stopCamera]);
 
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 768px)").matches;
+    if (mobile && cameraState === "idle") {
+      void startCamera();
+    }
+  }, [cameraState, startCamera]);
+
   const overlayLabel =
     phase === "analyzing"
       ? "ANALYZING"
@@ -215,7 +222,7 @@ export default function ScanPage() {
           />
           {cameraState === "idle" && (
             <div className="ip-scan-idle-overlay">
-              <p className="ip-muted ip-scan-placeholder">Camera not started</p>
+              <p className="ip-muted ip-scan-placeholder">Tap capture when ready</p>
               <button type="button" className="ip-btn ip-btn-primary" onClick={startCamera}>
                 Start camera
               </button>
@@ -234,8 +241,13 @@ export default function ScanPage() {
           )}
 
           {cameraState === "ready" && (
-            <div className="ip-scan-overlay">
+            <div className={`ip-scan-overlay ip-scan-phase-${phase}`}>
               <span className="ip-scan-overlay-badge">{overlayLabel}</span>
+              <div className="ip-scan-motion-strip" aria-hidden>
+                <span data-active={phase === "ready" || phase === "analyzing" ? "true" : "false"}>Scan</span>
+                <span data-active={phase === "analyzing" ? "true" : "false"}>Match</span>
+                <span data-active={phase === "success" ? "true" : "false"}>Open</span>
+              </div>
             </div>
           )}
         </div>
@@ -257,7 +269,7 @@ export default function ScanPage() {
               className="ip-btn ip-btn-primary"
               onClick={capturePhoto}
             >
-              {phase === "ready" ? "Capture photo" : "Capture again"}
+              {phase === "ready" ? "Capture" : "Try again"}
             </button>
           )}
           {cameraState === "ready" && phase === "analyzing" && (
@@ -312,7 +324,7 @@ export default function ScanPage() {
         )}
 
         {phase === "success" && result?.matched && result.portal && (
-          <div className="ip-card ip-scan-result-card ip-scan-url-popup">
+          <div className="ip-card ip-scan-result-card ip-scan-url-popup ip-scan-motion-in">
             <div className="ip-scan-status-label">Link found</div>
             <div className="ip-scan-url-domain">{result.portal.destinationDomain}</div>
             <p className="ip-faint ip-scan-result-detail">

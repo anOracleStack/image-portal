@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { workshopBase } from "@/lib/portal-workshop";
+
+const SAFE_FILE = /^draft-(ref-\d+|enhanced)\.jpg$/;
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: portalId } = await params;
-  const file = req.nextUrl.searchParams.get("file");
-  if (!file || file.includes("..") || file.includes("/")) {
-    return NextResponse.json({ error: "Invalid file" }, { status: 400 });
-  }
-
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const file = req.nextUrl.searchParams.get("file") ?? "";
+  if (!SAFE_FILE.test(file)) {
+    return NextResponse.json({ error: "Invalid file" }, { status: 400 });
+  }
 
   const db = createAdminClient();
   const { data: portal } = await db
@@ -30,23 +31,17 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const path = `${workshopBase(portal.owner_id, portalId)}/${file}`;
+  const path = `${portal.owner_id}/${portalId}/${file}`;
   const { data: blob, error } = await db.storage.from("portal-images").download(path);
+
   if (error || !blob) {
     return NextResponse.json({ error: "File not found" }, { status: 404 });
   }
 
-  const buf = Buffer.from(await blob.arrayBuffer());
-  const contentType = file.endsWith(".json")
-    ? "application/json"
-    : file.endsWith(".png")
-      ? "image/png"
-      : "image/jpeg";
-
-  return new NextResponse(buf, {
+  return new NextResponse(blob, {
     headers: {
-      "Content-Type": contentType,
-      "Cache-Control": "private, no-cache",
+      "Content-Type": "image/jpeg",
+      "Cache-Control": "private, max-age=60",
     },
   });
 }

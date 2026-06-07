@@ -10,12 +10,47 @@ interface Props {
   onApproved: () => void;
 }
 
+function BeforeAfterSlider({
+  beforeUrl,
+  afterUrl,
+}: {
+  beforeUrl: string;
+  afterUrl: string;
+}) {
+  const [pos, setPos] = useState(50);
+
+  return (
+    <div className="ip-workshop-ba">
+      <img src={beforeUrl} alt="Reference before" className="ip-workshop-ba-base" />
+      <div className="ip-workshop-ba-after" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
+        <img src={afterUrl} alt="Enhanced after" />
+      </div>
+      <div className="ip-workshop-ba-handle" style={{ left: `${pos}%` }} aria-hidden />
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={pos}
+        onChange={(e) => setPos(Number(e.target.value))}
+        className="ip-workshop-ba-range"
+        aria-label="Compare before and after"
+      />
+      <div className="ip-workshop-ba-labels">
+        <span>Before</span>
+        <span>After</span>
+      </div>
+    </div>
+  );
+}
+
 export default function PortalWorkshop({ portalId, onApproved }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadPct, setUploadPct] = useState(0);
   const [approving, setApproving] = useState(false);
+  const [approvedFlash, setApprovedFlash] = useState(false);
   const [chatBusy, setChatBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -79,16 +114,25 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       });
 
       setUploading(true);
+      setUploadPct(8);
       setError(null);
       setSuccess(null);
+
       const form = new FormData();
       for (const f of list) form.append("file", f);
 
       try {
+        const progressTimer = window.setInterval(() => {
+          setUploadPct((p) => (p < 88 ? p + 6 : p));
+        }, 280);
+
         const res = await fetch(`/api/portals/${portalId}/workshop`, {
           method: "POST",
           body: form,
         });
+        window.clearInterval(progressTimer);
+        setUploadPct(100);
+
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Upload failed");
         setReferences(data.references ?? []);
@@ -111,6 +155,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         setError(err instanceof Error ? err.message : "Upload failed");
       } finally {
         setUploading(false);
+        setUploadPct(0);
         if (fileRef.current) fileRef.current.value = "";
       }
     },
@@ -159,6 +204,8 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Approve failed");
       setSuccess(data.message ?? "Portal is live.");
+      setApprovedFlash(true);
+      window.setTimeout(() => setApprovedFlash(false), 2400);
       onApproved();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Approve failed");
@@ -179,6 +226,9 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
     [portalId],
   );
 
+  const firstRefUrl = references[0] ? cacheBust(references[0]) : null;
+  const showSlider = Boolean(firstRefUrl && enhancedUrl);
+
   if (loading) {
     return <p className="ip-muted ip-copy-sm">Loading workshop…</p>;
   }
@@ -188,7 +238,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       <BalancedText
         className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
         lines={[
-          "Upload reference images, workshop the enhanced version in chat,",
+          "Upload reference images, compare before/after, workshop in chat,",
           "& approve when it's ready to go live.",
         ]}
       />
@@ -205,7 +255,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
           setDragOver(false);
           if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
         }}
-        onClick={() => fileRef.current?.click()}
+        onClick={() => !uploading && fileRef.current?.click()}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -213,13 +263,31 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         }}
       >
         {uploading ? (
-          <p className="ip-muted">Uploading & analyzing…</p>
+          <div className="ip-workshop-upload-progress">
+            <p className="ip-muted">Uploading & analyzing…</p>
+            <div className="ip-workshop-progress-track" aria-hidden>
+              <div
+                className="ip-workshop-progress-fill"
+                style={{ width: `${uploadPct}%` }}
+              />
+            </div>
+          </div>
         ) : (
           <>
             <p className="ip-workshop-upload-title">Add reference images</p>
             <p className="ip-muted ip-copy-sm">
-              Drop files here, click to browse, or use your camera. Multiple images OK.
+              Drop files, click to browse, or use your camera. Multiple images OK.
             </p>
+            <button
+              type="button"
+              className="ip-btn ip-btn-secondary ip-btn-sm ip-workshop-camera-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                fileRef.current?.click();
+              }}
+            >
+              Open camera
+            </button>
           </>
         )}
       </div>
@@ -239,34 +307,37 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       {success && <div className="ip-export-msg ip-export-msg-success">{success}</div>}
       {error && <div className="ip-export-msg ip-export-msg-error">{error}</div>}
 
-      {(references.length > 0 || localPreviews.length > 0) && (
-        <div className="ip-workshop-refs">
+      <div className="ip-workshop-layout">
+        <aside className="ip-workshop-refs-strip">
           <h3 className="ip-workshop-section-title">
-            Your references ({references.length || localPreviews.length})
-            {uploading && localPreviews.length > 0 ? " — uploading…" : ""}
+            References ({references.length || localPreviews.length})
           </h3>
-          <div className="ip-workshop-ref-grid">
-            {references.map((url, i) => (
-              <figure key={`${url}-${i}`} className="ip-workshop-ref-card">
-                <img src={cacheBust(url)} alt={`Reference ${i + 1}`} />
-                <figcaption>Reference {i + 1}</figcaption>
-              </figure>
-            ))}
-            {references.length === 0 &&
-              localPreviews.map((url, i) => (
-                <figure key={`local-${url}`} className="ip-workshop-ref-card">
-                  <img src={url} alt={`Upload ${i + 1}`} />
-                  <figcaption>{uploading ? "Uploading…" : "Not saved yet"}</figcaption>
+          {(references.length > 0 || localPreviews.length > 0) ? (
+            <div className="ip-workshop-ref-strip">
+              {references.map((url, i) => (
+                <figure key={`${url}-${i}`} className="ip-workshop-ref-card">
+                  <img src={cacheBust(url)} alt={`Reference ${i + 1}`} />
+                  <figcaption>Ref {i + 1}</figcaption>
                 </figure>
               ))}
-          </div>
-        </div>
-      )}
+              {references.length === 0 &&
+                localPreviews.map((url, i) => (
+                  <figure key={`local-${url}`} className="ip-workshop-ref-card">
+                    <img src={url} alt={`Upload ${i + 1}`} />
+                    <figcaption>{uploading ? "Uploading…" : "Pending"}</figcaption>
+                  </figure>
+                ))}
+            </div>
+          ) : (
+            <p className="ip-muted ip-copy-sm">No references yet.</p>
+          )}
+        </aside>
 
-      <div className="ip-workshop-main">
         <div className="ip-workshop-preview">
           <h3 className="ip-workshop-section-title">Enhanced output</h3>
-          {enhancedUrl ? (
+          {showSlider && firstRefUrl && enhancedUrl ? (
+            <BeforeAfterSlider beforeUrl={firstRefUrl} afterUrl={enhancedUrl} />
+          ) : enhancedUrl ? (
             <img
               src={enhancedUrl}
               alt="Enhanced preview"
@@ -288,11 +359,11 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
           </label>
           <button
             type="button"
-            className="ip-btn ip-btn-primary ip-workshop-approve"
+            className={`ip-btn ip-btn-primary ip-workshop-approve${approvedFlash ? " ip-workshop-approve-success" : ""}`}
             disabled={approving || references.length === 0}
             onClick={handleApprove}
           >
-            {approving ? "Going live…" : "Approve & go live"}
+            {approving ? "Going live…" : approvedFlash ? "Live ✓" : "Approve & go live"}
           </button>
         </div>
 
@@ -325,7 +396,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
               className="ip-input"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder='e.g. "make it brighter" or "sharper"'
+              placeholder='e.g. "make it brighter" or "what do you see?"'
               disabled={chatBusy}
             />
             <button type="submit" className="ip-btn ip-btn-secondary" disabled={chatBusy || !chatInput.trim()}>

@@ -165,10 +165,24 @@ export async function POST(
       role: m.role,
       content: m.content,
     }));
+    let referenceImageBase64: string | undefined;
+    if (state.references.length > 0 && process.env.OPENAI_API_KEY?.trim()) {
+      const refPath = `${base}/${state.references[0]}`;
+      const { data: refBlob } = await db.storage
+        .from("portal-images")
+        .download(refPath);
+      if (refBlob) {
+        referenceImageBase64 = Buffer.from(await refBlob.arrayBuffer()).toString(
+          "base64",
+        );
+      }
+    }
+
     const { reply, adjust, wantsApprove } = await workshopAssistantReply(
       message,
       state.references.length,
       history,
+      { referenceImageBase64 },
     );
 
     if (adjust && state.references.length > 0) {

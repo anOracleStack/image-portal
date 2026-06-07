@@ -51,7 +51,7 @@ export default async function DashboardPage() {
   return (
     <div className="ip-dash-shell">
       {ownerId && <UsageSummary userId={ownerId} />}
-      {portals.length === 0 && <OnboardingStrip />}
+      <OnboardingStrip />
       <AnalyticsDashboard />
       <section className="ip-dash-section">
         <div className="ip-dash-section-head">

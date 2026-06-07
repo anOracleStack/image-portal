@@ -29,7 +29,7 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 
 - [ ] `/` — hero: “Turn any **Image** into a **Doorway**”, subtitle “Next generation QR code”
 - [ ] Hero CTAs: **GET STARTED FREE** & **SEE HOW IT WORKS** (uppercase, bold)
-- [ ] Scan demo shows **Scan → Match → Open** strip; live preview advances
+- [ ] Scan demo shows **Scan → Match → Open** strip with animated active step; live preview advances
 - [ ] Use cases section centered; line breaks per voice memo 53
 - [ ] “Why RQ Plus?” cards centered
 - [ ] Pricing block centered with link to `/pricing`
@@ -58,14 +58,14 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 ### Workshop upload
 
 5. [ ] Open portal detail → **Workshop your visual**
-6. [ ] Upload JPEG/PNG/WebP (drag-drop or browse) — preview visible while uploading
-7. [ ] Reference thumbnails appear after upload
+6. [ ] Upload JPEG/PNG/WebP (drag-drop, browse, or camera) — progress bar while uploading
+7. [ ] Reference strip + before/after slider appear after upload
 8. [ ] Enhanced preview generates (or clear error if enhancement fails; references retained)
 
 ### Workshop chat
 
 9. [ ] Send chat message (e.g. “make it brighter”) — assistant replies
-10. [ ] With `OPENAI_API_KEY`: creative/LLM-style replies; without: rule-based adjustments still work
+10. [ ] With `OPENAI_API_KEY`: creative/LLM + optional vision replies; without: rule-based adjustments still work
 
 ### Approve & export
 
@@ -73,6 +73,13 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 12. [ ] **Approve & go live** → portal status **active**
 13. [ ] **Export image** downloads PNG suitable for print/screen
 14. [ ] Portal slug URL `/p/{slug}` loads interstitial (if configured)
+
+---
+
+## First-run onboarding
+
+- [ ] Dashboard shows 3-step wizard until **Got it** / **Finish** (sets `ip_onboarding_done` in localStorage)
+- [ ] Steps link to Create portal, Dashboard, `/scan`
 
 ---
 

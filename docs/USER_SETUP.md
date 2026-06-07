@@ -43,9 +43,11 @@ New SQL migrations live in `supabase/migrations/`. Apply them so Security Adviso
 #### Option A — SQL Editor (easiest; no CLI)
 
 1. Open [Supabase SQL Editor](https://supabase.com/dashboard/project/duydupyyembdttmjvsxm/sql/new)
-2. Copy the full contents of `supabase/migrations/20260607180000_security_hardening.sql`
-3. Click **Run**
-4. **Database → Security Advisor → Rerun linter**
+2. Copy & run each migration file in order (if not already applied):
+   - `supabase/migrations/20260607180000_security_hardening.sql`
+   - `supabase/migrations/20260607190000_security_hardening_v2.sql`
+3. Click **Run** for each
+4. **Database → Security Advisor → Rerun linter** (expect ~1–2 warnings; vector extension may remain)
 
 #### Option B — CLI with database password (skips broken “login role” API)
 

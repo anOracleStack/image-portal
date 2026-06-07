@@ -36,9 +36,11 @@ Without a warm endpoint, set `CATALOG_EMBED_PROVIDER=grid` — uploads & scans w
 | Variable | Required? | Purpose | Where to get it |
 |----------|-----------|---------|-----------------|
 | `OPENAI_API_KEY` | Optional | Powers Help chat & Portal Workshop chat via OpenAI | [OpenAI API keys](https://platform.openai.com/api-keys) |
-| `OPENAI_MODEL` | Optional | Model id (default `gpt-4o-mini`) | — |
+| `OPENAI_MODEL` | Optional | Model id (default `gpt-4o-mini`; supports vision for workshop) | — |
 
 When unset, both chats use built-in rule-based fallbacks (no errors).
+
+**Workshop vision:** When `OPENAI_API_KEY` is set, workshop chat sends the primary reference image (base64, server-side) to OpenAI for creative feedback. No extra env vars required. Help chat remains text-only.
 
 ---
 

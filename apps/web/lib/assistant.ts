@@ -15,12 +15,46 @@ export function hasOpenAI(): boolean {
   return Boolean(process.env.OPENAI_API_KEY?.trim());
 }
 
+type OpenAIMessage =
+  | { role: "system" | "user" | "assistant"; content: string }
+  | {
+      role: "user";
+      content: Array<
+        | { type: "text"; text: string }
+        | { type: "image_url"; image_url: { url: string } }
+      >;
+    };
+
 async function openaiChat(
   system: string,
   messages: ChatTurn[],
+  visionImageBase64?: string,
 ): Promise<string | null> {
   const key = process.env.OPENAI_API_KEY?.trim();
   if (!key) return null;
+
+  const apiMessages: OpenAIMessage[] = [{ role: "system", content: system }];
+  for (let i = 0; i < messages.length; i++) {
+    const m = messages[i]!;
+    const isLastUser =
+      i === messages.length - 1 &&
+      m.role === "user" &&
+      Boolean(visionImageBase64);
+    if (isLastUser && visionImageBase64) {
+      apiMessages.push({
+        role: "user",
+        content: [
+          { type: "text", text: m.content },
+          {
+            type: "image_url",
+            image_url: { url: `data:image/jpeg;base64,${visionImageBase64}` },
+          },
+        ],
+      });
+    } else {
+      apiMessages.push({ role: m.role, content: m.content });
+    }
+  }
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -32,7 +66,7 @@ async function openaiChat(
       model: OPENAI_MODEL,
       temperature: 0.4,
       max_tokens: 500,
-      messages: [{ role: "system", content: system }, ...messages],
+      messages: apiMessages,
     }),
   });
 
@@ -68,7 +102,8 @@ Respond with JSON only (no markdown): {"reply":"string","adjust":{...} or null,"
 adjust keys (optional, numbers): brightness (0.7-1.3), sharpness (0.5-2.5), contrast (0.8-1.3), maxEdge (1280|1920|2560).
 Set wantsApprove true when user says approve/go live/looks good.
 If no references yet, reply asking them to upload first and omit adjust.
-Give creative feedback in reply when they ask for opinions; apply adjust when they want visual changes.`;
+When a reference image is attached, describe what you see and give specific creative feedback.
+Apply adjust when they want visual changes; opinions only when they ask for critique.`;
 
 function parseWorkshopJson(raw: string): WorkshopReply | null {
   const trimmed = raw.trim();
@@ -94,10 +129,16 @@ function parseWorkshopJson(raw: string): WorkshopReply | null {
   }
 }
 
+export type WorkshopAssistantOpts = {
+  /** JPEG base64 (no data: prefix) for optional vision when OPENAI_API_KEY is set */
+  referenceImageBase64?: string;
+};
+
 export async function workshopAssistantReply(
   message: string,
   refCount: number,
   history: ChatTurn[] = [],
+  opts: WorkshopAssistantOpts = {},
 ): Promise<WorkshopReply> {
   if (!hasOpenAI()) return workshopReplyFallback(message, refCount);
 
@@ -106,13 +147,17 @@ export async function workshopAssistantReply(
     content: t.content,
   }));
 
-  const llm = await openaiChat(WORKSHOP_SYSTEM, [
-    ...recent,
-    {
-      role: "user",
-      content: `References on file: ${refCount}. User message: ${message}`,
-    },
-  ]);
+  const llm = await openaiChat(
+    WORKSHOP_SYSTEM,
+    [
+      ...recent,
+      {
+        role: "user",
+        content: `References on file: ${refCount}. User message: ${message}`,
+      },
+    ],
+    opts.referenceImageBase64,
+  );
 
   if (!llm) return workshopReplyFallback(message, refCount);
 

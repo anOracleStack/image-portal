@@ -187,6 +187,8 @@ export type UseCaseDemoProps = {
   className?: string;
   /** Hero demo prioritizes first two frames for LCP */
   priorityFrames?: boolean;
+  /** Start on a specific step index (e.g. 5 = Scan for hero) */
+  initialStep?: number;
 };
 
 export function UseCaseDemo({
@@ -194,9 +196,10 @@ export function UseCaseDemo({
   autoAdvance = "immediate",
   className = "ip-demo",
   priorityFrames = false,
+  initialStep = 0,
 }: UseCaseDemoProps) {
   const steps = buildSteps(slug);
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(initialStep % steps.length);
   const [advanceEnabled, setAdvanceEnabled] = useState(autoAdvance === "immediate");
   const index = active % steps.length;
   const step = steps[index]!;
