@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { enhanceImage } from "@ip/vision";
+import {
+  draftPublicUrl,
+  draftRefName,
+  loadWorkshop,
+  regenerateEnhanced,
+  saveWorkshop,
+} from "@/lib/portal-workshop";
 
 const MAX_MB = Number(process.env.MAX_IMAGE_UPLOAD_MB ?? 10);
-const DRAFT_REF = "draft-reference.jpg";
-const DRAFT_ENH = "draft-enhanced.jpg";
 
+/** Legacy single-file prepare — forwards into workshop storage. */
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -38,26 +43,25 @@ export async function POST(
     return NextResponse.json({ error: "Portal not found" }, { status: 404 });
   }
 
+  let state = await loadWorkshop(portal.owner_id, portalId);
+  const refName = draftRefName(state.references.length);
   const referenceBuf = Buffer.from(await file.arrayBuffer());
-  const enhancedBuf = await enhanceImage(referenceBuf);
   const base = `${portal.owner_id}/${portalId}`;
 
-  await db.storage.from("portal-images").upload(`${base}/${DRAFT_REF}`, referenceBuf, {
+  await db.storage.from("portal-images").upload(`${base}/${refName}`, referenceBuf, {
     contentType: "image/jpeg",
     upsert: true,
   });
-  await db.storage.from("portal-images").upload(`${base}/${DRAFT_ENH}`, enhancedBuf, {
-    contentType: "image/jpeg",
-    upsert: true,
-  });
-
-  const refB64 = referenceBuf.toString("base64");
-  const enhB64 = enhancedBuf.toString("base64");
+  state.references.push(refName);
+  state = await regenerateEnhanced(portal.owner_id, portalId, state);
+  await saveWorkshop(portal.owner_id, portalId, state);
 
   return NextResponse.json({
     ok: true,
-    referencePreview: `data:image/jpeg;base64,${refB64}`,
-    enhancedPreview: `data:image/jpeg;base64,${enhB64}`,
+    referencePreview: draftPublicUrl(portalId, refName),
+    enhancedPreview: draftPublicUrl(portalId, state.enhanced),
+    referenceUrls: state.references.map((f) => draftPublicUrl(portalId, f)),
+    enhancedUrl: draftPublicUrl(portalId, state.enhanced),
     message: "Review the enhanced visual, then approve to go live.",
   });
 }

@@ -12,7 +12,6 @@ import { canHideFromGallery, type PlanTier } from "@/lib/plans";
 interface PortalValues {
   title: string;
   destinationUrl: string;
-  scanMode: "image" | "hybrid";
   visibility: "public" | "private";
 }
 
@@ -66,11 +65,20 @@ const pStyles = {
   visibilityLabel: { fontSize: "1rem", color: "var(--text)" },
 };
 
+/** Normalize casual input (methodmoirai.com) to a canonical https URL for display + save. */
 function formatDestinationField(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) return trimmed;
   const verdict = validateDestination(trimmed);
   return verdict.ok ? verdict.normalized : normalizeDestinationInput(trimmed);
+}
+
+function destinationFieldError(raw: string): string | undefined {
+  const formatted = formatDestinationField(raw);
+  if (!formatted) return "Destination URL is required";
+  const verdict = validateDestination(formatted);
+  if (!verdict.ok) return destinationUrlErrorMessage(verdict.reason);
+  return undefined;
 }
 
 export default function PortalForm({
@@ -85,9 +93,6 @@ export default function PortalForm({
   const [destinationUrl, setDestinationUrl] = useState(
     initialValues?.destinationUrl ?? ""
   );
-  const [scanMode, setScanMode] = useState<"image" | "hybrid">(
-    initialValues?.scanMode ?? "image"
-  );
   const [visibility, setVisibility] = useState<"public" | "private">(
     galleryEditable ? (initialValues?.visibility ?? "public") : "public"
   );
@@ -100,6 +105,19 @@ export default function PortalForm({
 
   const slug = slugify(title);
 
+  const applyDestinationFormat = useCallback(() => {
+    if (!destinationUrl.trim()) return;
+    const formatted = formatDestinationField(destinationUrl);
+    setDestinationUrl(formatted);
+    const err = destinationFieldError(formatted);
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (err) next.destinationUrl = err;
+      else delete next.destinationUrl;
+      return next;
+    });
+  }, [destinationUrl]);
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -108,21 +126,21 @@ export default function PortalForm({
       if (!title.trim()) errs.title = "Title is required";
       else if (title.length > 120) errs.title = "Max 120 characters";
 
-      if (!destinationUrl.trim()) {
-        errs.destinationUrl = "Destination URL is required";
-      } else {
-        const verdict = validateDestination(destinationUrl.trim());
-        if (!verdict.ok) {
-          errs.destinationUrl = destinationUrlErrorMessage(verdict.reason);
-        }
-      }
+      const formattedDestination = formatDestinationField(destinationUrl);
+      const destinationErr = destinationFieldError(formattedDestination);
+      if (destinationErr) errs.destinationUrl = destinationErr;
 
       if (Object.keys(errs).length > 0) {
+        if (formattedDestination && formattedDestination !== destinationUrl.trim()) {
+          setDestinationUrl(formattedDestination);
+        }
         setErrors(errs);
         return;
       }
 
-      const normalizedUrl = formatDestinationField(destinationUrl);
+      const verdict = validateDestination(formattedDestination);
+      const normalizedUrl = verdict.ok ? verdict.normalized : formattedDestination;
+      setDestinationUrl(normalizedUrl);
 
       setErrors({});
       setSubmitting(true);
@@ -130,14 +148,13 @@ export default function PortalForm({
         await onSubmit({
           title: title.trim(),
           destinationUrl: normalizedUrl,
-          scanMode,
           visibility: galleryEditable ? visibility : "public",
         });
       } finally {
         setSubmitting(false);
       }
     },
-    [title, destinationUrl, scanMode, visibility, galleryEditable, onSubmit]
+    [title, destinationUrl, visibility, galleryEditable, onSubmit]
   );
 
   const busy = !!(submitting || isLoading);
@@ -169,32 +186,34 @@ export default function PortalForm({
         <label style={pStyles.label}>Destination URL</label>
         <input
           className="ip-input"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
           value={destinationUrl}
-          onChange={(e) => setDestinationUrl(e.target.value)}
-          onBlur={() => {
-            if (destinationUrl.trim()) {
-              setDestinationUrl(formatDestinationField(destinationUrl));
+          onChange={(e) => {
+            setDestinationUrl(e.target.value);
+            if (errors.destinationUrl) {
+              setErrors((prev) => {
+                const next = { ...prev };
+                delete next.destinationUrl;
+                return next;
+              });
             }
           }}
-          placeholder="nike.com or https://example.com/page"
+          onBlur={applyDestinationFormat}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") applyDestinationFormat();
+          }}
+          placeholder="methodmoirai.com"
         />
+        <p className="ip-muted ip-copy-sm" style={{ marginTop: -4 }}>
+          Type any website — we add https:// automatically. Include www only if your site uses it.
+        </p>
         {errors.destinationUrl && (
           <div style={{ fontSize: "0.9375rem", color: "var(--danger)" }}>
             {errors.destinationUrl}
           </div>
         )}
-      </div>
-
-      <div style={pStyles.group}>
-        <label style={pStyles.label}>Scan mode</label>
-        <select
-          className="ip-input"
-          value={scanMode}
-          onChange={(e) => setScanMode(e.target.value as "image" | "hybrid")}
-        >
-          <option value="image">Image</option>
-          <option value="hybrid">Hybrid</option>
-        </select>
       </div>
 
       <div style={pStyles.group} className="ip-gallery-privacy-field">

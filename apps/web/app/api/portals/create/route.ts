@@ -33,8 +33,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, destinationUrl, scanMode, visibility: requestedVisibility } =
-      parsed.data;
+    const { title, destinationUrl, visibility: requestedVisibility } = parsed.data;
     const ownerId = user.id;
 
     const sub = await getUserSubscription(ownerId);
@@ -104,7 +103,7 @@ export async function POST(req: NextRequest) {
         title,
         slug,
         destination_url: verdict.normalized,
-        scan_mode: scanMode,
+        scan_mode: "image",
         visibility,
         status: "inactive",
         total_scans: 0,

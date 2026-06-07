@@ -3,7 +3,7 @@ import { validateDestination } from "@ip/shared";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { checkSafeBrowsing } from "@/lib/safe-browsing";
 
-// Native-camera / QR fallback path. Never auto-trusts the destination:
+// Direct slug link (typed or shared URL). Never auto-trusts the destination:
 // re-validates at redirect time and shows an interstitial for flagged URLs.
 export async function GET(
   req: NextRequest,

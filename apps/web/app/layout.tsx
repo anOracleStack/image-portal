@@ -31,12 +31,12 @@ export const metadata: Metadata = {
     template: "%s · RQ Plus",
   },
   description:
-    "Turn posters, stickers, & photos into programmable doorways. Visual scan matching, QR exports, analytics, & API access.",
+    "Turn posters, stickers, & photos into programmable doorways. Visual scan matching — no QR codes — plus analytics & API access.",
   metadataBase: new URL(appUrl),
   manifest: "/manifest.webmanifest",
   openGraph: {
     title: "RQ Plus",
-    description: "Enhanced QR — any image, a programmable doorway.",
+    description: "The image is the doorway — visual scan matching without QR codes.",
     url: appUrl,
     siteName: "RQ Plus",
     type: "website",

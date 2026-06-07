@@ -9,7 +9,6 @@ import { usePlanTier } from "@/hooks/usePlanTier";
 interface PortalValues {
   title: string;
   destinationUrl: string;
-  scanMode: "image" | "hybrid";
   visibility: "public" | "private";
 }
 

@@ -10,7 +10,7 @@ const plans = [
     period: "/mo",
     desc: "Core portals & scans.",
     ctas: { label: "Get started", href: "/dashboard" },
-    features: ["3 portals", "200 scans/mo", "Gallery listing", "Basic analytics", "QR export"],
+    features: ["3 portals", "200 scans/mo", "Gallery listing", "Basic analytics", "Image export"],
     popular: false,
   },
   {
@@ -57,7 +57,7 @@ const comparisonRows: [string, boolean[], string][] = [
   ["Team seats", [false, true, true, true], "\u2014 / 1 / 3 / Unlimited"],
   ["Public gallery listing", [true, true, true, true], ""],
   ["Hide from gallery", [false, true, true, true], ""],
-  ["QR export", [true, true, true, true], ""],
+  ["Image export", [true, true, true, true], ""],
   ["Poster export", [false, true, true, true], ""],
   ["Full analytics", [false, true, true, true], ""],
   ["API access", [false, false, true, true], ""],

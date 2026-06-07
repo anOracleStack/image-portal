@@ -11,7 +11,6 @@ import type { PortalRow } from "@/lib/types";
 interface PortalValues {
   title: string;
   destinationUrl: string;
-  scanMode: "image" | "hybrid";
   visibility: "public" | "private";
 }
 
@@ -61,7 +60,6 @@ export default function EditPortalPage() {
           body: JSON.stringify({
             title: values.title,
             destination_url: values.destinationUrl,
-            scan_mode: values.scanMode,
             visibility: values.visibility,
           }),
         });
@@ -109,7 +107,7 @@ export default function EditPortalPage() {
     <div className="ip-form-shell">
       <PageIntro
         title="Edit Portal"
-        lines={["Update title, destination,", "scan mode, & gallery listing."]}
+        lines={["Update title, destination,", "& gallery listing."]}
       />
 
       {submitError && (
@@ -120,7 +118,6 @@ export default function EditPortalPage() {
         initialValues={{
           title: portal.title,
           destinationUrl: portal.destination_url,
-          scanMode: portal.scan_mode,
           visibility: portal.visibility,
         }}
         onSubmit={handleSubmit}

@@ -38,6 +38,7 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
@@ -45,7 +46,7 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
   const validateAndUpload = useCallback(
     async (file: File) => {
       setError(null);
-      setPreview(null);
+      setSuccess(null);
       setProgress(0);
 
       if (!ALLOWED_TYPES.has(file.type)) {
@@ -66,10 +67,13 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
       try {
         await onUpload(file);
         setProgress(100);
+        setSuccess("Image uploaded successfully.");
+      } catch (err) {
+        setPreview(null);
+        setError(err instanceof Error ? err.message : "Upload failed.");
       } finally {
         setUploading(false);
         setProgress(0);
-        setPreview(null);
       }
     },
     [onUpload]
@@ -136,17 +140,19 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
         onChange={handleChange}
       />
 
-      {preview && !busy && (
+      {preview && (
         <img
           src={preview}
           alt="Preview"
-          style={{
-            maxWidth: "100%",
-            maxHeight: 240,
-            borderRadius: 8,
-            marginTop: 12,
-            objectFit: "contain",
-          }}
+          className="ip-uploader-preview"
+        />
+      )}
+
+      {success && !busy && (
+        <BalancedText
+          className="ip-text-block ip-export-msg-success"
+          style={{ fontSize: "0.82rem", marginTop: 8 }}
+          lines={[success]}
         />
       )}
 

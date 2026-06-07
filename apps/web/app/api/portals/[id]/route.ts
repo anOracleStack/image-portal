@@ -84,7 +84,6 @@ export async function PATCH(
       "title",
       "destination_url",
       "visibility",
-      "scan_mode",
       "status",
     ] as const;
     const updates: Record<string, unknown> = {};

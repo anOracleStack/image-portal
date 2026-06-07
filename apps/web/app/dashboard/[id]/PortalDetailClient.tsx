@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
-import PortalImageWorkflow from "@/components/PortalImageWorkflow";
+import PortalWorkshop from "@/components/PortalWorkshop";
 import { BalancedText } from "@/components/ui/BalancedText";
 import { canHideFromGallery, type PlanTier } from "@/lib/plans";
 import type { PortalRow, PortalImageRow } from "@/lib/types";
@@ -60,7 +60,6 @@ export default function PortalDetailClient({
         const data = await res.json();
         throw new Error(data.error || "Upload failed");
       }
-
       router.refresh();
     },
     [portal.id, router, userId]
@@ -177,27 +176,11 @@ export default function PortalDetailClient({
           </span>
           <button
             type="button"
-            onClick={() => handleExport("qrcode")}
-            disabled={exporting === "qrcode"}
-            className="ip-btn ip-btn-secondary ip-btn-sm"
-          >
-            {exporting === "qrcode" ? "…" : "QR code"}
-          </button>
-          <button
-            type="button"
             onClick={() => handleExport("image_only")}
             disabled={exporting === "image_only" || images.length === 0}
             className="ip-btn ip-btn-secondary ip-btn-sm"
           >
             {exporting === "image_only" ? "…" : "Export image"}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleExport("image_qr")}
-            disabled={exporting === "image_qr" || images.length === 0}
-            className="ip-btn ip-btn-secondary ip-btn-sm"
-          >
-            {exporting === "image_qr" ? "…" : "Image + QR"}
           </button>
           {exportMsg && (
             <span className={exportMsgClass}>{exportMsg}</span>
@@ -218,8 +201,6 @@ export default function PortalDetailClient({
             {domain}
           </a>
         </div>
-        <div className="ip-detail-label">Scan mode</div>
-        <div className="ip-detail-value">{portal.scan_mode}</div>
         <div className="ip-detail-label">Public gallery</div>
         <div className="ip-detail-value ip-gallery-privacy-row">
           <span>
@@ -277,7 +258,7 @@ export default function PortalDetailClient({
             rel="noopener noreferrer"
             className="ip-btn ip-btn-ghost ip-btn-sm"
           >
-            QR redirect (/go)
+            Direct link (/go)
           </a>
           <a
             href={`/api/portals/${portal.id}/share-card`}
@@ -331,30 +312,19 @@ export default function PortalDetailClient({
       <div className="ip-card ip-card-spaced-lg">
         <h2 className="ip-card-section-title">
           {status === "inactive" || images.length === 0
-            ? "Prepare your visual"
-            : "Replace image"}
+            ? "Workshop your visual"
+            : "Add or replace images"}
         </h2>
         {status === "inactive" || images.length === 0 ? (
-          <PortalImageWorkflow
+          <PortalWorkshop
             portalId={portal.id}
-            isInactive={status === "inactive"}
-            onComplete={() => {
+            onApproved={() => {
               setStatus("active");
               router.refresh();
             }}
           />
         ) : (
-          <>
-            <BalancedText
-              className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
-              lines={[
-                "Quick replace uploads immediately.",
-                "For enhance + approve flow, deactivate portal first",
-                "or delete images in Supabase.",
-              ]}
-            />
-            <ImageUploader onUpload={handleUpload} />
-          </>
+          <ImageUploader onUpload={handleUpload} />
         )}
       </div>
 

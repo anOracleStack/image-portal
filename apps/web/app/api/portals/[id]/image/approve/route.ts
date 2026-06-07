@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { persistPortalImage } from "@/lib/portal-image";
+import { DRAFT_ENH, loadWorkshop } from "@/lib/portal-workshop";
 
-const DRAFT_ENH = "draft-enhanced.jpg";
-const DRAFT_REF = "draft-reference.jpg";
+const DRAFT_REF_LEGACY = "draft-reference.jpg";
 
 export async function POST(
   req: NextRequest,
@@ -17,12 +17,11 @@ export async function POST(
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  let useEnhanced = true;
+  let body: { useEnhanced?: boolean } = {};
   try {
-    const body = await req.json();
-    if (typeof body?.useEnhanced === "boolean") useEnhanced = body.useEnhanced;
+    body = await req.json();
   } catch {
-    /* default enhanced */
+    /* empty body */
   }
 
   const db = createAdminClient();
@@ -36,7 +35,13 @@ export async function POST(
     return NextResponse.json({ error: "Portal not found" }, { status: 404 });
   }
 
-  const draftName = useEnhanced ? DRAFT_ENH : DRAFT_REF;
+  const workshop = await loadWorkshop(portal.owner_id, portalId);
+  const useEnhanced =
+    typeof body.useEnhanced === "boolean" ? body.useEnhanced : workshop.useEnhanced;
+
+  const draftName = useEnhanced
+    ? DRAFT_ENH
+    : workshop.references[0] ?? DRAFT_REF_LEGACY;
   const path = `${portal.owner_id}/${portalId}/${draftName}`;
   const { data: blob, error: dlErr } = await db.storage
     .from("portal-images")

@@ -16,7 +16,7 @@ export default function AuthWelcomePage() {
           className="ip-muted ip-text-block ip-copy-sm ip-card-spaced-lg"
           lines={[
             "Create a portal, attach a destination,",
-            "& share a print or QR that opens it on scan.",
+            "& share a visual viewers scan at rub.pub/scan.",
           ]}
         />
         <Link href="/dashboard" className="ip-btn ip-btn-primary">

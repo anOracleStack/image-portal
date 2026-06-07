@@ -1785,6 +1785,166 @@ a {
   color: var(--muted);
 }
 
+.ip-uploader-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 280px;
+  border-radius: var(--radius-md);
+  margin-top: 12px;
+  object-fit: contain;
+  border: 1px solid var(--border-strong);
+}
+
+.ip-workshop {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ip-workshop-upload {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ip-workshop-upload:hover,
+.ip-workshop-upload-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.ip-workshop-upload-title {
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.ip-workshop-section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--text-muted);
+}
+
+.ip-workshop-ref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.ip-workshop-ref-card {
+  margin: 0;
+  text-align: center;
+}
+
+.ip-workshop-ref-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+}
+
+.ip-workshop-ref-card figcaption {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.ip-workshop-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .ip-workshop-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ip-workshop-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ip-workshop-enhanced-img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: #000;
+}
+
+.ip-workshop-preview-empty {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+.ip-workshop-approve {
+  align-self: flex-start;
+}
+
+.ip-workshop-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+}
+
+.ip-workshop-chat-log {
+  flex: 1;
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--background) 92%, var(--foreground) 8%);
+  margin-bottom: 10px;
+}
+
+.ip-workshop-chat-bubble {
+  max-width: 92%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.ip-workshop-chat-user {
+  align-self: flex-end;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--foreground);
+}
+
+.ip-workshop-chat-assistant {
+  align-self: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+}
+
+.ip-workshop-chat-form {
+  display: flex;
+  gap: 8px;
+}
+
+.ip-workshop-chat-form .ip-input {
+  flex: 1;
+}
+
 .ip-scan-video-box {
   position: relative;
   border-radius: var(--radius-md);

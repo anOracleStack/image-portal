@@ -5,7 +5,7 @@ import { BalancedText } from "@/components/ui/BalancedText";
 const steps = [
   { n: 1, title: "Create a portal", href: "/dashboard/create", desc: "Title & HTTPS destination" },
   { n: 2, title: "Upload your visual", href: "/dashboard/create", desc: "Poster, sticker, or photo" },
-  { n: 3, title: "Export QR or scan", href: "/scan", desc: "Camera or print-ready QR" },
+  { n: 3, title: "Export & scan", href: "/scan", desc: "Download your visual & test at rub.pub/scan" },
   { n: 4, title: "Track analytics", href: "/dashboard", desc: "Scans, sources, match rate" },
 ] as const;
 
