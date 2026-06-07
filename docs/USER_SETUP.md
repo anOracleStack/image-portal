@@ -38,17 +38,45 @@ Add the same three to **Vercel → Settings → Environment Variables → Produc
 
 New SQL migrations live in `supabase/migrations/`. Apply them so Security Advisor warnings clear & export links stay working.
 
-**Option A — Supabase CLI** (from repo root, with project linked):
+**Important:** Your CLI must be linked to **`duydupyyembdttmjvsxm`** (Image Portal), not an old project ref. Check `supabase/.temp/project-ref` — if it is wrong, re-link first.
+
+#### Option A — SQL Editor (easiest; no CLI)
+
+1. Open [Supabase SQL Editor](https://supabase.com/dashboard/project/duydupyyembdttmjvsxm/sql/new)
+2. Copy the full contents of `supabase/migrations/20260607180000_security_hardening.sql`
+3. Click **Run**
+4. **Database → Security Advisor → Rerun linter**
+
+#### Option B — CLI with database password (skips broken “login role” API)
+
+The error `unexpected login role status 403` means the CLI cannot use Supabase’s temporary login-role endpoint. Use your **database password** instead:
+
+1. Dashboard → **Project Settings → Database** → copy or reset **Database password**
+2. In terminal:
 
 ```bash
 cd image-portal
-supabase link --project-ref duydupyyembdttmjvsxm
+supabase login                                    # if not already logged in
+supabase link --project-ref duydupyyembdttmjvsxm  # correct project
+export SUPABASE_DB_PASSWORD='YOUR_DB_PASSWORD'    # paste password — do not commit
 supabase db push
 ```
 
-**Option B — SQL Editor:** Supabase Dashboard → **SQL** → paste & run the latest file in `supabase/migrations/` (e.g. `20260607180000_security_hardening.sql`).
+If `db push` still fails, use the **Session pooler** connection string from the dashboard (Settings → Database → Connection string → Session mode):
 
-Then **Database → Security Advisor → Rerun linter** to confirm warnings dropped.
+```bash
+supabase db push --db-url "postgresql://postgres.duydupyyembdttmjvsxm:YOUR_PASSWORD@aws-0-us-west-2.pooler.supabase.com:5432/postgres"
+```
+
+(Replace host/region with the string shown in *your* dashboard if different.)
+
+#### Option C — repair migration history only
+
+If you ran the SQL manually in the editor but `db push` wants to re-apply it:
+
+```bash
+supabase migration repair 20260607180000 --status applied
+```
 
 ### 1b. Google sign-in (optional but recommended)
 
