@@ -1,6 +1,7 @@
 import { GlowBackground } from "@/components/ui/GlowBackground";
 import { Button } from "@/components/ui/Button";
 import { BalancedText } from "@/components/ui/BalancedText";
+import { HelpChat } from "@/components/HelpChat";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { AppDownloadStrip } from "@/components/marketing/AppDownloadStrip";
@@ -162,6 +163,7 @@ export default function LandingPage() {
       </section>
 
       <MarketingFooter />
+      <HelpChat />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { GlowBackground } from "@/components/ui/GlowBackground";
+import { HelpChat } from "@/components/HelpChat";
 import { MarketingNav } from "./MarketingNav";
 import { MarketingFooter } from "./MarketingFooter";
 
@@ -9,6 +10,7 @@ export function MarketingPage({ children }: { children: React.ReactNode }) {
       <MarketingNav />
       <div className="ip-main-content">{children}</div>
       <MarketingFooter />
+      <HelpChat />
     </div>
   );
 }

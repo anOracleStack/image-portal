@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GlowBackground } from "@/components/ui/GlowBackground";
+import { HelpChat } from "@/components/HelpChat";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
@@ -13,6 +14,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         </Link>
       </div>
       <div className="ip-auth-page">{children}</div>
+      <HelpChat />
     </div>
   );
 }

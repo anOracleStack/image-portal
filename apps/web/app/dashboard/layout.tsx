@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ensureProfile } from "@/lib/ensure-profile";
+import { DashboardFooter } from "@/components/DashboardFooter";
+import { HelpChat } from "@/components/HelpChat";
 import { Navbar } from "@/components/Navbar";
 
 export default async function DashboardLayout({
@@ -22,9 +24,11 @@ export default async function DashboardLayout({
   });
 
   return (
-    <div className="ip-page">
+    <div className="ip-page ip-dash-page">
       <Navbar user={user} />
       <main className="ip-dash-main">{children}</main>
+      <DashboardFooter />
+      <HelpChat />
     </div>
   );
 }
