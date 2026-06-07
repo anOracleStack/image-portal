@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase-admin";
 import { enhanceImage, type EnhanceOptions } from "@ip/vision";
+import sharp from "sharp";
 
 export const WORKSHOP_MANIFEST = "workshop.json";
 export const DRAFT_ENH = "draft-enhanced.jpg";
@@ -21,6 +22,14 @@ export type WorkshopState = {
 
 export function draftRefName(index: number): string {
   return `${DRAFT_REF_PREFIX}${index}.jpg`;
+}
+
+/** Normalize camera / upload bytes to JPEG for storage (handles PNG, WebP, HEIC when supported). */
+export async function normalizeReferenceImage(input: Buffer): Promise<Buffer> {
+  return sharp(input, { failOn: "none" })
+    .rotate()
+    .jpeg({ quality: 92, mozjpeg: true })
+    .toBuffer();
 }
 
 export function workshopBase(ownerId: string, portalId: string): string {

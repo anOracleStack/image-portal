@@ -60,7 +60,8 @@ export default function PortalDetailClient({
         const data = await res.json();
         throw new Error(data.error || "Upload failed");
       }
-      router.refresh();
+      // Defer refresh so the uploader preview stays visible until the page updates.
+      window.setTimeout(() => router.refresh(), 400);
     },
     [portal.id, router, userId]
   );

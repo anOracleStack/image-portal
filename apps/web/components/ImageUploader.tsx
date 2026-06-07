@@ -69,11 +69,11 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
         setProgress(100);
         setSuccess("Image uploaded successfully.");
       } catch (err) {
-        setPreview(null);
         setError(err instanceof Error ? err.message : "Upload failed.");
       } finally {
         setUploading(false);
         setProgress(0);
+        if (inputRef.current) inputRef.current.value = "";
       }
     },
     [onUpload]

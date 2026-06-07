@@ -5,6 +5,7 @@ import {
   draftPublicUrl,
   draftRefName,
   loadWorkshop,
+  normalizeReferenceImage,
   regenerateEnhanced,
   saveWorkshop,
   workshopReply,
@@ -89,25 +90,63 @@ export async function POST(
     const added: string[] = [];
     for (const file of files) {
       const refName = draftRefName(state.references.length);
-      const buf = Buffer.from(await file.arrayBuffer());
-      await db.storage.from("portal-images").upload(`${base}/${refName}`, buf, {
-        contentType: file.type || "image/jpeg",
-        upsert: true,
-      });
+      let buf: Buffer;
+      try {
+        buf = await normalizeReferenceImage(Buffer.from(await file.arrayBuffer()));
+      } catch {
+        return NextResponse.json(
+          {
+            error:
+              "Could not read that image — try JPEG or PNG, or re-save the photo from your camera roll.",
+          },
+          { status: 400 },
+        );
+      }
+
+      const { error: uploadError } = await db.storage
+        .from("portal-images")
+        .upload(`${base}/${refName}`, buf, {
+          contentType: "image/jpeg",
+          upsert: true,
+        });
+      if (uploadError) {
+        return NextResponse.json(
+          { error: `Upload failed: ${uploadError.message}` },
+          { status: 500 },
+        );
+      }
+
       state.references.push(refName);
       added.push(refName);
     }
 
-    state = await regenerateEnhanced(portal.owner_id, portalId, state);
-    state.messages.push({
-      role: "assistant",
-      content: `Added ${added.length} image${added.length === 1 ? "" : "s"} (${state.references.length} total). Enhanced preview is ready — tell me if you want changes, or approve when it looks right.`,
-      at: new Date().toISOString(),
-    });
+    // Persist references before enhancement so a processing failure does not lose uploads.
+    await saveWorkshop(portal.owner_id, portalId, state);
+
+    let enhanceFailed = false;
+    try {
+      state = await regenerateEnhanced(portal.owner_id, portalId, state);
+      state.messages.push({
+        role: "assistant",
+        content: `Added ${added.length} image${added.length === 1 ? "" : "s"} (${state.references.length} total). Enhanced preview is ready — tell me if you want changes, or approve when it looks right.`,
+        at: new Date().toISOString(),
+      });
+    } catch (enhanceErr) {
+      enhanceFailed = true;
+      const detail =
+        enhanceErr instanceof Error ? enhanceErr.message : "enhancement failed";
+      state.messages.push({
+        role: "assistant",
+        content: `Saved ${added.length} reference image${added.length === 1 ? "" : "s"}, but the enhanced preview could not be generated (${detail}). Your uploads are safe — try uploading again or approve with the reference.`,
+        at: new Date().toISOString(),
+      });
+    }
+
     await saveWorkshop(portal.owner_id, portalId, state);
 
     return NextResponse.json({
       ok: true,
+      enhanceFailed,
       ...serializeState(portalId, state),
     });
   }

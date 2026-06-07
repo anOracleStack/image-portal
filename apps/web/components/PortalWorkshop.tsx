@@ -25,8 +25,13 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
   const [useEnhanced, setUseEnhanced] = useState(true);
   const [chatInput, setChatInput] = useState("");
   const [dragOver, setDragOver] = useState(false);
+  const [localPreviews, setLocalPreviews] = useState<string[]>([]);
 
   const cacheBust = (url: string) => `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+
+  const revokeLocalPreviews = useCallback((urls: string[]) => {
+    for (const url of urls) URL.revokeObjectURL(url);
+  }, []);
 
   const loadState = useCallback(async () => {
     setError(null);
@@ -50,13 +55,29 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, chatBusy]);
 
+  useEffect(
+    () => () => {
+      revokeLocalPreviews(localPreviews);
+    },
+    [localPreviews, revokeLocalPreviews],
+  );
+
   const uploadFiles = useCallback(
     async (files: FileList | File[]) => {
-      const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
+      const list = Array.from(files).filter(
+        (f) => f.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name),
+      );
       if (list.length === 0) {
         setError("Choose JPEG, PNG, or WebP images.");
         return;
       }
+
+      const pendingPreviews = list.map((f) => URL.createObjectURL(f));
+      setLocalPreviews((prev) => {
+        revokeLocalPreviews(prev);
+        return pendingPreviews;
+      });
+
       setUploading(true);
       setError(null);
       setSuccess(null);
@@ -73,9 +94,19 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         setReferences(data.references ?? []);
         setEnhancedUrl(data.enhancedUrl ? cacheBust(data.enhancedUrl) : null);
         setMessages(data.messages ?? []);
-        setSuccess(
-          `Uploaded ${list.length} image${list.length === 1 ? "" : "s"} — enhanced preview is ready.`,
-        );
+        setLocalPreviews((prev) => {
+          revokeLocalPreviews(prev);
+          return [];
+        });
+        if (data.enhanceFailed) {
+          setError(
+            "References saved, but the enhanced preview could not be generated. Try again or approve with your reference.",
+          );
+        } else {
+          setSuccess(
+            `Uploaded ${list.length} image${list.length === 1 ? "" : "s"} — enhanced preview is ready.`,
+          );
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Upload failed");
       } finally {
@@ -83,7 +114,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         if (fileRef.current) fileRef.current.value = "";
       }
     },
-    [portalId],
+    [portalId, revokeLocalPreviews],
   );
 
   const sendChat = useCallback(async () => {
@@ -208,9 +239,12 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       {success && <div className="ip-export-msg ip-export-msg-success">{success}</div>}
       {error && <div className="ip-export-msg ip-export-msg-error">{error}</div>}
 
-      {references.length > 0 && (
+      {(references.length > 0 || localPreviews.length > 0) && (
         <div className="ip-workshop-refs">
-          <h3 className="ip-workshop-section-title">Your references ({references.length})</h3>
+          <h3 className="ip-workshop-section-title">
+            Your references ({references.length || localPreviews.length})
+            {uploading && localPreviews.length > 0 ? " — uploading…" : ""}
+          </h3>
           <div className="ip-workshop-ref-grid">
             {references.map((url, i) => (
               <figure key={`${url}-${i}`} className="ip-workshop-ref-card">
@@ -218,6 +252,13 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
                 <figcaption>Reference {i + 1}</figcaption>
               </figure>
             ))}
+            {references.length === 0 &&
+              localPreviews.map((url, i) => (
+                <figure key={`local-${url}`} className="ip-workshop-ref-card">
+                  <img src={url} alt={`Upload ${i + 1}`} />
+                  <figcaption>{uploading ? "Uploading…" : "Not saved yet"}</figcaption>
+                </figure>
+              ))}
           </div>
         </div>
       )}
