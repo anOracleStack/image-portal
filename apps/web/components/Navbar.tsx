@@ -9,6 +9,7 @@ import { SubscriptionBadge } from "@/components/SubscriptionBadge";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useEffect, useState } from "react";
 import type { PlanTier } from "@/lib/subscription";
+import { getEffectivePlanTier, isOwnerEmail } from "@/lib/owner-access";
 
 interface Props {
   user: User;
@@ -40,7 +41,8 @@ export function Navbar({ user }: Props) {
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (data?.plan_tier) setTier(data.plan_tier as PlanTier);
+      const raw = (data?.plan_tier as PlanTier) ?? "free";
+      setTier(getEffectivePlanTier(user.email, raw));
     }
     fetchTier();
   }, [user.id]);
@@ -67,7 +69,7 @@ export function Navbar({ user }: Props) {
         <div className="ip-dash-header-actions">
           <ThemeToggle compact />
           <span className="ip-dash-user-email">{user.email}</span>
-          <SubscriptionBadge tier={tier} />
+          <SubscriptionBadge tier={tier} isOwner={isOwnerEmail(user.email)} />
           <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm" onClick={handleLogout}>
             Logout
           </button>

@@ -5,6 +5,8 @@ import type { PlanTier } from "@/lib/subscription";
 
 interface Props {
   tier: PlanTier;
+  /** When true, badge reads "Owner" instead of the tier name. */
+  isOwner?: boolean;
 }
 
 const colors: Record<PlanTier, { bg: string; text: string }> = {
@@ -53,11 +55,14 @@ const styles = {
   },
 };
 
-export function SubscriptionBadge({ tier }: Props) {
+export function SubscriptionBadge({ tier, isOwner }: Props) {
+  const displayTier = isOwner ? "enterprise" : tier;
+  const label = isOwner ? "Owner" : tier;
+
   return (
     <span style={styles.wrapper}>
-      <span style={styles.badge(tier)}>{tier}</span>
-      {tier === "free" && (
+      <span style={styles.badge(displayTier)}>{label}</span>
+      {tier === "free" && !isOwner && (
         <Link href="/pricing" style={styles.upgradeLink}>
           Upgrade
         </Link>

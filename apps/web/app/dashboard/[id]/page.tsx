@@ -72,7 +72,7 @@ export default async function PortalDetailPage({
 
   if (!portal) notFound();
 
-  const sub = await getUserSubscription(user.id);
+  const sub = await getUserSubscription(user.id, user.email);
 
   return (
     <PortalDetailClient

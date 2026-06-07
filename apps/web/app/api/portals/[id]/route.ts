@@ -96,7 +96,7 @@ export async function PATCH(
     }
 
     if (updates.visibility !== undefined) {
-      const sub = await getUserSubscription(user.id);
+      const sub = await getUserSubscription(user.id, user.email);
       updates.visibility = enforceGalleryVisibility(
         sub.plan_tier,
         updates.visibility as "public" | "private"

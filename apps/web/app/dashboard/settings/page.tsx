@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { createBrowserClient_ } from "@/lib/supabase-browser";
 import type { PlanTier } from "@/lib/subscription";
+import { getEffectivePlanTier, isOwnerEmail } from "@/lib/owner-access";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { PageIntro } from "@/components/ui/PageIntro";
 import { BalancedText } from "@/components/ui/BalancedText";
@@ -29,7 +30,8 @@ export default function SettingsPage() {
         return;
       }
       setUserId(session.user.id);
-      setEmail(session.user.email ?? "");
+      const userEmail = session.user.email ?? "";
+      setEmail(userEmail);
 
       const supabase = createBrowserClient_();
       const { data: sub } = await supabase
@@ -37,7 +39,8 @@ export default function SettingsPage() {
         .select("plan_tier")
         .eq("user_id", session.user.id)
         .maybeSingle();
-      if (sub?.plan_tier) setTier(sub.plan_tier as PlanTier);
+      const raw = (sub?.plan_tier as PlanTier) ?? "free";
+      setTier(getEffectivePlanTier(userEmail, raw));
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -91,6 +94,8 @@ export default function SettingsPage() {
     }
   }
 
+  const ownerAccess = isOwnerEmail(email);
+
   return (
     <div className="ip-dash-page">
       <PageIntro
@@ -123,9 +128,14 @@ export default function SettingsPage() {
         </p>
         <p className="ip-account-row">
           <span className="ip-faint ip-account-label">Plan</span>
-          <span className="ip-capitalize">{tier}</span>
+          <span className="ip-capitalize">{ownerAccess ? "Owner (full access)" : tier}</span>
         </p>
-        {tier !== "free" && tier !== "enterprise" && (
+        {ownerAccess && (
+          <p className="ip-muted ip-copy-sm ip-text-block">
+            Enterprise limits apply. No Stripe subscription required.
+          </p>
+        )}
+        {!ownerAccess && tier !== "free" && tier !== "enterprise" && (
           <button
             type="button"
             onClick={openBillingPortal}
@@ -135,7 +145,7 @@ export default function SettingsPage() {
             {billingLoading ? "Opening…" : "Manage billing (Stripe)"}
           </button>
         )}
-        {tier === "free" && (
+        {!ownerAccess && tier === "free" && (
           <a
             href="/pricing"
             className="ip-btn ip-btn-primary ip-btn-sm ip-btn-mt-sm"

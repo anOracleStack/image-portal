@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     const { title, destinationUrl, visibility: requestedVisibility } = parsed.data;
     const ownerId = user.id;
 
-    const sub = await getUserSubscription(ownerId);
+    const sub = await getUserSubscription(ownerId, user.email);
     const visibility = enforceGalleryVisibility(
       sub.plan_tier,
       requestedVisibility
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check portal creation limit
-    const limit = await checkPortalLimit(ownerId);
+    const limit = await checkPortalLimit(ownerId, user.email);
     if (!limit.allowed) {
       return NextResponse.json(
         { error: limit.reason, upgrade: true },

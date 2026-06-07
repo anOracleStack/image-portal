@@ -50,7 +50,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="ip-dash-shell">
-      {ownerId && <UsageSummary userId={ownerId} />}
+      {ownerId && <UsageSummary userId={ownerId} email={user?.email} />}
       <OnboardingStrip />
       <AnalyticsDashboard />
       <section className="ip-dash-section">

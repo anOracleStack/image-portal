@@ -3,15 +3,16 @@ import { getUserSubscription, getPlanLimits } from "@/lib/subscription";
 
 interface Props {
   userId: string;
+  email?: string | null;
 }
 
-export async function UsageSummary({ userId }: Props) {
+export async function UsageSummary({ userId, email }: Props) {
   const admin = createAdminClient();
   const now = new Date();
   const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
   const [sub, usage] = await Promise.all([
-    getUserSubscription(userId),
+    getUserSubscription(userId, email),
     admin
       .from("subscription_usage")
       .select("scan_count, portal_count")
