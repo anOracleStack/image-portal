@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import {
+  destinationUrlErrorMessage,
+  normalizeDestinationInput,
+  validateDestination,
+} from "@ip/shared";
 import { canHideFromGallery, type PlanTier } from "@/lib/plans";
 
 interface PortalValues {
@@ -61,7 +66,12 @@ const pStyles = {
   visibilityLabel: { fontSize: "1rem", color: "var(--text)" },
 };
 
-const URL_REGEX = /^https?:\/\/.+\..+/i;
+function formatDestinationField(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return trimmed;
+  const verdict = validateDestination(trimmed);
+  return verdict.ok ? verdict.normalized : normalizeDestinationInput(trimmed);
+}
 
 export default function PortalForm({
   initialValues,
@@ -100,8 +110,11 @@ export default function PortalForm({
 
       if (!destinationUrl.trim()) {
         errs.destinationUrl = "Destination URL is required";
-      } else if (!URL_REGEX.test(destinationUrl.trim())) {
-        errs.destinationUrl = "Enter a valid URL (http/https)";
+      } else {
+        const verdict = validateDestination(destinationUrl.trim());
+        if (!verdict.ok) {
+          errs.destinationUrl = destinationUrlErrorMessage(verdict.reason);
+        }
       }
 
       if (Object.keys(errs).length > 0) {
@@ -109,12 +122,14 @@ export default function PortalForm({
         return;
       }
 
+      const normalizedUrl = formatDestinationField(destinationUrl);
+
       setErrors({});
       setSubmitting(true);
       try {
         await onSubmit({
           title: title.trim(),
-          destinationUrl: destinationUrl.trim(),
+          destinationUrl: normalizedUrl,
           scanMode,
           visibility: galleryEditable ? visibility : "public",
         });
@@ -156,7 +171,12 @@ export default function PortalForm({
           className="ip-input"
           value={destinationUrl}
           onChange={(e) => setDestinationUrl(e.target.value)}
-          placeholder="https://example.com"
+          onBlur={() => {
+            if (destinationUrl.trim()) {
+              setDestinationUrl(formatDestinationField(destinationUrl));
+            }
+          }}
+          placeholder="nike.com or https://example.com/page"
         />
         {errors.destinationUrl && (
           <div style={{ fontSize: "0.9375rem", color: "var(--danger)" }}>

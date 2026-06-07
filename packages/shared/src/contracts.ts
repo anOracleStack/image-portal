@@ -95,7 +95,7 @@ export type ScanResponse = z.infer<typeof ScanResponse>;
 
 export const CreatePortalInput = z.object({
   title: z.string().min(1).max(120),
-  destinationUrl: z.string().url(),
+  destinationUrl: z.string().min(1).max(2048),
   scanMode: ScanMode.default("image"),
   visibility: Visibility.default("public"),
 });

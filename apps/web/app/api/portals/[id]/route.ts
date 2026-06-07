@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { destinationUrlErrorMessage, validateDestination } from "@ip/shared";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 import {
   enforceGalleryVisibility,
   getUserSubscription,
 } from "@/lib/subscription";
+import { checkSafeBrowsing } from "@/lib/safe-browsing";
 
 // ---------------------------------------------------------------------------
 // GET — fetch a single portal by ID (with ownership check)
@@ -100,6 +102,25 @@ export async function PATCH(
         sub.plan_tier,
         updates.visibility as "public" | "private"
       );
+    }
+
+    if (updates.destination_url !== undefined) {
+      const raw = String(updates.destination_url);
+      const verdict = validateDestination(raw);
+      if (!verdict.ok) {
+        return NextResponse.json(
+          { error: destinationUrlErrorMessage(verdict.reason) },
+          { status: 422 }
+        );
+      }
+      const sb = await checkSafeBrowsing(verdict.normalized);
+      if (!sb.safe) {
+        return NextResponse.json(
+          { error: `URL blocked: ${sb.threats.join(", ")}` },
+          { status: 422 }
+        );
+      }
+      updates.destination_url = verdict.normalized;
     }
 
     const { data: portal, error } = await db

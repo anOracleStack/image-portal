@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { CreatePortalInput, validateDestination } from "@ip/shared";
+import { CreatePortalInput, validateDestination, destinationUrlErrorMessage } from "@ip/shared";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { ensureProfile, ProfileEnsureError } from "@/lib/ensure-profile";
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     const verdict = validateDestination(destinationUrl);
     if (!verdict.ok) {
-      return NextResponse.json({ error: verdict.reason }, { status: 422 });
+      return NextResponse.json({ error: destinationUrlErrorMessage(verdict.reason) }, { status: 422 });
     }
     const sb = await checkSafeBrowsing(verdict.normalized);
     if (!sb.safe) {
