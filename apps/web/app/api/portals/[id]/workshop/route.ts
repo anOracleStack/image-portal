@@ -8,9 +8,9 @@ import {
   normalizeReferenceImage,
   regenerateEnhanced,
   saveWorkshop,
-  workshopReply,
   type WorkshopState,
 } from "@/lib/portal-workshop";
+import { workshopAssistantReply } from "@/lib/assistant";
 
 const MAX_MB = Number(process.env.MAX_IMAGE_UPLOAD_MB ?? 10);
 
@@ -161,7 +161,15 @@ export async function POST(
     }
 
     state.messages.push({ role: "user", content: message, at: new Date().toISOString() });
-    const { reply, adjust, wantsApprove } = workshopReply(message, state.references.length);
+    const history = state.messages.slice(0, -1).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+    const { reply, adjust, wantsApprove } = await workshopAssistantReply(
+      message,
+      state.references.length,
+      history,
+    );
 
     if (adjust && state.references.length > 0) {
       state.enhanceOpts = { ...state.enhanceOpts, ...adjust };

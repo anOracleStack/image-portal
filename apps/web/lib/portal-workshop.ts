@@ -115,59 +115,7 @@ export async function regenerateEnhanced(
   return { ...state, enhanced: DRAFT_ENH };
 }
 
-export function workshopReply(
-  message: string,
-  refCount: number,
-): { reply: string; adjust?: EnhanceOptions; wantsApprove?: boolean } {
-  const m = message.toLowerCase().trim();
-
-  if (/^(approve|approved|go live|looks good|perfect|done|ship it)/.test(m)) {
-    return {
-      reply:
-        "Great — hit Approve & go live when you're ready. I'll register the visual and activate scanning.",
-      wantsApprove: true,
-    };
-  }
-
-  if (refCount === 0) {
-    return {
-      reply: "Upload at least one image first — use the upload area above or drag files in.",
-    };
-  }
-
-  const adjust: EnhanceOptions = {};
-
-  if (/bright|lighter|lighten/.test(m)) adjust.brightness = 1.12;
-  if (/dark|darker|dim/.test(m)) adjust.brightness = 0.88;
-  if (/sharp|crisp|detail/.test(m)) adjust.sharpness = 1.8;
-  if (/soft|smooth|blur/.test(m)) adjust.sharpness = 0.7;
-  if (/contrast|punch|pop/.test(m)) adjust.contrast = 1.15;
-  if (/high.?res|upscale|bigger|larger|hq|quality/.test(m)) adjust.maxEdge = 2560;
-
-  if (Object.keys(adjust).length > 0) {
-    const parts = [];
-    if (adjust.brightness) parts.push(adjust.brightness > 1 ? "brighter" : "darker");
-    if (adjust.sharpness)
-      parts.push(adjust.sharpness > 1.2 ? "sharper" : "softer");
-    if (adjust.contrast) parts.push("more contrast");
-    if (adjust.maxEdge) parts.push("higher resolution");
-    return {
-      reply: `Updating the enhanced preview (${parts.join(", ")})…`,
-      adjust,
-    };
-  }
-
-  if (/reference|original|source/.test(m)) {
-    return {
-      reply: `I'm using your first upload as the primary visual (${refCount} reference${refCount === 1 ? "" : "s"} on file). Ask for brighter, sharper, or more contrast, or approve when it looks right.`,
-    };
-  }
-
-  return {
-    reply:
-      "I can adjust the enhanced preview — try: \"make it brighter\", \"sharper\", \"more contrast\", or \"higher quality\". When you're happy, say \"approve\" or use the Approve button.",
-  };
-}
+export { workshopReplyFallback as workshopReply } from "@/lib/assistant-fallback";
 
 export function draftPublicUrl(portalId: string, file: string): string {
   return `/api/portals/${portalId}/image/draft?file=${encodeURIComponent(file)}`;

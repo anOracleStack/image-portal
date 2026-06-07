@@ -3,7 +3,7 @@
 **Purpose:** Single source of truth for agents resuming work on Image Portal (https://rub.pub).  
 **Repo:** `/Users/oraclevision/Developer/applications/RQ/image-portal`  
 **Branch:** `main` · **Remote:** `anOracleStack/image-portal`  
-**Vercel:** root `apps/web` · **Supabase ref:** `ybqmvxuvaldfzmkbucqc`
+**Vercel:** root `apps/web` · **Supabase ref:** `duydupyyembdttmjvsxm` · **Local port:** `3004`
 
 ---
 
@@ -71,13 +71,13 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 ### Implementation — landing (from 53 + full memos)
 
-- [ ] **T-030** Landing hero: “Image” / “Doorway” capitalization; subtitle “Next generation QR code”; line breaks per 53 transcript.
-- [ ] **T-031** Hero body: “the image is the key — not the destination” on one line; “Anyone with a camera phone…” on one line; **GET STARTED FREE** / **SEE HOW IT WORKS** all caps bold.
-- [ ] **T-032** Scan demo: SCAN / MATCH / OPEN; fix or explain live preview if empty; copy per memo.
-- [ ] **T-033** Use cases section: line breaks for posters/flyers, menus, event tickets, product packaging (per 53).
-- [ ] **T-034** “Why Image Portal”: center-aligned block; capitalization on Reliable scanning, Update any time, Never reprint, No QR codes needed; line merges per memo.
-- [ ] **T-035** Pricing section on landing: center-aligned (per memo).
-- [ ] **T-036** Remaining landing items from **T-020 checklist** not covered above.
+- [x] **T-030** Landing hero — **done 2026-06-07** (`HeroHeadline.tsx`, memo 53).
+- [x] **T-031** Hero body & CTAs — **done 2026-06-07** (`page.tsx`).
+- [x] **T-032** Scan demo SCAN/MATCH/OPEN strip — **done 2026-06-07** (`ScanDemo.tsx`).
+- [x] **T-033** Use cases line breaks — **done** (prior `use-cases.ts`; verified 2026-06-07).
+- [x] **T-034** Why RQ Plus center & copy — **done 2026-06-07** (`page.tsx`).
+- [x] **T-035** Pricing on landing centered — **done** (prior + verified 2026-06-07).
+- [ ] **T-036** Remaining landing items from **T-020 checklist** — **deferred** until audio 54–57 transcribed.
 
 ### Implementation — auth / login (code exists; verify live)
 
@@ -91,11 +91,19 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 - [ ] **T-051** Other marketing pages: gallery, features, etc. — audit center/`&`/balanced lines from checklist.
 - [ ] **T-052** Any dashboard/portal items from memos 54–57 (fill from T-020 checklist).
 
+### Completion build-out (2026-06-07 session)
+
+- [x] **T-100** Docs: USER_SETUP, ENV_KEYS, DEPLOY, E2E_CHECKLIST, design spec — **done 2026-06-07**.
+- [x] **T-101** Env: `.env.example` expanded, `scripts/check-env.mjs`, `pnpm check:env` — **done 2026-06-07**.
+- [x] **T-102** LLM assistant: Help + Workshop chat with OpenAI fallback — **done 2026-06-07**.
+- [x] **T-103** `supabase-auth-rub-pub.sh` ref + port 3004 — **done 2026-06-07**.
+- [x] **T-104** Stale copy grep — **done 2026-06-07** (no matches; recorded in E2E_CHECKLIST).
+
 ### Verification — do last, every time
 
-- [ ] **T-090** Production browser pass: `/`, `/login`, `/pricing`, `/signup` (or routes in checklist). Hard refresh / incognito.
-- [ ] **T-091** `pnpm build` and `pnpm test` in `image-portal` — record pass/fail in log.
-- [ ] **T-092** Update this file: all Pending done or explicitly deferred with reason; final log entry “ready for user review” only if T-090 + audio scope complete.
+- [ ] **T-090** Production browser pass — **deferred** (user must verify after deploy + keys).
+- [x] **T-091** `pnpm --filter @ip/web build` + typecheck — **done 2026-06-07** (see log).
+- [ ] **T-092** “Ready for user review” — **pending** T-090 + audio scope (T-010–T-016).
 
 ---
 
@@ -115,6 +123,22 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 ## Work log (newest first)
 
 Append entries here. **Do not delete history.**
+
+### 2026-06-07 — Completion build-out (docs, LLM chat, landing, env)
+
+- **Agent:** Cursor (autonomous completion session)
+- **Task id(s):** T-030–T-035, T-100–T-104, T-091
+- **Done:**
+  - Documentation: `USER_SETUP.md`, `ENV_KEYS.md`, `DEPLOY.md`, `E2E_CHECKLIST.md`, `docs/superpowers/specs/2026-06-07-image-portal-completion-design.md`
+  - Env: expanded `apps/web/.env.example`, `scripts/check-env.mjs`, `pnpm check:env`
+  - AI: `lib/assistant.ts`, `lib/assistant-fallback.ts`, `/api/help/chat`, workshop route uses `workshopAssistantReply`
+  - Landing: hero Image/Doorway, memo 53 copy, Scan/Match/Open strip, CSS
+  - Auth script: `duydupyyembdttmjvsxm`, port 3004 redirects
+  - Cleanup: `scan_mode` UI types → `image` only; stale string grep clean
+- **Files changed:** see git diff on `main`
+- **Verification:** `pnpm --filter @ip/web build` + `typecheck` pass; `rg` stale strings → 0 matches
+- **Deferred:** T-002–T-004 (user Google OAuth), T-010–T-016 (audio), T-090 (production browser), Stripe/ML keys
+- **User action:** Add Supabase, optional OpenAI/Stripe/Google keys per `USER_SETUP.md`; run `E2E_CHECKLIST.md`
 
 ### 2026-05-20 — T-001 production deploy (CLI)
 

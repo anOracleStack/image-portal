@@ -1,79 +1,126 @@
 # Image Portal — what you must do (manual setup)
 
-The codebase can run end-to-end once these steps are done. Do them in order while agents ship code.
+The codebase runs end-to-end once you add secrets below. Agents have wired everything else with placeholders & graceful fallbacks.
+
+**Production:** https://rub.pub  
+**Supabase project ref:** `duydupyyembdttmjvsxm`  
+**Local dev port:** `3004`
+
+---
+
+## Quick start (keys only)
+
+1. Copy `apps/web/.env.example` → `apps/web/.env.local`
+2. Fill **required** keys (see [ENV_KEYS.md](./ENV_KEYS.md))
+3. Run `pnpm check:env` — fix any missing required vars
+4. `pnpm --filter @ip/web dev` → open http://localhost:3004
+5. For production: add the same keys in Vercel → deploy (see [DEPLOY.md](./DEPLOY.md))
 
 ---
 
 ## 1. Supabase (database & auth)
 
-**Why:** Portals, images, fingerprints, and auth live in Supabase.
+**Why:** Portals, images, fingerprints, & auth live in Supabase.
 
-**Where:** [https://supabase.com/dashboard](https://supabase.com/dashboard) → project `ybqmvxuvaldfzmkbucqc`
+**Where:** [Supabase Dashboard](https://supabase.com/dashboard/project/duydupyyembdttmjvsxm)
 
-### 1a. Environment variables (local + Vercel)
+### 1a. API keys
 
-Copy `apps/web/.env.example` → `apps/web/.env.local` and fill:
+| Variable | Dashboard path |
+|----------|----------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | **Settings → API → Project URL** |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | **Settings → API → anon public** |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Settings → API → service_role** (server only — never commit) |
 
-| Variable | Where to get it |
-|----------|-----------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API → Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API → anon public |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → service_role (**server only, never commit**) |
-
-**Vercel:** Project → Settings → Environment Variables → add the same for **Production** (and Preview if you use it).
+Add the same three to **Vercel → Settings → Environment Variables → Production**.
 
 ### 1b. Google sign-in (optional but recommended)
 
-**Why:** Login page expects “Continue with Google.”
+**Why:** Login page offers “Continue with Google.”
 
-**Where:** Supabase → Authentication → Providers → Google
+#### Step 1 — Google Cloud OAuth client (you must do this)
 
-1. Create OAuth client in [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
-2. Authorized redirect URI: `https://rub.pub/auth/callback` (and `http://localhost:3000/auth/callback` for dev).
-3. Paste Client ID + Secret into Supabase Google provider → Enable.
-4. Supabase → Authentication → URL configuration → Site URL: `https://rub.pub`, Redirect URLs include `/auth/callback`.
+1. Open [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
+2. **Create OAuth client ID** → Application type: **Web application**.
+3. **Authorized JavaScript origins:**
+   - `https://rub.pub`
+   - `http://localhost:3004`
+4. **Authorized redirect URIs:**
+   - `https://duydupyyembdttmjvsxm.supabase.co/auth/v1/callback` (Supabase handles OAuth callback)
+5. Copy **Client ID** & **Client secret**.
 
-If the Google app is in **Testing** mode, add your email under Test users.
+#### Step 2 — Supabase Google provider
+
+1. Supabase → **Authentication → Providers → Google**.
+2. Paste Client ID & secret → **Enable**.
+3. If the Google app is in **Testing** mode, add your email under **Test users** (or publish the app).
+
+#### Step 3 — URL configuration
+
+**Option A — script (needs Supabase personal access token):**
+
+```bash
+export SUPABASE_ACCESS_TOKEN="sbp_..."   # https://supabase.com/dashboard/account/tokens
+export SUPABASE_PROJECT_REF="duydupyyembdttmjvsxm"
+bash scripts/supabase-auth-rub-pub.sh
+```
+
+**Option B — manual clicks:**
+
+1. Supabase → **Authentication → URL Configuration**
+2. **Site URL:** `https://rub.pub` (use `http://localhost:3004` only for local-only testing)
+3. **Redirect URLs** — add each on its own line:
+   - `https://rub.pub/auth/callback`
+   - `http://localhost:3004/auth/callback`
+   - `http://127.0.0.1:3004/auth/callback`
 
 ---
 
 ## 2. Embedding provider (matching engine)
 
-**Why:** Upload and scan must use the **same** embedding model or matches fail.
+**Why:** Upload & scan must use the **same** embedding model or matches fail.
 
-### Option A — MVP / demo (no ML API, works immediately)
-
-In Vercel and `.env.local`:
+### Option A — MVP / demo (works immediately)
 
 ```
 CATALOG_EMBED_PROVIDER=grid
 ```
 
-Uses a built-in 768-dim grid fingerprint. Good for demos and first E2E tests. Upgrade before serious scale.
+Built-in 768-dim grid fingerprint. Good for demos & first E2E tests.
 
-### Option B — Production ML (recommended later)
-
-Set a warm HTTP endpoint that accepts raw image bytes and returns `{ "embedding": number[768] }`:
+### Option B — Production ML (later)
 
 ```
+CATALOG_EMBED_PROVIDER=warm-endpoint
 CATALOG_EMBED_ENDPOINT=https://your-embed-service/embed
 CATALOG_EMBED_API_KEY=your-secret
 EMBED_MODEL_ID=dinov2_vitb14
 ```
 
-Same model must be used for catalog upload and `/api/embed/query`.
+---
+
+## 3. OpenAI (optional — smarter chat)
+
+**Why:** Help chat & Portal Workshop chat use GPT when this key is set; otherwise rule-based FAQ.
+
+```
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini   # optional
+```
+
+Get keys at [platform.openai.com/api-keys](https://platform.openai.com/api-keys). Add to Vercel Production if you want LLM chat on rub.pub.
 
 ---
 
-## 3. Deploy web app to rub.pub
+## 4. Deploy web app to rub.pub
 
-**Why:** Viewers use `https://rub.pub/scan` in the browser (no App Store).
+See [DEPLOY.md](./DEPLOY.md) for Vercel GitHub integration or CLI.
 
-**Where:** Vercel dashboard linked to `anOracleStack/image-portal`, root `apps/web`
+Minimum production env:
 
-1. Ensure env vars from §1–2 are set on **Production**.
-2. Set `NEXT_PUBLIC_APP_URL=https://rub.pub`
-3. Deploy latest `main` (or push to trigger auto-deploy).
+- All Supabase keys from §1a
+- `NEXT_PUBLIC_APP_URL=https://rub.pub`
+- `CATALOG_EMBED_PROVIDER=grid` (or warm endpoint)
 
 Verify:
 
@@ -82,70 +129,58 @@ Verify:
 
 ---
 
-## 4. Creator flow test (you)
+## 5. Creator flow test (you)
 
 1. Sign up / log in at `https://rub.pub/login`
-2. Dashboard → **Create portal** → enter title + destination URL  
-   → Portal starts **inactive**
-3. Open the portal → **Upload or capture photo**
-4. Review **Reference vs Enhanced** → **Approve & go live**
-5. **Export image** (dashboard) → download file for print/screen
+2. Dashboard → **Create portal** → title + destination (e.g. `nike.com`)
+3. Open portal → **Workshop your visual** → upload reference image(s)
+4. Review reference vs enhanced → chat adjustments optional → **Approve & go live**
+5. **Export image** → download for print/screen
+
+Full steps: [E2E_CHECKLIST.md](./E2E_CHECKLIST.md)
 
 ---
 
-## 5. Viewer flow test (you)
+## 6. Viewer flow test (you)
 
-1. On a phone, open **`https://rub.pub/scan`** in Safari or Chrome (not the stock Camera app).
-2. Allow camera → **Capture photo** aimed at your printed/exported visual.
-3. Expect **Link found** → **Open link →**
+1. On a phone, open **`https://rub.pub/scan`** in Safari or Chrome
+2. Allow camera → capture your printed/exported visual
+3. Expect **Link found** → **Open link**
 
-Optional: Safari → Share → **Add to Home Screen** so the scanner is one tap.
-
----
-
-## 6. Stock iPhone/Android Camera app
-
-**You cannot** make the default Camera app query Image Portal without:
-
-- OS partnership, or
-- A machine-readable layer in the export (QR, App Clip code, subtle URL text for Live Text), or
-- V3 invisible watermark + OS support (not built).
-
-**Honest viewer path today:** `rub.pub/scan` in the mobile browser.
+Optional: Safari → Share → **Add to Home Screen** for a one-tap scanner PWA.
 
 ---
 
-## 7. Mobile Expo app (optional)
+## 7. Stripe / Safe Browsing (optional)
 
-**Why:** Native app for creators/viewers who install from App Store later.
+Only for paid plans & production URL safety:
 
-**Where:** `apps/mobile/.env`
+- `STRIPE_*` from [Stripe Dashboard](https://dashboard.stripe.com/apikeys)
+- `SAFE_BROWSING_API_KEY` from Google Cloud Safe Browsing API
+
+See [ENV_KEYS.md](./ENV_KEYS.md).
+
+---
+
+## 8. Mobile Expo app (optional)
+
+`apps/mobile/.env`:
 
 ```
 EXPO_PUBLIC_API_URL=https://rub.pub
 ```
 
-Run `pnpm --filter @ip/mobile start` for dev. EAS build is separate; not required for MVP if PWA scan works.
+Run `pnpm --filter @ip/mobile start`. EAS build is separate; not required if PWA scan works.
 
 ---
 
-## 8. Stripe / Safe Browsing (optional)
+## Checklist
 
-Only needed for paid plans and URL safety in production:
-
-- `STRIPE_*` from Stripe Dashboard
-- `SAFE_BROWSING_API_KEY` from Google Cloud (Safe Browsing API)
-
----
-
-## Quick checklist
-
-- [ ] Supabase URL + anon + service role in Vercel Production
-- [ ] `NEXT_PUBLIC_APP_URL=https://rub.pub`
+- [ ] Supabase URL + anon + service role in `.env.local` & Vercel Production
+- [ ] `NEXT_PUBLIC_APP_URL` correct per environment
 - [ ] `CATALOG_EMBED_PROVIDER=grid` (or warm embed endpoint)
-- [ ] Google OAuth enabled (if using Google login)
+- [ ] Google OAuth enabled in Supabase (if using Google login)
+- [ ] `OPENAI_API_KEY` added (optional, for LLM chat)
 - [ ] Production deploy succeeded
-- [ ] Creator: create → capture → approve → export
+- [ ] Creator: create → workshop → approve → export
 - [ ] Viewer: `rub.pub/scan` → match → open link
-
-When all boxes are checked, the product matches the intended creator + viewer loop (browser scanner, no App Store for viewers).

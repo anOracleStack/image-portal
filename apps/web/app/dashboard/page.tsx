@@ -22,7 +22,7 @@ export default async function DashboardPage() {
     slug: string;
     destination_url: string;
     status: "active" | "inactive" | "suspended";
-    scan_mode: "image" | "hybrid";
+    scan_mode: "image";
     visibility: "public" | "private";
     total_scans: number;
     last_scanned_at: string | null;

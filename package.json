@@ -5,7 +5,8 @@
   "scripts": {
     "build": "pnpm -r --filter ./packages/** build",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm exec vitest run"
+    "test": "pnpm exec vitest run",
+    "check:env": "node scripts/check-env.mjs"
   },
   "devDependencies": {
     "typescript": "^5.6.3",

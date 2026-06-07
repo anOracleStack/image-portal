@@ -7,7 +7,7 @@
 #   bash "/Users/oraclevision/Developer/applications/RQ/image-portal/scripts/supabase-auth-rub-pub.sh"
 set -euo pipefail
 
-PROJECT_REF="${SUPABASE_PROJECT_REF:-ybqmvxuvaldfzmkbucqc}"
+PROJECT_REF="${SUPABASE_PROJECT_REF:-duydupyyembdttmjvsxm}"
 SITE_URL="${SITE_URL:-https://rub.pub}"
 
 if [[ -z "${SUPABASE_ACCESS_TOKEN:-}" ]]; then
@@ -30,7 +30,7 @@ print("uri_allow_list:")
 print(d.get("uri_allow_list") or "(empty)")
 PY
 
-export REQUIRED_URLS="${SITE_URL}/auth/callback|http://localhost:3000/auth/callback|http://localhost:3004/auth/callback|https://image-portal-liard.vercel.app/auth/callback"
+export REQUIRED_URLS="${SITE_URL}/auth/callback|http://localhost:3004/auth/callback|http://127.0.0.1:3004/auth/callback|https://image-portal-liard.vercel.app/auth/callback"
 
 MERGED=$(python3 <<'PY'
 import json, os

@@ -18,10 +18,10 @@ const whyItems = [
     ],
   },
   {
-    title: "Update Anytime, Never Reprint",
+    title: "Update Any Time, Never Reprint",
     lines: [
       "Change the destination whenever you want.",
-      "The printed image stays the same; the link does not.",
+      "The printed image stays the same; the link does not move.",
     ],
   },
   {
@@ -74,20 +74,18 @@ export default function LandingPage() {
           <BalancedText
             className="ip-muted ip-text-block ip-hero-lead ip-copy-md"
             lines={[
-              "Link any image to the URL of your choice —",
-              "like a QR code, only not outdated or unattractive.",
-              "Upload your file or snap a photo on your phone.",
-              "We reimagine the visual — you approve it,",
-              "then link it to any destination you choose.",
+              "Upload an image, link it anywhere —",
+              "the image is the key — not the destination.",
+              "Anyone with a camera phone can open your link in seconds.",
             ]}
           />
         </div>
         <div className="ip-hero-actions ip-animate-in ip-animate-in-delay-2">
-          <Button href="/login" variant="primary" className="ip-btn-hero">
-            Get started free
+          <Button href="/login" variant="primary" className="ip-btn-hero ip-btn-hero-cta">
+            GET STARTED FREE
           </Button>
-          <Button href="#how-it-works" variant="secondary" className="ip-btn-hero">
-            See how it works ↓
+          <Button href="#how-it-works" variant="secondary" className="ip-btn-hero ip-btn-hero-cta">
+            SEE HOW IT WORKS ↓
           </Button>
         </div>
         <AppDownloadStrip />
