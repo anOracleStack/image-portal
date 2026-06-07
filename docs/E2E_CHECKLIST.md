@@ -2,7 +2,7 @@
 
 Use this after local setup or a production deploy to confirm the full creator → viewer loop.
 
-**Production:** https://rub.pub · **Local:** http://localhost:3004  
+**Production:** [https://rub.pub](https://rub.pub) · **Local:** [http://localhost:3004](http://localhost:3004)  
 **Supabase ref:** `duydupyyembdttmjvsxm`
 
 ---
@@ -57,22 +57,22 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 
 ### Workshop upload
 
-5. [ ] Open portal detail → **Workshop your visual**
-6. [ ] Upload JPEG/PNG/WebP (drag-drop, browse, or camera) — progress bar while uploading
-7. [ ] Reference strip + before/after slider appear after upload
-8. [ ] Enhanced preview generates (or clear error if enhancement fails; references retained)
+1. [ ] Open portal detail → **Workshop your visual**
+2. [ ] Upload JPEG/PNG/WebP (drag-drop, browse, or camera) — progress bar while uploading
+3. [ ] Reference strip + before/after slider appear after upload
+4. [ ] Enhanced preview generates (or clear error if enhancement fails; references retained)
 
 ### Workshop chat
 
-9. [ ] Send chat message (e.g. “make it brighter”) — assistant replies
-10. [ ] With `OPENAI_API_KEY`: creative/LLM + optional vision replies; without: rule-based adjustments still work
+1. [ ] Send chat message (e.g. “make it brighter”) — assistant replies
+2. [ ] With `OPENAI_API_KEY`: creative/LLM + optional vision replies; without: rule-based adjustments still work
 
 ### Approve & export
 
-11. [ ] Toggle “Use enhanced version” if desired
-12. [ ] **Approve & go live** → portal status **active**
-13. [ ] **Export image** downloads PNG suitable for print/screen
-14. [ ] Portal slug URL `/p/{slug}` loads interstitial (if configured)
+1. [ ] Toggle “Use enhanced version” if desired
+2. [ ] **Approve & go live** → portal status **active**
+3. [ ] **Export image** downloads PNG suitable for print/screen
+4. [ ] Portal slug URL `/p/{slug}` loads interstitial (if configured)
 
 ---
 
@@ -85,15 +85,15 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 
 ## Viewer flow — scan on phone
 
-15. [ ] On phone browser, open `https://rub.pub/scan` (or local tunnel for dev)
-16. [ ] Grant camera permission
-17. [ ] Capture photo of exported/printed visual
-18. [ ] Match result shows correct portal / destination domain
-19. [ ] **Open link** navigates to destination URL
+1. [ ] On phone browser, open `https://rub.pub/scan` (or local tunnel for dev)
+2. [ ] Grant camera permission
+3. [ ] Capture photo of exported/printed visual
+4. [ ] Match result shows correct portal / destination domain
+5. [ ] **Open link** navigates to destination URL
 
 ### PWA (optional)
 
-20. [ ] Add to Home Screen → icon opens scan UI full-screen
+1. [ ] Add to Home Screen → icon opens scan UI full-screen
 
 ---
 
@@ -107,12 +107,14 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 
 ## Optional integrations
 
-| Feature | Requires | Verify |
-|---------|----------|--------|
-| Google login | Google OAuth + Supabase provider | Sign in with Google |
-| LLM chat | `OPENAI_API_KEY` | Workshop & help give non-template answers |
-| Stripe billing | `STRIPE_*` keys | `/pricing` checkout (test mode) |
-| Safe Browsing | `SAFE_BROWSING_API_KEY` | Malicious URL blocked on portal create |
+
+| Feature        | Requires                         | Verify                                    |
+| -------------- | -------------------------------- | ----------------------------------------- |
+| Google login   | Google OAuth + Supabase provider | Sign in with Google                       |
+| LLM chat       | `OPENAI_API_KEY`                 | Workshop & help give non-template answers |
+| Stripe billing | `STRIPE_`* keys                  | `/pricing` checkout (test mode)           |
+| Safe Browsing  | `SAFE_BROWSING_API_KEY`          | Malicious URL blocked on portal create    |
+
 
 ---
 
@@ -126,7 +128,10 @@ rg "choose how visitors scan|Enter a valid URL \(http/https\)" apps/web packages
 
 ## Sign-off
 
-| Role | Date | Notes |
-|------|------|-------|
+
+| Role        | Date       | Notes                                                |
+| ----------- | ---------- | ---------------------------------------------------- |
 | Agent build | 2026-06-07 | Code complete; user keys & live browser pass pending |
-| User | | |
+| User        |            |                                                      |
+
+
