@@ -21,16 +21,11 @@ export async function HeroHeadline() {
         dangerouslySetInnerHTML={{ __html: qrSvg }}
       />
       <h1 className="ip-hero-title ip-hero-grabber">
-        <span className="ip-hero-grabber-line">
-          Turn any <span className="ip-hero-cap">Image</span>
-        </span>
+        <span className="ip-hero-grabber-line">The Next Generation</span>
         <span className="ip-hero-grabber-line ip-hero-grabber-accent">
-          into a <span className="ip-hero-cap">Doorway</span>
+          Of QR Codes
         </span>
       </h1>
-      <p className="ip-mono ip-badge ip-badge-accent ip-hero-subtitle">
-        Next generation QR code
-      </p>
     </div>
   );
 }

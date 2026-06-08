@@ -74,8 +74,8 @@ export default function LandingPage() {
           <BalancedText
             className="ip-muted ip-text-block ip-hero-lead ip-copy-md"
             lines={[
-              "Upload an image, link it anywhere —",
-              "the image is the key — not the destination.",
+              "Turn any image into a doorway.",
+              "Upload it, link it anywhere — the image is the key.",
               "Anyone with a camera phone can open your link in seconds.",
             ]}
           />
