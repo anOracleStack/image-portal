@@ -48,8 +48,8 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 ### Blockers — production & auth
 
-- [x] **T-001** Redeploy Vercel **production** from latest `main` — **done 2026-05-20** (`vercel deploy --prod`, deployment `dpl_5gLGrcJXZBLMXnxUP2ruSNWqbQq1`, aliased https://rub.pub).
-- [ ] **T-002** Verify **https://rub.pub/login** shows: “Continue with Google”, Create Account flow, centered fields, keep-signed-in behavior. Record evidence in log (screenshot note or HTML grep for `Continue with Google`).
+- [x] **T-001** Redeploy Vercel **production** from latest `main` — **done 2026-06-08** (`a95fba2`, deployment `dpl_HnKJnqQa3pmGQ3N59MePsxBoKWu5`, aliased https://rub.pub). Prior: `dpl_5gLGrcJXZBLMXnxUP2ruSNWqbQq1` (2026-05-20).
+- [x] **T-002** Verify **https://rub.pub/login** — **done 2026-06-08**: login JS bundle `app/login/page-1d3a5294d1a0340f.js` contains `Continue with Google`.
 - [ ] **T-003** Supabase: enable **Google** provider; set redirect URLs for `https://rub.pub/auth/callback` (and local dev if needed). Document status in log (no secrets).
 - [ ] **T-004** If Google app is in **Testing** mode: ensure test users are added or app published — document in log.
 
@@ -123,6 +123,17 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 ## Work log (newest first)
 
 Append entries here. **Do not delete history.**
+
+### 2026-06-08 — T-001 + T-002 commit push deploy
+
+- **Agent:** Cursor (user: commit push merge deploy)
+- **Task id(s):** T-001, T-002
+- **Done:** Working tree already clean on `main` `a95fba2` (synced with `origin/main`). No merge needed. `vercel deploy --prod --yes` → **READY**, aliased **https://rub.pub**
+- **Files changed:** `docs/PROJECT-TASKS.md` (this log + T-001/T-002 checkboxes)
+- **Commit:** (see `git log -1` after push)
+- **Verification:** Deployment `dpl_HnKJnqQa3pmGQ3N59MePsxBoKWu5`; login bundle grep → `Continue with Google` ✓
+- **Inspector:** https://vercel.com/anoraclestacks-projects/image-portal/HnKJnqQa3pmGQ3N59MePsxBoKWu5
+- **Next:** T-003 (Supabase Google provider), T-011–T-016 (audio transcripts)
 
 ### 2026-06-07 — Completion build-out (docs, LLM chat, landing, env)
 
