@@ -1316,15 +1316,38 @@ a {
 }
 
 .ip-dash-header {
-  background: color-mix(in srgb, var(--bg-elevated) 96%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
   border-bottom: 1px solid var(--border);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   padding-top: env(safe-area-inset-top, 0);
+}
+
+.ip-dash-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+
+.ip-dash-logo span {
+  white-space: nowrap;
+}
+
+.ip-dash-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  min-width: 0;
 }
 
 .ip-dash-header-top {
@@ -1340,17 +1363,9 @@ a {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-}
-
-.ip-dash-user-email {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  max-width: min(220px, 40vw);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .ip-dash-header-nav {
@@ -1370,7 +1385,7 @@ a {
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  padding: calc(var(--dash-header-offset, 128px) + clamp(16px, 3vw, 28px))
+  padding: calc(var(--dash-header-offset, 88px) + clamp(16px, 3vw, 28px))
     clamp(16px, 4vw, 24px) 2rem;
   position: relative;
   z-index: 1;
@@ -1378,10 +1393,143 @@ a {
 
 .ip-dash-footer {
   border-top: 1px solid var(--border);
-  padding: 32px 0 calc(32px + env(safe-area-inset-bottom, 0));
+  padding: 24px 0 calc(24px + env(safe-area-inset-bottom, 0));
   margin-top: auto;
   position: relative;
   z-index: 1;
+  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.ip-dash-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ip-dash-footer-theme {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .ip-dash-header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    padding-bottom: 10px;
+  }
+
+  .ip-dash-nav {
+    order: 3;
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ip-dash-header-actions {
+    order: 2;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .ip-dash-logo {
+    order: 1;
+  }
+}
+
+.ip-dash-user-email {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  max-width: min(200px, 36vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dashboard cards — subtle brand glow */
+.ip-dash-page .ip-card {
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 12%, var(--border));
+}
+
+.ip-portal-detail {
+  text-align: center;
+}
+
+.ip-portal-nav-help {
+  max-width: 42rem;
+  margin: 0 auto 1.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  background: color-mix(in srgb, var(--accent-dim) 45%, var(--bg-card));
+  text-align: left;
+}
+
+.ip-portal-nav-help-intro {
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+
+.ip-portal-nav-help-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.ip-portal-nav-help-list li + li {
+  margin-top: 0.35rem;
+}
+
+.ip-portal-nav-help-list strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ip-portal-field-help {
+  max-width: 36rem;
+  margin: 0 auto 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ip-portal-field-help strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ip-portal-section .ip-share-actions,
+.ip-portal-section .ip-copy-link-row {
+  justify-content: center;
+}
+
+.ip-portal-section .ip-detail-grid {
+  justify-items: center;
+}
+
+.ip-uploader-cta {
+  margin-top: 1rem;
+}
+
+.ip-workshop-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.ip-workshop-upload-cta {
+  min-width: 10rem;
 }
 
 /* Floating help chat */
@@ -2015,12 +2163,13 @@ a {
 }
 
 .ip-workshop-upload {
-  border: 2px dashed var(--border-strong);
+  border: 2px dashed color-mix(in srgb, var(--accent) 35%, var(--border-strong));
   border-radius: var(--radius-md);
   padding: 1.75rem 1rem;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  background: color-mix(in srgb, var(--accent-dim) 25%, transparent);
 }
 
 .ip-workshop-upload:hover,
@@ -2035,10 +2184,13 @@ a {
 }
 
 .ip-workshop-section-title {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 700;
   margin: 0 0 10px;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
 }
 
 .ip-workshop-ref-grid {
@@ -2511,10 +2663,13 @@ a {
 /* Cards & alerts */
 .ip-card-section-title {
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 700;
   margin: 0 0 1rem;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
 }
 
 .ip-card-title-sm {

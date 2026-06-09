@@ -153,6 +153,10 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Upload failed");
+        setLocalPreviews((prev) => {
+          revokeLocalPreviews(prev);
+          return [];
+        });
       } finally {
         setUploading(false);
         setUploadPct(0);
@@ -276,18 +280,30 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
           <>
             <p className="ip-workshop-upload-title">Add reference images</p>
             <p className="ip-muted ip-copy-sm">
-              Drop files, click to browse, or use your camera. Multiple images OK.
+              Drop files here, or use the button below to pick a photo from your device.
             </p>
-            <button
-              type="button"
-              className="ip-btn ip-btn-secondary ip-btn-sm ip-workshop-camera-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                fileRef.current?.click();
-              }}
-            >
-              Open camera
-            </button>
+            <div className="ip-workshop-upload-actions">
+              <button
+                type="button"
+                className="ip-btn ip-btn-primary ip-workshop-upload-cta"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileRef.current?.click();
+                }}
+              >
+                Upload photo
+              </button>
+              <button
+                type="button"
+                className="ip-btn ip-btn-secondary ip-btn-sm ip-workshop-camera-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileRef.current?.click();
+                }}
+              >
+                Camera
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -321,10 +337,11 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
                 </figure>
               ))}
               {references.length === 0 &&
+                uploading &&
                 localPreviews.map((url, i) => (
                   <figure key={`local-${url}`} className="ip-workshop-ref-card">
                     <img src={url} alt={`Upload ${i + 1}`} />
-                    <figcaption>{uploading ? "Uploading…" : "Pending"}</figcaption>
+                    <figcaption>Uploading…</figcaption>
                   </figure>
                 ))}
             </div>

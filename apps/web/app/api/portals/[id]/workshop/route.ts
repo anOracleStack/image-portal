@@ -11,6 +11,10 @@ import {
   type WorkshopState,
 } from "@/lib/portal-workshop";
 import { workshopAssistantReply } from "@/lib/assistant";
+import {
+  STORAGE_BUCKETS,
+  storageBucketErrorMessage,
+} from "@/lib/storage-buckets";
 
 const MAX_MB = Number(process.env.MAX_IMAGE_UPLOAD_MB ?? 10);
 
@@ -94,6 +98,11 @@ export async function POST(
       try {
         buf = await normalizeReferenceImage(Buffer.from(await file.arrayBuffer()));
       } catch {
+        for (const name of added) {
+          await db.storage
+            .from(STORAGE_BUCKETS.PORTAL_IMAGES)
+            .remove([`${base}/${name}`]);
+        }
         return NextResponse.json(
           {
             error:
@@ -104,14 +113,24 @@ export async function POST(
       }
 
       const { error: uploadError } = await db.storage
-        .from("portal-images")
+        .from(STORAGE_BUCKETS.PORTAL_IMAGES)
         .upload(`${base}/${refName}`, buf, {
           contentType: "image/jpeg",
           upsert: true,
         });
       if (uploadError) {
+        for (const name of added) {
+          await db.storage
+            .from(STORAGE_BUCKETS.PORTAL_IMAGES)
+            .remove([`${base}/${name}`]);
+        }
         return NextResponse.json(
-          { error: `Upload failed: ${uploadError.message}` },
+          {
+            error: storageBucketErrorMessage(
+              STORAGE_BUCKETS.PORTAL_IMAGES,
+              uploadError.message,
+            ),
+          },
           { status: 500 },
         );
       }

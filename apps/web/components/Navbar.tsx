@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { RqPlusMark } from "@/components/brand/RqPlusMark";
 import { SubscriptionBadge } from "@/components/SubscriptionBadge";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useEffect, useState } from "react";
 import type { PlanTier } from "@/lib/subscription";
 import { getEffectivePlanTier, isOwnerEmail } from "@/lib/owner-access";
@@ -17,9 +16,21 @@ interface Props {
 
 const navLinks = [
   { href: "/dashboard", label: "Portals" },
-  { href: "/dashboard/scan-history", label: "History" },
-  { href: "/dashboard/api-keys", label: "API" },
-  { href: "/gallery", label: "Gallery" },
+  {
+    href: "/dashboard/scan-history",
+    label: "History",
+    hint: "Scan log for your portals — who scanned, when, & match confidence.",
+  },
+  {
+    href: "/dashboard/api-keys",
+    label: "API",
+    hint: "Programmatic access — create keys to upload portals or query scan data.",
+  },
+  {
+    href: "/gallery",
+    label: "Gallery",
+    hint: "Public showcase of portals opted in — browse what others have published.",
+  },
   { href: "/scan", label: "Scan" },
   { href: "/pricing", label: "Pricing" },
   { href: "/dashboard/settings", label: "Settings" },
@@ -45,7 +56,7 @@ export function Navbar({ user }: Props) {
       setTier(getEffectivePlanTier(user.email, raw));
     }
     fetchTier();
-  }, [user.id]);
+  }, [user.id, user.email]);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -60,29 +71,35 @@ export function Navbar({ user }: Props) {
 
   return (
     <header className="ip-dash-header">
-      <div className="ip-container ip-dash-header-top">
-        <Link href="/dashboard" className="ip-logo">
+      <div className="ip-container ip-dash-header-inner">
+        <Link href="/dashboard" className="ip-logo ip-dash-logo">
           <RqPlusMark />
-          RQ Plus
+          <span>RQ Plus</span>
         </Link>
 
+        <nav className="ip-dash-nav" aria-label="Dashboard">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="ip-nav-link"
+              title={"hint" in link ? link.hint : undefined}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
         <div className="ip-dash-header-actions">
-          <ThemeToggle compact />
-          <span className="ip-dash-user-email">{user.email}</span>
+          <span className="ip-dash-user-email" title={user.email ?? undefined}>
+            {user.email}
+          </span>
           <SubscriptionBadge tier={tier} isOwner={isOwnerEmail(user.email)} />
           <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </div>
-
-      <nav className="ip-container ip-dash-header-nav" aria-label="Dashboard">
-        {navLinks.map((link) => (
-          <Link key={link.href} href={link.href} className="ip-nav-link">
-            {link.label}
-          </Link>
-        ))}
-      </nav>
     </header>
   );
 }

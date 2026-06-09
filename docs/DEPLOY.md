@@ -102,6 +102,34 @@ Quick smoke:
 |---------|-----|
 | Old UI on rub.pub | Redeploy production from latest `main`; hard refresh |
 | Google login redirect error | Check Supabase redirect URLs & Google OAuth client URIs |
-| Upload fails | Verify `SUPABASE_SERVICE_ROLE_KEY` on Vercel; storage buckets exist |
+| Upload fails | Verify `SUPABASE_SERVICE_ROLE_KEY` on Vercel; run storage migration `20260609120000_ensure_storage_buckets.sql` or create buckets manually (see below) |
 | Scans never match | Set `CATALOG_EMBED_PROVIDER=grid` or configure warm embed endpoint |
 | Workshop/help chat generic only | Add `OPENAI_API_KEY` on Vercel (optional) |
+
+### Storage buckets (production)
+
+Uploads require these Supabase Storage buckets:
+
+| Bucket ID | Purpose |
+|-----------|---------|
+| `portal-images` | Portal & workshop image files |
+| `portal-cache` | Preprocessed scan cache (per image) |
+| `portal-exports` | Generated export files |
+| `avatars` | Profile avatars (optional) |
+
+**Preferred:** apply migrations via Supabase CLI or SQL Editor:
+
+```bash
+# From image-portal/
+supabase db push
+# Or paste supabase/migrations/20260609120000_ensure_storage_buckets.sql into SQL Editor
+```
+
+**Manual (Supabase Dashboard → Storage → New bucket):**
+
+1. Create bucket `portal-images` — **Private**
+2. Create bucket `portal-cache` — **Private**
+3. Create bucket `portal-exports` — **Private**
+4. (Optional) Create bucket `avatars` — **Public**
+
+Then run the rest of `20260519052611_storage_policies.sql` for RLS policies if not already applied.

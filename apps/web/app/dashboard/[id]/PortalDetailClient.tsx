@@ -148,7 +148,24 @@ export default function PortalDetailClient({
       : "ip-export-msg ip-export-msg-error";
 
   return (
-    <div className="ip-dash-page-wide">
+    <div className="ip-dash-page-wide ip-portal-detail">
+      <div className="ip-portal-nav-help">
+        <p className="ip-muted ip-copy-sm ip-portal-nav-help-intro">
+          Quick guide to dashboard navigation:
+        </p>
+        <ul className="ip-portal-nav-help-list">
+          <li>
+            <strong>History</strong> — scan log for your portals: timestamps, match confidence, &amp; destinations opened.
+          </li>
+          <li>
+            <strong>API</strong> — create keys to upload portals or query scan data from your own apps &amp; scripts.
+          </li>
+          <li>
+            <strong>Gallery</strong> — public showcase at /gallery for portals you choose to list (see visibility below).
+          </li>
+        </ul>
+      </div>
+
       <div className="ip-detail-header">
         <div className="ip-detail-title-wrap">
           <h1 className="ip-detail-title">{portal.title}</h1>
@@ -189,7 +206,7 @@ export default function PortalDetailClient({
         </div>
       </div>
 
-      <div className="ip-card ip-card-spaced-lg">
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
         <h2 className="ip-card-section-title">Details</h2>
         <div className="ip-detail-label">Destination URL</div>
         <div className="ip-detail-value">
@@ -203,6 +220,12 @@ export default function PortalDetailClient({
           </a>
         </div>
         <div className="ip-detail-label">Public gallery</div>
+        <p className="ip-portal-field-help">
+          Controls whether this portal appears on the public /gallery page.
+          <strong> Listed on gallery</strong> means anyone can browse &amp; discover it.
+          <strong> Hide from gallery</strong> keeps the portal private — viewers can still scan if they have the link, but it won&apos;t show in the directory.
+          Paid plans can toggle this; free portals are always listed.
+        </p>
         <div className="ip-detail-value ip-gallery-privacy-row">
           <span>
             {visibility === "public"
@@ -242,8 +265,8 @@ export default function PortalDetailClient({
         </div>
       </div>
 
-      <div className="ip-card ip-card-spaced-lg">
-        <h2 className="ip-card-section-title">Share & distribute</h2>
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
+        <h2 className="ip-card-section-title">Share &amp; distribute</h2>
         <div className="ip-share-actions">
           <a
             href={`/p/${portal.slug}`}
@@ -289,7 +312,7 @@ export default function PortalDetailClient({
         </div>
       </div>
 
-      <div className="ip-card ip-card-spaced-lg">
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
         <h2 className="ip-card-section-title">Images ({images.length})</h2>
         {images.length === 0 ? (
           <BalancedText
@@ -310,7 +333,7 @@ export default function PortalDetailClient({
         )}
       </div>
 
-      <div className="ip-card ip-card-spaced-lg">
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
         <h2 className="ip-card-section-title">
           {status === "inactive" || images.length === 0
             ? "Workshop your visual"

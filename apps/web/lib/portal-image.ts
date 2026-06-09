@@ -1,5 +1,9 @@
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getEmbeddingProvider } from "@/lib/embedding";
+import {
+  STORAGE_BUCKETS,
+  storageBucketErrorMessage,
+} from "@/lib/storage-buckets";
 import { preprocess, dhash, ahash, hashSimilarity } from "@ip/vision";
 import { EMBED_MODEL, EMBED_VERSION } from "@ip/shared";
 import crypto from "node:crypto";
@@ -35,10 +39,20 @@ export async function persistPortalImage(opts: {
   const quality_score = Number((distinctNibbles / 16).toFixed(3));
   const storagePath = `${ownerId}/${portalId}/${sha256}`;
 
-  await db.storage.from("portal-images").upload(storagePath, buf, {
-    contentType: mimeType,
-    upsert: true,
-  });
+  const { error: imageUploadErr } = await db.storage
+    .from(STORAGE_BUCKETS.PORTAL_IMAGES)
+    .upload(storagePath, buf, {
+      contentType: mimeType,
+      upsert: true,
+    });
+  if (imageUploadErr) {
+    throw new Error(
+      storageBucketErrorMessage(
+        STORAGE_BUCKETS.PORTAL_IMAGES,
+        imageUploadErr.message,
+      ),
+    );
+  }
 
   const { data: imgRow, error: imgErr } = await db
     .from("portal_images")
@@ -56,11 +70,24 @@ export async function persistPortalImage(opts: {
     .select("id")
     .single();
 
-  if (imgErr || !imgRow) throw new Error(imgErr?.message ?? "image insert failed");
+  if (imgErr || !imgRow) {
+    await db.storage.from(STORAGE_BUCKETS.PORTAL_IMAGES).remove([storagePath]);
+    throw new Error(imgErr?.message ?? "image insert failed");
+  }
 
-  await db.storage
-    .from("portal-cache")
+  const { error: cacheUploadErr } = await db.storage
+    .from(STORAGE_BUCKETS.PORTAL_CACHE)
     .upload(`${imgRow.id}.raw`, Buffer.from(px), { upsert: true });
+  if (cacheUploadErr) {
+    await db.storage.from(STORAGE_BUCKETS.PORTAL_IMAGES).remove([storagePath]);
+    await db.from("portal_images").delete().eq("id", imgRow.id);
+    throw new Error(
+      storageBucketErrorMessage(
+        STORAGE_BUCKETS.PORTAL_CACHE,
+        cacheUploadErr.message,
+      ),
+    );
+  }
 
   const provider = getEmbeddingProvider();
   const embedding = await provider.embed(buf);

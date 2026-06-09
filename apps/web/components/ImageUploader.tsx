@@ -70,6 +70,7 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
         setSuccess("Image uploaded successfully.");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Upload failed.");
+        setPreview(null);
       } finally {
         setUploading(false);
         setProgress(0);
@@ -118,11 +119,18 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
             <BalancedText
               className="ip-text-block"
               style={{ color: "var(--foreground)", margin: 0 }}
-              lines={[
-                "Drop an image here",
-                "or click to browse.",
-              ]}
+              lines={["Drop an image here", "or use the button below."]}
             />
+            <button
+              type="button"
+              className="ip-btn ip-btn-primary ip-uploader-cta"
+              onClick={(e) => {
+                e.stopPropagation();
+                inputRef.current?.click();
+              }}
+            >
+              Upload photo
+            </button>
             <BalancedText
               className="ip-muted ip-text-block"
               style={{ marginTop: 8, fontSize: "0.82rem" }}

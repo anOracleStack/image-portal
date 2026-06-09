@@ -4,6 +4,7 @@ import { ensureProfile } from "@/lib/ensure-profile";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { HelpChat } from "@/components/HelpChat";
 import { Navbar } from "@/components/Navbar";
+import { GlowBackground } from "@/components/ui/GlowBackground";
 
 export default async function DashboardLayout({
   children,
@@ -25,6 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="ip-page ip-dash-page">
+      <GlowBackground showGrid={false} />
       <Navbar user={user} />
       <main className="ip-dash-main">{children}</main>
       <DashboardFooter />
