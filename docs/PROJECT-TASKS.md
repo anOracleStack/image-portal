@@ -124,6 +124,19 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 Append entries here. **Do not delete history.**
 
+### 2026-06-09 — PWA ship-today (Approach 1)
+
+- **Agent:** Cursor (subagent)
+- **Task id(s):** PWA ship blockers (T-090 prep — **not** marking T-090 complete)
+- **Done:**
+  - Added `POST /api/embed/query` — accepts JSON `{ frameBase64 }` or multipart `file`; returns embedding + phash + model/version via `computeWebQueryEmbedding`
+  - PWA manifest icons: `public/icons/icon-192.png`, `icon-512.png`; updated `manifest.webmanifest`
+  - Design spec: `docs/superpowers/specs/2026-06-09-pwa-ship-today-design.md`
+- **Files changed:** `apps/web/app/api/embed/query/route.ts`, `apps/web/public/manifest.webmanifest`, `apps/web/public/icons/icon-192.png`, `apps/web/public/icons/icon-512.png`, `docs/superpowers/specs/2026-06-09-pwa-ship-today-design.md`, `docs/PROJECT-TASKS.md`
+- **Commit:** none (user did not request)
+- **Verification:** `pnpm --filter @ip/web build` — see agent output
+- **User action (T-090):** Deploy to production; phone E2E — create portal → scan exported image at `https://rub.pub/scan`; confirm match + Open link
+
 ### 2026-06-08 — T-001 + T-002 commit push deploy
 
 - **Agent:** Cursor (user: commit push merge deploy)
