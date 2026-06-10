@@ -98,7 +98,7 @@ export default function LandingPage() {
         >
           <div className="ip-landing-section-inner ip-landing-scan-inner">
             <h2 className="ip-display ip-section-title ip-landing-section-kicker">
-              Quick guide
+              QUICK GUIDE
             </h2>
             <ScanDemo />
           </div>
@@ -109,7 +109,7 @@ export default function LandingPage() {
           className="ip-landing-section ip-landing-how ip-container ip-section-center"
         >
           <div className="ip-landing-section-inner">
-            <h2 className="ip-display ip-section-title">How it works</h2>
+            <h2 className="ip-display ip-section-title">HOW IT WORKS</h2>
             <div className="ip-landing-steps-row">
               {howSteps.map((step, i) => (
                 <div key={step.title} className="ip-step-block ip-landing-step-card">
@@ -127,7 +127,7 @@ export default function LandingPage() {
 
         <section className="ip-landing-section ip-landing-why ip-container ip-section-center">
           <div className="ip-landing-section-inner">
-            <h2 className="ip-display ip-section-title">Why RQ Plus?</h2>
+            <h2 className="ip-display ip-section-title">WHY RQ PLUS?</h2>
             <div className="ip-landing-cards-row ip-landing-why-row">
               {whyItems.map((item) => (
                 <div key={item.title} className="ip-card ip-card-copy ip-why-card ip-landing-compact-card">
@@ -144,14 +144,20 @@ export default function LandingPage() {
 
         <section className="ip-landing-section ip-landing-use-cases ip-container ip-section-center">
           <div className="ip-landing-section-inner">
-            <h2 className="ip-display ip-section-title">Use cases</h2>
+            <h2 className="ip-display ip-section-title">USE CASES</h2>
             <UseCasesSection limit={3} compact />
+          </div>
+        </section>
+
+        <section className="ip-landing-section ip-landing-use-cases ip-landing-use-cases-more ip-container ip-section-center">
+          <div className="ip-landing-section-inner">
+            <UseCasesSection offset={3} limit={3} compact />
           </div>
         </section>
 
         <section className="ip-landing-section ip-landing-pricing ip-container ip-section-center">
           <div className="ip-landing-section-inner ip-landing-pricing-inner">
-            <h2 className="ip-display ip-section-title-sm">Pricing</h2>
+            <h2 className="ip-display ip-section-title-sm">PRICING</h2>
             <BalancedText
               className="ip-muted ip-text-block ip-copy-md ip-mb-lg"
               lines={[

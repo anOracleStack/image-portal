@@ -21,9 +21,11 @@ export async function HeroHeadline() {
         dangerouslySetInnerHTML={{ __html: qrSvg }}
       />
       <h1 className="ip-hero-title ip-hero-grabber">
-        <span className="ip-hero-grabber-line">The Next Generation</span>
-        <span className="ip-hero-grabber-line">Of QR</span>
-        <span className="ip-hero-grabber-line ip-hero-grabber-accent">Codes</span>
+        <span className="ip-hero-grabber-line">The Next</span>
+        <span className="ip-hero-grabber-line">Generation</span>
+        <span className="ip-hero-grabber-line ip-hero-grabber-phrase">
+          Of QR <span className="ip-hero-grabber-accent">Codes</span>
+        </span>
       </h1>
     </div>
   );

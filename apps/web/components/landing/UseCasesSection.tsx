@@ -7,15 +7,24 @@ import { UseCaseModal } from "@/components/landing/UseCaseModal";
 import { USE_CASES, demoAssetPath, type UseCaseSlug } from "@/lib/use-cases";
 
 type UseCasesSectionProps = {
-  /** Show only the first N use cases (landing viewport). */
+  /** Skip the first N use cases (second landing viewport row). */
+  offset?: number;
+  /** Show only N use cases from offset (landing viewport). */
   limit?: number;
   /** Tighter cards for full-viewport landing row. */
   compact?: boolean;
 };
 
-export function UseCasesSection({ limit, compact = false }: UseCasesSectionProps = {}) {
+export function UseCasesSection({
+  offset = 0,
+  limit,
+  compact = false,
+}: UseCasesSectionProps = {}) {
   const [openSlug, setOpenSlug] = useState<UseCaseSlug | null>(null);
-  const cases = limit != null ? USE_CASES.slice(0, limit) : USE_CASES;
+  const cases =
+    limit != null
+      ? USE_CASES.slice(offset, offset + limit)
+      : USE_CASES.slice(offset);
   const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
 
