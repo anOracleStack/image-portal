@@ -1459,6 +1459,11 @@ a {
 
 .ip-portal-detail {
   text-align: center;
+  padding-bottom: 2rem;
+}
+
+.ip-portal-detail .ip-portal-section {
+  margin-bottom: 0;
 }
 
 .ip-portal-nav-help {
@@ -1516,8 +1521,67 @@ a {
   justify-items: center;
 }
 
-.ip-uploader-cta {
+.ip-portal-section-accent {
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--accent-dim));
+}
+
+.ip-portal-section-subtitle {
+  max-width: 34rem;
+  margin: -0.35rem auto 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ip-portal-images-upload {
+  margin-top: 1.5rem;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ip-portal-share-section,
+.ip-portal-gallery-section {
+  text-align: center;
+}
+
+.ip-share-explainer {
+  list-style: none;
+  margin: 0 auto 1.25rem;
+  padding: 0;
+  max-width: 36rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ip-share-explainer li + li {
+  margin-top: 0.65rem;
+}
+
+.ip-share-explainer strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ip-share-explainer code {
+  font-size: 0.78rem;
+}
+
+.ip-uploader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
   margin-top: 1rem;
+}
+
+.ip-uploader-cta {
+  min-width: 9.5rem;
+  min-height: 44px;
 }
 
 .ip-workshop-upload-actions {
@@ -1529,7 +1593,13 @@ a {
 }
 
 .ip-workshop-upload-cta {
-  min-width: 10rem;
+  min-width: 9.5rem;
+  min-height: 44px;
+}
+
+.ip-workshop-section-help {
+  margin: -4px 0 10px;
+  text-align: center;
 }
 
 /* Floating help chat */
@@ -2090,7 +2160,9 @@ a {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  margin-bottom: 0;
 }
 
 .ip-scan-controls {
@@ -2235,6 +2307,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
 }
 
 .ip-workshop-enhanced-img {
@@ -2340,8 +2413,46 @@ a {
   }
 }
 
-.ip-workshop-camera-btn {
-  margin-top: 10px;
+.ip-portal-section + .ip-portal-section {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .ip-portal-detail .ip-card-spaced-lg {
+    padding: 1.25rem 1rem;
+  }
+
+  .ip-portal-detail .ip-detail-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .ip-portal-detail .ip-detail-actions {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .ip-portal-detail .ip-detail-actions .ip-btn {
+    min-height: 44px;
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .ip-workshop-chat-form {
+    flex-direction: column;
+  }
+
+  .ip-workshop-chat-form .ip-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .ip-workshop-chat-form .ip-input {
+    min-height: 44px;
+  }
+
+  .ip-portal-workflow-check {
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 .ip-workshop-upload-progress {

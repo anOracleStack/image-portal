@@ -44,7 +44,8 @@ function BeforeAfterSlider({
 }
 
 export default function PortalWorkshop({ portalId, onApproved }: Props) {
-  const fileRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -160,7 +161,8 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       } finally {
         setUploading(false);
         setUploadPct(0);
-        if (fileRef.current) fileRef.current.value = "";
+        if (galleryRef.current) galleryRef.current.value = "";
+        if (cameraRef.current) cameraRef.current.value = "";
       }
     },
     [portalId, revokeLocalPreviews],
@@ -242,8 +244,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       <BalancedText
         className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
         lines={[
-          "Upload reference images, compare before/after, workshop in chat,",
-          "& approve when it's ready to go live.",
+          "Upload a photo → compare before/after → approve when ready to publish.",
         ]}
       />
 
@@ -259,11 +260,11 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
           setDragOver(false);
           if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
         }}
-        onClick={() => !uploading && fileRef.current?.click()}
+        onClick={() => !uploading && galleryRef.current?.click()}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") fileRef.current?.click();
+          if (e.key === "Enter" || e.key === " ") galleryRef.current?.click();
         }}
       >
         {uploading ? (
@@ -278,9 +279,9 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
           </div>
         ) : (
           <>
-            <p className="ip-workshop-upload-title">Add reference images</p>
+            <p className="ip-workshop-upload-title">Add images</p>
             <p className="ip-muted ip-copy-sm">
-              Drop files here, or use the button below to pick a photo from your device.
+              Drop files here, or pick from your photo library. Use Take photo for the camera.
             </p>
             <div className="ip-workshop-upload-actions">
               <button
@@ -288,20 +289,20 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
                 className="ip-btn ip-btn-primary ip-workshop-upload-cta"
                 onClick={(e) => {
                   e.stopPropagation();
-                  fileRef.current?.click();
+                  galleryRef.current?.click();
                 }}
               >
-                Upload photo
+                Pick photo
               </button>
               <button
                 type="button"
-                className="ip-btn ip-btn-secondary ip-btn-sm ip-workshop-camera-btn"
+                className="ip-btn ip-btn-secondary ip-workshop-upload-cta"
                 onClick={(e) => {
                   e.stopPropagation();
-                  fileRef.current?.click();
+                  cameraRef.current?.click();
                 }}
               >
-                Camera
+                Take photo
               </button>
             </div>
           </>
@@ -309,11 +310,20 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       </div>
 
       <input
-        ref={fileRef}
+        ref={galleryRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
-        capture="environment"
+        accept="image/*"
         multiple
+        className="ip-hidden-canvas"
+        onChange={(e) => {
+          if (e.target.files?.length) uploadFiles(e.target.files);
+        }}
+      />
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
         className="ip-hidden-canvas"
         onChange={(e) => {
           if (e.target.files?.length) uploadFiles(e.target.files);
@@ -326,7 +336,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       <div className="ip-workshop-layout">
         <aside className="ip-workshop-refs-strip">
           <h3 className="ip-workshop-section-title">
-            References ({references.length || localPreviews.length})
+            Your images ({references.length || localPreviews.length})
           </h3>
           {(references.length > 0 || localPreviews.length > 0) ? (
             <div className="ip-workshop-ref-strip">
@@ -346,12 +356,15 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
                 ))}
             </div>
           ) : (
-            <p className="ip-muted ip-copy-sm">No references yet.</p>
+            <p className="ip-muted ip-copy-sm">No images uploaded yet.</p>
           )}
         </aside>
 
         <div className="ip-workshop-preview">
-          <h3 className="ip-workshop-section-title">Enhanced output</h3>
+          <h3 className="ip-workshop-section-title">AI-enhanced preview</h3>
+          <p className="ip-muted ip-copy-sm ip-workshop-section-help">
+            Optional AI-enhanced version of your image — compare before approving.
+          </p>
           {showSlider && firstRefUrl && enhancedUrl ? (
             <BeforeAfterSlider beforeUrl={firstRefUrl} afterUrl={enhancedUrl} />
           ) : enhancedUrl ? (
@@ -372,7 +385,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
               onChange={(e) => toggleEnhanced(e.target.checked)}
               disabled={!enhancedUrl}
             />
-            <span>Use enhanced version when going live</span>
+            <span>Use AI-enhanced version when going live</span>
           </label>
           <button
             type="button"

@@ -35,7 +35,8 @@ function barStyle(pct: number): CSSProperties {
 }
 
 export default function ImageUploader({ onUpload, disabled }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -74,7 +75,8 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
       } finally {
         setUploading(false);
         setProgress(0);
-        if (inputRef.current) inputRef.current.value = "";
+        if (galleryRef.current) galleryRef.current.value = "";
+        if (cameraRef.current) cameraRef.current.value = "";
       }
     },
     [onUpload]
@@ -110,7 +112,7 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => galleryRef.current?.click()}
       >
         {busy ? (
           <BalancedText className="ip-muted ip-text-block" lines={["Uploading…"]} />
@@ -119,18 +121,30 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
             <BalancedText
               className="ip-text-block"
               style={{ color: "var(--foreground)", margin: 0 }}
-              lines={["Drop an image here", "or use the button below."]}
+              lines={["Drop an image here", "or pick from your photo library."]}
             />
-            <button
-              type="button"
-              className="ip-btn ip-btn-primary ip-uploader-cta"
-              onClick={(e) => {
-                e.stopPropagation();
-                inputRef.current?.click();
-              }}
-            >
-              Upload photo
-            </button>
+            <div className="ip-uploader-actions">
+              <button
+                type="button"
+                className="ip-btn ip-btn-primary ip-uploader-cta"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  galleryRef.current?.click();
+                }}
+              >
+                Pick photo
+              </button>
+              <button
+                type="button"
+                className="ip-btn ip-btn-secondary ip-uploader-cta"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  cameraRef.current?.click();
+                }}
+              >
+                Take photo
+              </button>
+            </div>
             <BalancedText
               className="ip-muted ip-text-block"
               style={{ marginTop: 8, fontSize: "0.82rem" }}
@@ -141,9 +155,17 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
       </div>
 
       <input
-        ref={inputRef}
+        ref={galleryRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleChange}
+      />
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
         style={{ display: "none" }}
         onChange={handleChange}
       />

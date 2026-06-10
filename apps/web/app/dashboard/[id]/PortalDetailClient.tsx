@@ -206,8 +206,11 @@ export default function PortalDetailClient({
         </div>
       </div>
 
-      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section ip-portal-section-accent">
         <h2 className="ip-card-section-title">Details</h2>
+        <p className="ip-portal-section-subtitle">
+          Where your scan goes &amp; how this portal is set up.
+        </p>
         <div className="ip-detail-label">Destination URL</div>
         <div className="ip-detail-value">
           <a
@@ -219,41 +222,14 @@ export default function PortalDetailClient({
             {domain}
           </a>
         </div>
-        <div className="ip-detail-label">Public gallery</div>
         <p className="ip-portal-field-help">
-          Controls whether this portal appears on the public /gallery page.
-          <strong> Listed on gallery</strong> means anyone can browse &amp; discover it.
-          <strong> Hide from gallery</strong> keeps the portal private — viewers can still scan if they have the link, but it won&apos;t show in the directory.
-          Paid plans can toggle this; free portals are always listed.
+          When someone scans your image successfully, they&apos;re sent to this URL.
         </p>
-        <div className="ip-detail-value ip-gallery-privacy-row">
-          <span>
-            {visibility === "public"
-              ? "Listed on /gallery"
-              : "Not listed on /gallery"}
-          </span>
-          {galleryEditable ? (
-            <button
-              type="button"
-              className="ip-btn ip-btn-secondary ip-btn-sm"
-              disabled={galleryBusy}
-              onClick={handleGalleryVisibility}
-            >
-              {galleryBusy
-                ? "…"
-                : visibility === "public"
-                  ? "Hide from gallery"
-                  : "Show in gallery"}
-            </button>
-          ) : (
-            <Link href="/pricing" className="ip-link-accent ip-copy-sm">
-              Upgrade to hide from gallery
-            </Link>
-          )}
-        </div>
-        <div className="ip-detail-label">Total Scans</div>
+        <div className="ip-detail-label">Title</div>
+        <div className="ip-detail-value">{portal.title}</div>
+        <div className="ip-detail-label">Total scans</div>
         <div className="ip-detail-value">{portal.total_scans}</div>
-        <div className="ip-detail-label">Last Scanned</div>
+        <div className="ip-detail-label">Last scanned</div>
         <div className="ip-detail-value">
           {portal.last_scanned_at
             ? new Date(portal.last_scanned_at).toLocaleString()
@@ -265,8 +241,59 @@ export default function PortalDetailClient({
         </div>
       </div>
 
-      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section ip-portal-section-accent">
+        <h2 className="ip-card-section-title">Images ({images.length})</h2>
+        <p className="ip-portal-section-subtitle">
+          Upload the photos you want people to scan.
+        </p>
+        {images.length === 0 ? (
+          <BalancedText
+            className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
+            lines={[
+              "No images yet — add photos in the workshop section below,",
+              "or pick from your library when your portal is live.",
+            ]}
+          />
+        ) : (
+          <div className="ip-detail-grid">
+            {images.map((img) => (
+              <img
+                key={img.id}
+                src={`/api/images/${img.id}`}
+                alt="Portal image"
+                className="ip-detail-thumb"
+              />
+            ))}
+          </div>
+        )}
+        {status === "active" && images.length > 0 && (
+          <div className="ip-portal-images-upload">
+            <ImageUploader onUpload={handleUpload} />
+          </div>
+        )}
+      </div>
+
+      {(status === "inactive" || images.length === 0) && (
+        <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section ip-portal-section-accent">
+          <h2 className="ip-card-section-title">Workshop your visual</h2>
+          <p className="ip-portal-section-subtitle">
+            Upload a photo → compare before/after → approve when ready to publish.
+          </p>
+          <PortalWorkshop
+            portalId={portal.id}
+            onApproved={() => {
+              setStatus("active");
+              router.refresh();
+            }}
+          />
+        </div>
+      )}
+
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section ip-portal-section-accent ip-portal-share-section">
         <h2 className="ip-card-section-title">Share &amp; distribute</h2>
+        <p className="ip-portal-section-subtitle">
+          Links &amp; previews for sharing your portal with others.
+        </p>
         <div className="ip-share-actions">
           <a
             href={`/p/${portal.slug}`}
@@ -293,6 +320,20 @@ export default function PortalDetailClient({
             Social share card
           </a>
         </div>
+        <ul className="ip-share-explainer">
+          <li>
+            <strong>Public page</strong> (<code className="ip-mono">/p/{portal.slug}</code>) — landing page visitors see before opening your link.
+          </li>
+          <li>
+            <strong>Direct link</strong> (<code className="ip-mono">/p/{portal.slug}/go</code>) — where the scan takes people; the actual destination URL.
+          </li>
+          <li>
+            <strong>/go</strong> — short redirect used when someone taps &quot;Open link&quot; after a successful scan.
+          </li>
+          <li>
+            <strong>Social share card</strong> — preview image &amp; title shown when you share the link on social media.
+          </li>
+        </ul>
         <div className="ip-detail-label">Copy link</div>
         <div className="ip-copy-link-row">
           <code className="ip-mono ip-faint ip-copy-link-code">
@@ -312,44 +353,38 @@ export default function PortalDetailClient({
         </div>
       </div>
 
-      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
-        <h2 className="ip-card-section-title">Images ({images.length})</h2>
-        {images.length === 0 ? (
-          <BalancedText
-            className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
-            lines={["No images uploaded yet."]}
-          />
-        ) : (
-          <div className="ip-detail-grid">
-            {images.map((img) => (
-              <img
-                key={img.id}
-                src={`/api/images/${img.id}`}
-                alt="Portal image"
-                className="ip-detail-thumb"
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section">
-        <h2 className="ip-card-section-title">
-          {status === "inactive" || images.length === 0
-            ? "Workshop your visual"
-            : "Add or replace images"}
-        </h2>
-        {status === "inactive" || images.length === 0 ? (
-          <PortalWorkshop
-            portalId={portal.id}
-            onApproved={() => {
-              setStatus("active");
-              router.refresh();
-            }}
-          />
-        ) : (
-          <ImageUploader onUpload={handleUpload} />
-        )}
+      <div className="ip-card ip-card-spaced-lg ip-card-glow ip-portal-section ip-portal-section-accent ip-portal-gallery-section">
+        <h2 className="ip-card-section-title">Gallery visibility</h2>
+        <p className="ip-portal-field-help">
+          <strong>Listed on gallery</strong> — your portal appears on the public rub.pub/gallery directory.
+          <br />
+          <strong>Hide from gallery</strong> — scan still works; your portal just won&apos;t show in the public directory.
+        </p>
+        <div className="ip-detail-value ip-gallery-privacy-row">
+          <span>
+            {visibility === "public"
+              ? "Listed on gallery"
+              : "Hidden from gallery"}
+          </span>
+          {galleryEditable ? (
+            <button
+              type="button"
+              className="ip-btn ip-btn-secondary ip-btn-sm"
+              disabled={galleryBusy}
+              onClick={handleGalleryVisibility}
+            >
+              {galleryBusy
+                ? "…"
+                : visibility === "public"
+                  ? "Hide from gallery"
+                  : "List on gallery"}
+            </button>
+          ) : (
+            <Link href="/pricing" className="ip-link-accent ip-copy-sm">
+              Upgrade to hide from gallery
+            </Link>
+          )}
+        </div>
       </div>
 
       {showConfirm && (
