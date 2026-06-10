@@ -19,6 +19,10 @@
 
   --dash-header-offset: 72px;
   --dash-footer-offset: 52px;
+
+  /* Dashboard proportional scale (set by DashboardScaleShell) */
+  --dash-ref-width: 1440;
+  --dash-scale: 1;
 }
 
 [data-theme="dark"] {
@@ -1311,11 +1315,99 @@ a {
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
+/* Dashboard proportional scale — ref 1440px desktop, uniform transform */
+.ip-dash-scale-viewport {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.ip-dash-scale-slot {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ip-dash-scale-root {
+  width: 1440px;
+  transform-origin: top left;
+  will-change: transform;
+}
+
 /* Dashboard shell */
 .ip-dash-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/* Inside scale shell: full ref width, fixed px spacing (no vw breakpoints) */
+.ip-dash-scale-root .ip-dash-page {
+  max-width: none;
+  width: 100%;
+}
+
+.ip-dash-scale-root {
+  --dash-header-offset: 72px;
+  --dash-footer-offset: 52px;
+}
+
+.ip-dash-scale-root .ip-dash-main {
+  padding: calc(var(--dash-header-offset) + 24px) 24px
+    calc(var(--dash-footer-offset) + 28px);
+}
+
+.ip-dash-scale-root .ip-dash-header-inner {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.ip-dash-scale-root .ip-dash-nav {
+  order: unset;
+  flex: 1 1 auto;
+  justify-content: center;
+  overflow-x: visible;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  padding-bottom: 0;
+}
+
+.ip-dash-scale-root .ip-dash-nav .ip-nav-link {
+  font-size: 0.8125rem;
+  padding: 6px 10px;
+}
+
+.ip-dash-scale-root .ip-dash-header-actions {
+  order: unset;
+  margin-left: 0;
+  gap: 10px;
+}
+
+.ip-dash-scale-root .ip-dash-logo {
+  order: unset;
+  font-size: 0.9375rem;
+}
+
+.ip-dash-scale-root .ip-dash-footer-copy {
+  display: inline;
+}
+
+.ip-dash-scale-root .ip-workshop-main {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.ip-dash-scale-root .ip-workshop-layout {
+  grid-template-columns: minmax(100px, 140px) minmax(0, 1.2fr) minmax(0, 1fr);
+}
+
+.ip-dash-scale-root .ip-workshop-ref-strip {
+  flex-direction: column;
 }
 
 .ip-dash-header {

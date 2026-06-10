@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ensureProfile } from "@/lib/ensure-profile";
 import { DashboardFooter } from "@/components/DashboardFooter";
+import { DashboardScaleShell } from "@/components/DashboardScaleShell";
 import { Navbar } from "@/components/Navbar";
 import { GlowBackground } from "@/components/ui/GlowBackground";
 
@@ -24,11 +25,13 @@ export default async function DashboardLayout({
   });
 
   return (
-    <div className="ip-page ip-dash-page">
-      <GlowBackground showGrid={false} />
-      <Navbar user={user} />
-      <main className="ip-dash-main">{children}</main>
-      <DashboardFooter />
-    </div>
+    <DashboardScaleShell>
+      <div className="ip-page ip-dash-page">
+        <GlowBackground showGrid={false} />
+        <Navbar user={user} />
+        <main className="ip-dash-main">{children}</main>
+        <DashboardFooter />
+      </div>
+    </DashboardScaleShell>
   );
 }
