@@ -1,0 +1,39 @@
+---
+description: Proportional viewport scaling, center-aligned layout, and balanced line lengths for all UI work
+globs: "**/*.{tsx,jsx,css,scss}"
+alwaysApply: true
+---
+
+# Layout, scaling & copy
+
+## Proportional scaling (desktop-first)
+
+- Design every screen for a **full desktop browser frame** (reference width: **1440px**).
+- When the viewport shrinks or grows, **the entire UI scales proportionally** — same layout, same relationships, no mixed fixed vs fluid elements.
+- Prefer a single scale wrapper (`transform: scale()` with `transform-origin: top left` or top center) over breakpoint reflow that rearranges the layout.
+- Scale formula: `min(1, max(0.5, viewportWidth / 1440))`. Cap at 1.0 above reference; floor at 0.5 for very narrow viewports.
+- Header, footer, nav, and content must live **inside** the scale root so they shrink/grow together.
+- Reuse `DashboardScaleShell` pattern for dashboard; apply the same approach to new surfaces.
+
+## Center alignment & flow
+
+- **Center-align** text, headings, CTAs, form labels, and feature blocks unless a control is inherently left-aligned (e.g. long URL input).
+- Section titles: **ALL CAPS**, bold, centered.
+- Maintain clear vertical rhythm: Details → primary action (e.g. upload) → secondary sections.
+- Use existing `BalancedText` for marketing and help copy.
+
+## Balanced line lengths
+
+- **No orphan lines**: adjacent lines in a block should be **similar length** — avoid one long line beside one short line.
+- Break copy into 2–3 balanced lines rather than one wide paragraph or uneven wraps.
+- For multi-line help text, split at natural pauses and balance character count per line (±20%).
+- Example:
+  - ✅ "When your image is scanned successfully," / "it will direct to this URL."
+  - ❌ "When someone scans your image successfully they're sent to this URL."
+
+## Implementation checklist
+
+- [ ] Scale wrapper wraps full page chrome + content
+- [ ] No `position: fixed` elements outside the scale root (or they scale with it)
+- [ ] Copy uses `BalancedText` or manual balanced breaks
+- [ ] Mobile: proportional scale preferred over separate mobile-only layouts unless explicitly requested
