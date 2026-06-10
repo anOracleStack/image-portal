@@ -344,17 +344,14 @@ a {
   max-width: 40ch;
 }
 
-.ip-hero-lead .ip-text-block-line:nth-child(2),
-.ip-hero-lead .ip-text-block-line:nth-child(3) {
-  white-space: nowrap;
-  max-width: none;
+.ip-hero-lead .ip-text-block-line {
+  max-width: 42ch;
 }
 
 @media (max-width: 640px) {
-  .ip-hero-lead .ip-text-block-line:nth-child(2),
-  .ip-hero-lead .ip-text-block-line:nth-child(3) {
+  .ip-hero-lead .ip-text-block-line {
     white-space: normal;
-    max-width: 40ch;
+    max-width: 38ch;
   }
 }
 
@@ -982,6 +979,7 @@ a {
   gap: 4px;
   margin: 0 auto 14px;
   max-width: 32ch;
+  min-height: 4.25em;
 }
 
 .ip-demo-stage-word {
@@ -1002,6 +1000,8 @@ a {
   letter-spacing: -0.02em;
   color: var(--text-muted);
   text-transform: lowercase;
+  min-height: 2.7em;
+  max-width: 28ch;
 }
 
 .ip-demo-desc {
@@ -1009,6 +1009,7 @@ a {
   line-height: 1.65;
   max-width: 38ch;
   margin: 0 auto;
+  min-height: calc(3 * 1.65em);
 }
 
 .ip-demo-desc .ip-text-block-line {
@@ -1041,6 +1042,7 @@ a {
   font-style: normal;
   text-align: center;
   max-width: 34ch;
+  min-height: 2.5em;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1166,6 +1168,24 @@ a {
   font-weight: 600;
   color: var(--accent);
   word-break: break-all;
+}
+
+.ip-demo-scan-open-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 88%, transparent);
+  border: 1px solid var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-foreground);
+  backdrop-filter: blur(8px);
 }
 
 .ip-demo-caption {
@@ -4485,6 +4505,15 @@ a {
 
 .ip-landing-use-cases-row .ip-use-case-card-thumb {
   aspect-ratio: 4 / 3;
+}
+
+.ip-landing-use-cases .ip-landing-section-inner {
+  gap: clamp(10px, 1.8vh, 20px);
+  padding: clamp(28px, 4vh, 44px) 0;
+}
+
+.ip-landing-use-cases .ip-landing-use-cases-row {
+  max-width: 1040px;
 }
 
 .ip-landing-pricing-inner {

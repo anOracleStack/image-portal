@@ -16,7 +16,7 @@ const QUICK_GUIDE = [
   },
   {
     label: "Capture",
-    summary: "No file? Snap a photo on your phone. Same analysis.",
+    summary: "No file? Snap a photo on your smart device. Same analysis.",
   },
   {
     label: "Enhance",
@@ -24,19 +24,15 @@ const QUICK_GUIDE = [
   },
   {
     label: "Link",
-    summary: "Link the URL where viewers land after scanning.",
+    summary: "Link the website URL where viewers land after scanning.",
   },
   {
     label: "Approve",
     summary: "Preview visual + URL — nothing live until approved.",
   },
   {
-    label: "Scan",
-    summary: "Viewers scan your physical or digital image.",
-  },
-  {
-    label: "Open",
-    summary: "Viewers are directed to your attached URL instantly.",
+    label: "Scan & Open",
+    summary: "Viewers scan your image and open your linked URL instantly.",
   },
 ] as const;
 
@@ -67,9 +63,9 @@ function buildSteps(slug: UseCaseSlug): DemoStep[] {
       id: 0,
       label: "Upload",
       stage: "Upload",
-      subtitle: "an image file",
+      subtitle: "any image file you want to portal",
       description: [
-        "Drop a .JPEG, .PNG, & .WEBP file — up to 10 MB.",
+        "Drop a .JPEG, .PNG, or .WEBP file — up to 10 MB.",
         "We access, view, & analyze it to build your portal.",
         "Your image becomes the key to every scan.",
       ],
@@ -98,11 +94,10 @@ function buildSteps(slug: UseCaseSlug): DemoStep[] {
       id: 2,
       label: "Enhance",
       stage: "Enhance",
-      subtitle: "we reimagine your visual for you",
+      subtitle: "we refine your capture for scanning",
       description: [
-        "If a photo is taken, we refine your capture",
-        "for optimized & enhanced quality.",
-        "You receive a clean, high-quality reference.",
+        "We reimagine your photo for optimized quality.",
+        "You receive a clean, high-quality reference back.",
         "Nothing goes live until you approve the image.",
       ],
       example: "Example: enhanced reference sent for review",
@@ -115,12 +110,11 @@ function buildSteps(slug: UseCaseSlug): DemoStep[] {
       id: 3,
       label: "Link",
       stage: "Link",
-      subtitle: "a URL destination to your image",
+      subtitle: "a website URL to your portal image",
       description: [
         "Link the image to wherever viewers should land.",
         "Website, store, menu, or ticket page — any URL.",
-        "Update the destination anytime without reprinting",
-        "or re-exporting anything at all.",
+        "Update the destination anytime without reprinting.",
       ],
       example: `Example: ${destination}`,
       image: reference,
@@ -132,9 +126,9 @@ function buildSteps(slug: UseCaseSlug): DemoStep[] {
       id: 4,
       label: "Approve",
       stage: "Approve",
-      subtitle: "your portal after everything is reviewed",
+      subtitle: "your portal before it goes live",
       description: [
-        "Preview the enhanced visual & linked URL.",
+        "Preview the enhanced visual & linked URL together.",
         "Approve when the look & destination are correct.",
         "Your scannable portal goes live on your OK.",
       ],
@@ -146,34 +140,20 @@ function buildSteps(slug: UseCaseSlug): DemoStep[] {
     },
     {
       id: 5,
-      label: "Scan",
-      stage: "Scan",
-      subtitle: "viewers scan your image when seen",
+      label: "Scan & Open",
+      stage: "Scan & Open",
+      subtitle: "viewers reach your linked website URL",
       description: [
-        "Anyone points a camera at the print or screen.",
-        "Retrieve → verify — scored in milliseconds.",
-        "Real-world photos of the image still match.",
+        "Anyone scans your print or screen with a smart device.",
+        "A match opens your linked website URL instantly.",
+        "Every scan is logged in your dashboard.",
       ],
       example: config.scanExample,
       image: scan,
       imageAlt: `Camera scanning a printed ${categoryLabel}`,
       variant: "matched",
       showReticle: true,
-    },
-    {
-      id: 6,
-      label: "Open",
-      stage: "Open",
-      subtitle: "the viewer lands on your linked page",
-      description: [
-        "A successful match opens your URL instantly.",
-        "Every scan is logged in your dashboard.",
-        `Example destination → ${destination}`,
-      ],
-      example: "Example: visitor opens your linked page",
-      image: null,
-      imageAlt: "",
-      variant: "open",
+      linkBadge: destination,
       previewUrl: destination,
     },
   ];
@@ -187,7 +167,7 @@ export type UseCaseDemoProps = {
   className?: string;
   /** Hero demo prioritizes first two frames for LCP */
   priorityFrames?: boolean;
-  /** Start on a specific step index (e.g. 5 = Scan for hero) */
+  /** Start on a specific step index */
   initialStep?: number;
 };
 
@@ -201,25 +181,43 @@ export function UseCaseDemo({
   const steps = buildSteps(slug);
   const [active, setActive] = useState(initialStep % steps.length);
   const [advanceEnabled, setAdvanceEnabled] = useState(autoAdvance === "immediate");
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const index = active % steps.length;
   const step = steps[index]!;
+
+  const clearAdvanceTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const startAdvanceTimer = useCallback(() => {
+    clearAdvanceTimer();
+    if (!advanceEnabled) return;
+    intervalRef.current = setInterval(() => {
+      setActive((a) => (a + 1) % steps.length);
+    }, AUTO_INTERVAL_MS);
+  }, [advanceEnabled, clearAdvanceTimer, steps.length]);
 
   const enableAdvance = useCallback(() => {
     setAdvanceEnabled(true);
   }, []);
 
   useEffect(() => {
-    if (!advanceEnabled) return;
-    const id = setInterval(() => {
-      setActive((a) => (a + 1) % steps.length);
-    }, AUTO_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [advanceEnabled, steps.length]);
+    startAdvanceTimer();
+    return clearAdvanceTimer;
+  }, [active, startAdvanceTimer, clearAdvanceTimer]);
 
   const handleInteraction = () => {
     if (autoAdvance === "after-interaction" && !advanceEnabled) {
       enableAdvance();
     }
+  };
+
+  const selectStep = (stepIndex: number) => {
+    handleInteraction();
+    setActive(stepIndex);
   };
 
   return (
@@ -253,6 +251,11 @@ export function UseCaseDemo({
                     <span className="ip-demo-approve-bar-label">Approve & go live</span>
                   </div>
                 ) : null}
+                {step.previewUrl && step.variant === "matched" ? (
+                  <div className="ip-demo-scan-open-tag" aria-hidden>
+                    Opening linked URL…
+                  </div>
+                ) : null}
               </>
             ) : (
               <div className="ip-demo-open-card">
@@ -267,7 +270,6 @@ export function UseCaseDemo({
         </figure>
 
         <div className="ip-demo-guide ip-demo-guide-compact" aria-label="Quick step guide">
-          <p className="ip-demo-guide-label">Quick guide</p>
           <div className="ip-demo-guide-pills" role="group" aria-label="Jump to step">
             {QUICK_GUIDE.map((row, i) => (
               <button
@@ -275,10 +277,7 @@ export function UseCaseDemo({
                 type="button"
                 className="ip-demo-guide-pill"
                 data-active={active === i ? "true" : "false"}
-                onClick={() => {
-                  handleInteraction();
-                  setActive(i);
-                }}
+                onClick={() => selectStep(i)}
                 aria-current={active === i ? "step" : undefined}
                 aria-label={`${row.label}: ${row.summary}`}
                 title={row.summary}
@@ -304,27 +303,6 @@ export function UseCaseDemo({
               lines={step.description}
             />
           </header>
-        </div>
-      </div>
-
-      <div className="ip-demo-controls">
-        <div className="ip-demo-steps" role="tablist" aria-label="Demo steps">
-          {steps.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              role="tab"
-              className="ip-demo-step"
-              data-active={active === s.id ? "true" : "false"}
-              onClick={() => {
-                handleInteraction();
-                setActive(s.id);
-              }}
-              aria-selected={active === s.id}
-            >
-              {s.label}
-            </button>
-          ))}
         </div>
       </div>
     </div>

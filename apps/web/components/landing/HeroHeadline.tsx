@@ -24,7 +24,7 @@ export async function HeroHeadline() {
         <span className="ip-hero-grabber-line">The Next</span>
         <span className="ip-hero-grabber-line">Generation</span>
         <span className="ip-hero-grabber-line ip-hero-grabber-phrase">
-          Of QR <span className="ip-hero-grabber-accent">Codes</span>
+          OF QR <span className="ip-hero-grabber-accent">CODES</span>
         </span>
       </h1>
     </div>

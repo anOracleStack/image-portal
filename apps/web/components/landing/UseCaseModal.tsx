@@ -82,7 +82,7 @@ export function UseCaseModal({ slug, onClose, returnFocusRef }: UseCaseModalProp
               {config.titleCaps}
             </h2>
             <p className="ip-muted ip-use-case-modal-sub">
-              Seven steps from upload to open — same flow as the hero demo.
+              Six steps from upload to scan & open — same flow as the hero demo.
             </p>
           </div>
           <button

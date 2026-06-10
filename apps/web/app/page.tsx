@@ -75,9 +75,8 @@ export default function LandingPage() {
               <BalancedText
                 className="ip-muted ip-text-block ip-hero-lead ip-copy-md"
                 lines={[
-                  "Turn any image into a doorway.",
-                  "Upload it, link it anywhere — the image is the key.",
-                  "Anyone with a camera phone can open your link in seconds.",
+                  "Upload any image and link it to any website URL.",
+                  "Anyone with a smart device can scan it and open your link in seconds.",
                 ]}
               />
             </div>
@@ -145,13 +144,7 @@ export default function LandingPage() {
         <section className="ip-landing-section ip-landing-use-cases ip-container ip-section-center">
           <div className="ip-landing-section-inner">
             <h2 className="ip-display ip-section-title">USE CASES</h2>
-            <UseCasesSection limit={3} compact />
-          </div>
-        </section>
-
-        <section className="ip-landing-section ip-landing-use-cases ip-landing-use-cases-more ip-container ip-section-center">
-          <div className="ip-landing-section-inner">
-            <UseCasesSection offset={3} limit={3} compact />
+            <UseCasesSection compact />
           </div>
         </section>
 
