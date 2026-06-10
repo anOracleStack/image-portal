@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { BalancedText } from "@/components/ui/BalancedText";
+import { compressImageForUpload } from "@/lib/compress-image-client";
 
 interface Props {
   onUpload: (file: File) => Promise<void>;
@@ -66,7 +67,9 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
       setUploading(true);
       setProgress(30);
       try {
-        await onUpload(file);
+        const prepared = await compressImageForUpload(file);
+        setProgress(60);
+        await onUpload(prepared);
         setProgress(100);
         setSuccess("Image uploaded successfully.");
       } catch (err) {

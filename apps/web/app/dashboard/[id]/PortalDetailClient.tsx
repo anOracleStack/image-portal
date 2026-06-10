@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
+import { readApiJson } from "@/lib/parse-api-response";
 import PortalWorkshop from "@/components/PortalWorkshop";
 import { BalancedText } from "@/components/ui/BalancedText";
 import { canHideFromGallery, type PlanTier } from "@/lib/plans";
@@ -56,10 +57,7 @@ export default function PortalDetailClient({
         body: formData,
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Upload failed");
-      }
+      await readApiJson(res);
       // Defer refresh so the uploader preview stays visible until the page updates.
       window.setTimeout(() => router.refresh(), 400);
     },

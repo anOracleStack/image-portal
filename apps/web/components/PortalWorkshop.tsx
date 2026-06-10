@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BalancedText } from "@/components/ui/BalancedText";
+import { readApiJson } from "@/lib/parse-api-response";
 
 type WorkshopMessage = { role: "user" | "assistant"; content: string; at: string };
 
@@ -62,9 +63,16 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
   const loadState = useCallback(async () => {
     setError(null);
     const res = await fetch(`/api/portals/${portalId}/workshop`);
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "Failed to load workshop");
+    let data: {
+      references?: string[];
+      enhancedUrl?: string | null;
+      messages?: WorkshopMessage[];
+      useEnhanced?: boolean;
+    };
+    try {
+      data = await readApiJson(res);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load workshop");
       return;
     }
     setReferences(data.references ?? []);
@@ -95,8 +103,11 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "chat", message: text }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Message failed");
+      const data = await readApiJson<{
+        messages?: WorkshopMessage[];
+        enhancedUrl?: string;
+        references?: string[];
+      }>(res);
       setMessages(data.messages ?? []);
       if (data.enhancedUrl) setEnhancedUrl(cacheBust(data.enhancedUrl));
       if (data.references) setReferences(data.references);
@@ -120,8 +131,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ useEnhanced }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Approve failed");
+      const data = await readApiJson<{ message?: string }>(res);
       setSuccess(data.message ?? "Portal is live.");
       setApprovedFlash(true);
       window.setTimeout(() => setApprovedFlash(false), 2400);
