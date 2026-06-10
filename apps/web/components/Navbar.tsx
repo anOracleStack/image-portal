@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
-import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { RqPlusMark } from "@/components/brand/RqPlusMark";
 import { SubscriptionBadge } from "@/components/SubscriptionBadge";
@@ -21,6 +20,7 @@ const navLinks = [
     label: "History",
     hint: "Scan log for your portals — who scanned, when, & match confidence.",
   },
+  { href: "/scan", label: "Scan" },
   {
     href: "/dashboard/api-keys",
     label: "API",
@@ -31,13 +31,29 @@ const navLinks = [
     label: "Gallery",
     hint: "Public showcase of portals opted in — browse what others have published.",
   },
-  { href: "/scan", label: "Scan" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/dashboard/settings", label: "Settings" },
 ] as const;
 
+function ProfileIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 export function Navbar({ user }: Props) {
-  const router = useRouter();
   const [tier, setTier] = useState<PlanTier>("free");
 
   useEffect(() => {
@@ -57,17 +73,6 @@ export function Navbar({ user }: Props) {
     }
     fetchTier();
   }, [user.id, user.email]);
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
 
   return (
     <header className="ip-dash-header">
@@ -91,13 +96,15 @@ export function Navbar({ user }: Props) {
         </nav>
 
         <div className="ip-dash-header-actions">
-          <span className="ip-dash-user-email" title={user.email ?? undefined}>
-            {user.email}
-          </span>
           <SubscriptionBadge tier={tier} isOwner={isOwnerEmail(user.email)} />
-          <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm" onClick={handleLogout}>
-            Logout
-          </button>
+          <Link
+            href="/dashboard/settings"
+            className="ip-btn ip-btn-ghost ip-btn-sm ip-dash-profile-btn"
+            aria-label="Profile & settings"
+            title="Profile & settings"
+          >
+            <ProfileIcon />
+          </Link>
         </div>
       </div>
     </header>

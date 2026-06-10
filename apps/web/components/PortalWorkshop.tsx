@@ -44,12 +44,8 @@ function BeforeAfterSlider({
 }
 
 export default function PortalWorkshop({ portalId, onApproved }: Props) {
-  const galleryRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [uploadPct, setUploadPct] = useState(0);
   const [approving, setApproving] = useState(false);
   const [approvedFlash, setApprovedFlash] = useState(false);
   const [chatBusy, setChatBusy] = useState(false);
@@ -60,14 +56,8 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
   const [messages, setMessages] = useState<WorkshopMessage[]>([]);
   const [useEnhanced, setUseEnhanced] = useState(true);
   const [chatInput, setChatInput] = useState("");
-  const [dragOver, setDragOver] = useState(false);
-  const [localPreviews, setLocalPreviews] = useState<string[]>([]);
 
   const cacheBust = (url: string) => `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
-
-  const revokeLocalPreviews = useCallback((urls: string[]) => {
-    for (const url of urls) URL.revokeObjectURL(url);
-  }, []);
 
   const loadState = useCallback(async () => {
     setError(null);
@@ -90,83 +80,6 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, chatBusy]);
-
-  useEffect(
-    () => () => {
-      revokeLocalPreviews(localPreviews);
-    },
-    [localPreviews, revokeLocalPreviews],
-  );
-
-  const uploadFiles = useCallback(
-    async (files: FileList | File[]) => {
-      const list = Array.from(files).filter(
-        (f) => f.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name),
-      );
-      if (list.length === 0) {
-        setError("Choose JPEG, PNG, or WebP images.");
-        return;
-      }
-
-      const pendingPreviews = list.map((f) => URL.createObjectURL(f));
-      setLocalPreviews((prev) => {
-        revokeLocalPreviews(prev);
-        return pendingPreviews;
-      });
-
-      setUploading(true);
-      setUploadPct(8);
-      setError(null);
-      setSuccess(null);
-
-      const form = new FormData();
-      for (const f of list) form.append("file", f);
-
-      try {
-        const progressTimer = window.setInterval(() => {
-          setUploadPct((p) => (p < 88 ? p + 6 : p));
-        }, 280);
-
-        const res = await fetch(`/api/portals/${portalId}/workshop`, {
-          method: "POST",
-          body: form,
-        });
-        window.clearInterval(progressTimer);
-        setUploadPct(100);
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Upload failed");
-        setReferences(data.references ?? []);
-        setEnhancedUrl(data.enhancedUrl ? cacheBust(data.enhancedUrl) : null);
-        setMessages(data.messages ?? []);
-        setLocalPreviews((prev) => {
-          revokeLocalPreviews(prev);
-          return [];
-        });
-        if (data.enhanceFailed) {
-          setError(
-            "References saved, but the enhanced preview could not be generated. Try again or approve with your reference.",
-          );
-        } else {
-          setSuccess(
-            `Uploaded ${list.length} image${list.length === 1 ? "" : "s"} — enhanced preview is ready.`,
-          );
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Upload failed");
-        setLocalPreviews((prev) => {
-          revokeLocalPreviews(prev);
-          return [];
-        });
-      } finally {
-        setUploading(false);
-        setUploadPct(0);
-        if (galleryRef.current) galleryRef.current.value = "";
-        if (cameraRef.current) cameraRef.current.value = "";
-      }
-    },
-    [portalId, revokeLocalPreviews],
-  );
 
   const sendChat = useCallback(async () => {
     const text = chatInput.trim();
@@ -244,90 +157,10 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       <BalancedText
         className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
         lines={[
-          "Upload a photo → compare before/after → approve when ready to publish.",
+          "Upload your image in the Images section above.",
+          "Refine here with AI enhance, compare before/after,",
+          "& approve when ready to publish.",
         ]}
-      />
-
-      <div
-        className={`ip-workshop-upload${dragOver ? " ip-workshop-upload-active" : ""}`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragOver(false);
-          if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
-        }}
-        onClick={() => !uploading && galleryRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") galleryRef.current?.click();
-        }}
-      >
-        {uploading ? (
-          <div className="ip-workshop-upload-progress">
-            <p className="ip-muted">Uploading & analyzing…</p>
-            <div className="ip-workshop-progress-track" aria-hidden>
-              <div
-                className="ip-workshop-progress-fill"
-                style={{ width: `${uploadPct}%` }}
-              />
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="ip-workshop-upload-title">Add images</p>
-            <p className="ip-muted ip-copy-sm">
-              Drop files here, or pick from your photo library. Use Take photo for the camera.
-            </p>
-            <div className="ip-workshop-upload-actions">
-              <button
-                type="button"
-                className="ip-btn ip-btn-primary ip-workshop-upload-cta"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  galleryRef.current?.click();
-                }}
-              >
-                Pick photo
-              </button>
-              <button
-                type="button"
-                className="ip-btn ip-btn-secondary ip-workshop-upload-cta"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  cameraRef.current?.click();
-                }}
-              >
-                Take photo
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-
-      <input
-        ref={galleryRef}
-        type="file"
-        accept="image/*"
-        multiple
-        className="ip-hidden-canvas"
-        onChange={(e) => {
-          if (e.target.files?.length) uploadFiles(e.target.files);
-        }}
-      />
-      <input
-        ref={cameraRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="ip-hidden-canvas"
-        onChange={(e) => {
-          if (e.target.files?.length) uploadFiles(e.target.files);
-        }}
       />
 
       {success && <div className="ip-export-msg ip-export-msg-success">{success}</div>}
@@ -336,9 +169,9 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
       <div className="ip-workshop-layout">
         <aside className="ip-workshop-refs-strip">
           <h3 className="ip-workshop-section-title">
-            Your images ({references.length || localPreviews.length})
+            Your images ({references.length})
           </h3>
-          {(references.length > 0 || localPreviews.length > 0) ? (
+          {references.length > 0 ? (
             <div className="ip-workshop-ref-strip">
               {references.map((url, i) => (
                 <figure key={`${url}-${i}`} className="ip-workshop-ref-card">
@@ -346,17 +179,9 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
                   <figcaption>Ref {i + 1}</figcaption>
                 </figure>
               ))}
-              {references.length === 0 &&
-                uploading &&
-                localPreviews.map((url, i) => (
-                  <figure key={`local-${url}`} className="ip-workshop-ref-card">
-                    <img src={url} alt={`Upload ${i + 1}`} />
-                    <figcaption>Uploading…</figcaption>
-                  </figure>
-                ))}
             </div>
           ) : (
-            <p className="ip-muted ip-copy-sm">No images uploaded yet.</p>
+            <p className="ip-muted ip-copy-sm">Upload in the Images section above.</p>
           )}
         </aside>
 
@@ -375,7 +200,7 @@ export default function PortalWorkshop({ portalId, onApproved }: Props) {
             />
           ) : (
             <div className="ip-workshop-preview-empty">
-              <p className="ip-muted ip-copy-sm">Upload a reference to generate the enhanced visual.</p>
+              <p className="ip-muted ip-copy-sm">Upload in the Images section to generate an enhanced visual.</p>
             </div>
           )}
           <label className="ip-portal-workflow-check">

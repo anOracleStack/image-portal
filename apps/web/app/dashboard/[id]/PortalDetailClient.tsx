@@ -150,8 +150,8 @@ export default function PortalDetailClient({
   return (
     <div className="ip-dash-page-wide ip-portal-detail">
       <div className="ip-portal-nav-help">
-        <p className="ip-muted ip-copy-sm ip-portal-nav-help-intro">
-          Quick guide to dashboard navigation:
+        <p className="ip-portal-nav-help-title">
+          DASHBOARD GUIDE
         </p>
         <ul className="ip-portal-nav-help-list">
           <li>
@@ -211,7 +211,7 @@ export default function PortalDetailClient({
         <p className="ip-portal-section-subtitle">
           Where your scan goes &amp; how this portal is set up.
         </p>
-        <div className="ip-detail-label">Destination URL</div>
+        <div className="ip-detail-label ip-detail-label-caps">DESTINATION URL</div>
         <div className="ip-detail-value">
           <a
             href={portal.destination_url}
@@ -222,20 +222,24 @@ export default function PortalDetailClient({
             {domain}
           </a>
         </div>
-        <p className="ip-portal-field-help">
-          When someone scans your image successfully, they&apos;re sent to this URL.
-        </p>
-        <div className="ip-detail-label">Title</div>
+        <BalancedText
+          className="ip-portal-field-help"
+          lines={[
+            "When your image is scanned successfully,",
+            "it will direct to this URL.",
+          ]}
+        />
+        <div className="ip-detail-label ip-detail-label-caps">TITLE</div>
         <div className="ip-detail-value">{portal.title}</div>
-        <div className="ip-detail-label">Total scans</div>
+        <div className="ip-detail-label ip-detail-label-caps">TOTAL SCANS</div>
         <div className="ip-detail-value">{portal.total_scans}</div>
-        <div className="ip-detail-label">Last scanned</div>
+        <div className="ip-detail-label ip-detail-label-caps">LAST SCAN</div>
         <div className="ip-detail-value">
           {portal.last_scanned_at
             ? new Date(portal.last_scanned_at).toLocaleString()
             : "Never"}
         </div>
-        <div className="ip-detail-label">Created</div>
+        <div className="ip-detail-label ip-detail-label-caps">CREATED</div>
         <div className="ip-detail-value ip-detail-value-last">
           {new Date(portal.created_at).toLocaleString()}
         </div>
@@ -246,15 +250,7 @@ export default function PortalDetailClient({
         <p className="ip-portal-section-subtitle">
           Upload the photos you want people to scan.
         </p>
-        {images.length === 0 ? (
-          <BalancedText
-            className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
-            lines={[
-              "No images yet — add photos in the workshop section below,",
-              "or pick from your library when your portal is live.",
-            ]}
-          />
-        ) : (
+        {images.length > 0 && (
           <div className="ip-detail-grid">
             {images.map((img) => (
               <img
@@ -266,11 +262,9 @@ export default function PortalDetailClient({
             ))}
           </div>
         )}
-        {status === "active" && images.length > 0 && (
-          <div className="ip-portal-images-upload">
-            <ImageUploader onUpload={handleUpload} />
-          </div>
-        )}
+        <div className="ip-portal-images-upload">
+          <ImageUploader onUpload={handleUpload} />
+        </div>
       </div>
 
       {(status === "inactive" || images.length === 0) && (

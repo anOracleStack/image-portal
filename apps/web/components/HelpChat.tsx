@@ -11,16 +11,62 @@ const WELCOME: ChatMessage = {
     "Hi — I'm the RQ Plus help assistant. Ask about creating portals, uploading images, scanning, gallery privacy, or pricing.",
 };
 
-export function HelpChat() {
-  const [open, setOpen] = useState(false);
+type SpeechRecognitionCtor = new () => {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+function getSpeechRecognition(): SpeechRecognitionCtor | null {
+  if (typeof window === "undefined") return null;
+  const w = window as Window & {
+    SpeechRecognition?: SpeechRecognitionCtor;
+    webkitSpeechRecognition?: SpeechRecognitionCtor;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+}
+
+interface HelpChatProps {
+  embedded?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function HelpChat({
+  embedded = false,
+  open: controlledOpen,
+  onOpenChange,
+}: HelpChatProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
+
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [micSupported, setMicSupported] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const endRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<InstanceType<SpeechRecognitionCtor> | null>(null);
+
+  useEffect(() => {
+    setMicSupported(getSpeechRecognition() !== null);
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open, busy]);
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+    };
+  }, []);
 
   const send = useCallback(async () => {
     const text = input.trim();
@@ -55,8 +101,38 @@ export function HelpChat() {
     }
   }, [busy, input, messages]);
 
+  const toggleMic = useCallback(() => {
+    const Ctor = getSpeechRecognition();
+    if (!Ctor) return;
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = new Ctor();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+      setListening(false);
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+    recognitionRef.current = recognition;
+    setListening(true);
+    recognition.start();
+  }, [listening]);
+
+  const rootClass = embedded
+    ? `ip-help-chat ip-help-chat-embedded${open ? " ip-help-chat-open" : ""}`
+    : "ip-help-chat";
+
   return (
-    <div className="ip-help-chat">
+    <div className={rootClass}>
       {open && (
         <div className="ip-help-chat-panel" role="dialog" aria-label="Help chat">
           <div className="ip-help-chat-header">
@@ -93,6 +169,22 @@ export function HelpChat() {
               void send();
             }}
           >
+            <button
+              type="button"
+              className={`ip-btn ip-btn-ghost ip-btn-sm ip-help-chat-mic${listening ? " ip-help-chat-mic-active" : ""}`}
+              onClick={toggleMic}
+              disabled={!micSupported || busy}
+              aria-label={listening ? "Stop listening" : "Voice input"}
+              title={
+                micSupported
+                  ? listening
+                    ? "Stop listening"
+                    : "Voice input"
+                  : "Voice input not supported in this browser"
+              }
+            >
+              {listening ? "◉" : "🎤"}
+            </button>
             <input
               className="ip-input"
               value={input}
@@ -112,15 +204,40 @@ export function HelpChat() {
         </div>
       )}
 
-      <button
-        type="button"
-        className="ip-help-chat-fab"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-label={open ? "Close help chat" : "Open help chat"}
-      >
-        {open ? "×" : "?"}
-      </button>
+      {!embedded && (
+        <button
+          type="button"
+          className="ip-help-chat-fab"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-label={open ? "Close help chat" : "Open help chat"}
+        >
+          {open ? "×" : "?"}
+        </button>
+      )}
     </div>
+  );
+}
+
+export function HelpChatFooterToggle({
+  open,
+  onToggle,
+}: {
+  open: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="ip-dash-footer-help-btn"
+      onClick={onToggle}
+      aria-expanded={open}
+      aria-label={open ? "Close help" : "Open help"}
+    >
+      <span className="ip-dash-footer-help-icon" aria-hidden>
+        ?
+      </span>
+      <span>Help</span>
+    </button>
   );
 }

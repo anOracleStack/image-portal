@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getEmbeddingProvider } from "@/lib/embedding";
+import { ensureStorageBuckets } from "@/lib/ensure-storage-buckets";
 import {
   STORAGE_BUCKETS,
   storageBucketErrorMessage,
@@ -38,6 +39,11 @@ export async function persistPortalImage(opts: {
   const distinctNibbles = new Set(dh.split("")).size;
   const quality_score = Number((distinctNibbles / 16).toFixed(3));
   const storagePath = `${ownerId}/${portalId}/${sha256}`;
+
+  await ensureStorageBuckets(
+    STORAGE_BUCKETS.PORTAL_IMAGES,
+    STORAGE_BUCKETS.PORTAL_CACHE,
+  );
 
   const { error: imageUploadErr } = await db.storage
     .from(STORAGE_BUCKETS.PORTAL_IMAGES)

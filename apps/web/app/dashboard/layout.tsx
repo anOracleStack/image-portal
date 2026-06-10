@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { ensureProfile } from "@/lib/ensure-profile";
 import { DashboardFooter } from "@/components/DashboardFooter";
-import { HelpChat } from "@/components/HelpChat";
 import { Navbar } from "@/components/Navbar";
 import { GlowBackground } from "@/components/ui/GlowBackground";
 
@@ -30,7 +29,6 @@ export default async function DashboardLayout({
       <Navbar user={user} />
       <main className="ip-dash-main">{children}</main>
       <DashboardFooter />
-      <HelpChat />
     </div>
   );
 }

@@ -182,13 +182,32 @@ export default function SettingsPage() {
         </button>
       </section>
 
-      <section className="ip-card">
+      <section className="ip-card ip-card-spaced">
         <h2 className="ip-card-section-title">Quick links</h2>
         <div className="ip-stack-links ip-stack-links-start">
           <a href="/dashboard/api-keys">API keys →</a>
           <a href="/dashboard/scan-history">Scan history →</a>
           <a href="/scan">Open scanner →</a>
         </div>
+      </section>
+
+      <section className="ip-card">
+        <h2 className="ip-card-section-title">Sign out</h2>
+        <BalancedText
+          className="ip-muted ip-text-block ip-card-copy ip-copy-sm"
+          lines={["End your session on this device."]}
+        />
+        <button
+          type="button"
+          className="ip-btn ip-btn-ghost ip-btn-sm ip-btn-mt-sm"
+          onClick={async () => {
+            const supabase = createBrowserClient_();
+            await supabase.auth.signOut();
+            window.location.href = "/login";
+          }}
+        >
+          Log out
+        </button>
       </section>
     </div>
   );

@@ -132,7 +132,7 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
                   galleryRef.current?.click();
                 }}
               >
-                Pick photo
+                Upload image
               </button>
               <button
                 type="button"
@@ -141,8 +141,9 @@ export default function ImageUploader({ onUpload, disabled }: Props) {
                   e.stopPropagation();
                   cameraRef.current?.click();
                 }}
+                aria-label="Take photo with camera"
               >
-                Take photo
+                Camera
               </button>
             </div>
             <BalancedText

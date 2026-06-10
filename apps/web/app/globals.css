@@ -16,6 +16,9 @@
   --duration-fast: 150ms;
   --duration-normal: 280ms;
   --duration-slow: 600ms;
+
+  --dash-header-offset: 72px;
+  --dash-footer-offset: 52px;
 }
 
 [data-theme="dark"] {
@@ -1331,8 +1334,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px 20px;
-  padding: 12px 0;
+  gap: 8px 16px;
+  padding: 8px 0;
   flex-wrap: wrap;
 }
 
@@ -1385,70 +1388,160 @@ a {
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  padding: calc(var(--dash-header-offset, 88px) + clamp(16px, 3vw, 28px))
-    clamp(16px, 4vw, 24px) 2rem;
+  padding: calc(var(--dash-header-offset) + clamp(12px, 2.5vw, 24px))
+    clamp(16px, 4vw, 24px)
+    calc(var(--dash-footer-offset) + clamp(16px, 3vw, 28px) + env(safe-area-inset-bottom, 0));
   position: relative;
   z-index: 1;
+  scroll-margin-top: var(--dash-header-offset);
 }
 
 .ip-dash-footer {
   border-top: 1px solid var(--border);
-  padding: 24px 0 calc(24px + env(safe-area-inset-bottom, 0));
-  margin-top: auto;
-  position: relative;
-  z-index: 1;
-  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
-  backdrop-filter: blur(8px);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0));
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.ip-dash-footer-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 110;
+  isolation: isolate;
 }
 
 .ip-dash-footer-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 10px;
+  flex-wrap: nowrap;
+  min-height: var(--dash-footer-offset);
+}
+
+.ip-dash-footer-copy {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.ip-dash-footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
 }
 
 .ip-dash-footer-theme {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+}
+
+.ip-dash-footer-home {
+  white-space: nowrap;
+}
+
+.ip-dash-footer-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
+  background: color-mix(in srgb, var(--accent-dim) 60%, transparent);
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.ip-dash-footer-help-btn:hover {
+  background: color-mix(in srgb, var(--accent-dim) 90%, transparent);
+}
+
+.ip-dash-footer-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.ip-dash-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+}
+
+.ip-dash-logo {
+  font-size: 0.9375rem;
+}
+
+.ip-dash-nav .ip-nav-link {
+  font-size: 0.8125rem;
+  padding: 6px 10px;
 }
 
 @media (max-width: 900px) {
+  :root {
+    --dash-header-offset: 108px;
+    --dash-footer-offset: 48px;
+  }
+
   .ip-dash-header-inner {
-    flex-direction: column;
-    align-items: stretch;
-    padding-bottom: 10px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 6px 0 8px;
   }
 
   .ip-dash-nav {
     order: 3;
+    flex: 1 1 100%;
     justify-content: flex-start;
     overflow-x: auto;
     flex-wrap: nowrap;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
     -webkit-overflow-scrolling: touch;
+    gap: 0;
+  }
+
+  .ip-dash-nav .ip-nav-link {
+    font-size: 0.75rem;
+    padding: 5px 8px;
   }
 
   .ip-dash-header-actions {
     order: 2;
-    justify-content: space-between;
-    width: 100%;
+    margin-left: auto;
+    gap: 8px;
   }
 
   .ip-dash-logo {
     order: 1;
+    font-size: 0.875rem;
   }
-}
 
-.ip-dash-user-email {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  max-width: min(200px, 36vw);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  .ip-dash-footer-inner {
+    gap: 8px;
+  }
+
+  .ip-dash-footer-copy {
+    display: none;
+  }
 }
 
 /* Dashboard cards — subtle brand glow */
@@ -1476,9 +1569,14 @@ a {
   text-align: left;
 }
 
-.ip-portal-nav-help-intro {
-  margin: 0 0 0.5rem;
+.ip-portal-nav-help-title {
+  margin: 0 0 0.65rem;
   text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--text);
 }
 
 .ip-portal-nav-help-list {
@@ -1602,7 +1700,7 @@ a {
   text-align: center;
 }
 
-/* Floating help chat */
+/* Help chat — embedded in dashboard footer */
 .ip-help-chat {
   position: fixed;
   right: max(16px, env(safe-area-inset-right, 0));
@@ -1612,6 +1710,31 @@ a {
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
+}
+
+.ip-help-chat-embedded {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  align-items: stretch;
+  padding: 0 clamp(12px, 3vw, 20px) 8px;
+  pointer-events: none;
+}
+
+.ip-help-chat-embedded.ip-help-chat-open {
+  pointer-events: auto;
+}
+
+.ip-help-chat-embedded .ip-help-chat-panel {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  max-height: min(360px, 50vh);
+}
+
+.ip-help-chat-mic-active {
+  color: var(--danger);
 }
 
 .ip-help-chat-fab {
@@ -3529,6 +3652,15 @@ a {
   font-weight: 500;
   color: var(--muted);
   text-align: center;
+}
+
+.ip-detail-label-caps {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
 .ip-detail-value {

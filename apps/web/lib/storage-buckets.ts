@@ -13,7 +13,7 @@ export function storageBucketErrorMessage(
   raw: string,
 ): string {
   if (/bucket not found/i.test(raw)) {
-    return `Storage bucket "${bucket}" is missing. Run Supabase migrations or create the bucket in the Supabase dashboard (Storage → New bucket → id: ${bucket}).`;
+    return `Image storage isn’t ready yet (bucket id: ${bucket}). Ask your admin to run Supabase migrations, or create a bucket named exactly “${bucket}” in the Supabase dashboard under Storage → New bucket.`;
   }
   return raw;
 }

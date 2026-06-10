@@ -11,6 +11,7 @@ import {
   type WorkshopState,
 } from "@/lib/portal-workshop";
 import { workshopAssistantReply } from "@/lib/assistant";
+import { ensureStorageBuckets } from "@/lib/ensure-storage-buckets";
 import {
   STORAGE_BUCKETS,
   storageBucketErrorMessage,
@@ -90,6 +91,8 @@ export async function POST(
         return NextResponse.json({ error: "File too large" }, { status: 413 });
       }
     }
+
+    await ensureStorageBuckets(STORAGE_BUCKETS.PORTAL_IMAGES);
 
     const added: string[] = [];
     for (const file of files) {
