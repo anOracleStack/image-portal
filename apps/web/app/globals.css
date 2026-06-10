@@ -1410,6 +1410,42 @@ a {
   flex-direction: column;
 }
 
+/* Scale shell: fixed px/rem at 1440 design — transform alone handles viewport fit.
+   vw/clamp(vw) inside a scaled root double-shrinks and makes the dashboard look tiny. */
+.ip-dash-scale-root .ip-dash-main {
+  max-width: 1120px;
+}
+
+.ip-dash-scale-root .ip-dash-section-title {
+  font-size: 2rem;
+}
+
+.ip-dash-scale-root .ip-dash-section-title-sm {
+  font-size: 1.35rem;
+}
+
+.ip-dash-scale-root .ip-dash-lead {
+  font-size: 1.125rem;
+}
+
+.ip-dash-scale-root .ip-onboarding {
+  padding: 2rem;
+}
+
+.ip-dash-scale-root .ip-usage-summary {
+  padding: 1.75rem;
+}
+
+.ip-dash-scale-root .ip-dash-header {
+  position: sticky;
+  top: 0;
+}
+
+.ip-dash-scale-root .ip-dash-footer-fixed {
+  position: sticky;
+  bottom: 0;
+}
+
 .ip-dash-header {
   background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
   border-bottom: 1px solid var(--border);

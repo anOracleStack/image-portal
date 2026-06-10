@@ -8,6 +8,16 @@ export const DASHBOARD_REF_WIDTH = 1440;
 /** Minimum scale factor (720px visual width at ref). Narrower viewports scroll horizontally. */
 export const DASHBOARD_MIN_SCALE = 0.5;
 
+function getViewportWidth(): number {
+  if (typeof window === "undefined") return DASHBOARD_REF_WIDTH;
+  return window.visualViewport?.width ?? window.innerWidth;
+}
+
+export function computeDashboardScale(viewportWidth: number): number {
+  if (viewportWidth >= DASHBOARD_REF_WIDTH) return 1;
+  return Math.max(DASHBOARD_MIN_SCALE, viewportWidth / DASHBOARD_REF_WIDTH);
+}
+
 export function DashboardScaleShell({ children }: { children: React.ReactNode }) {
   const slotRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -17,21 +27,21 @@ export function DashboardScaleShell({ children }: { children: React.ReactNode })
     const slot = slotRef.current;
     if (!inner || !slot) return;
 
-    const scale = Math.min(
-      1,
-      Math.max(DASHBOARD_MIN_SCALE, window.innerWidth / DASHBOARD_REF_WIDTH),
-    );
+    const scale = computeDashboardScale(getViewportWidth());
 
     document.documentElement.style.setProperty("--dash-scale", String(scale));
-    inner.style.transform = `scale(${scale})`;
+    inner.style.transform = scale === 1 ? "none" : `scale(${scale})`;
 
-    slot.style.width = `${DASHBOARD_REF_WIDTH * scale}px`;
+    const visualWidth = DASHBOARD_REF_WIDTH * scale;
+    slot.style.width = `${visualWidth}px`;
     slot.style.height = `${inner.offsetHeight * scale}px`;
   }, []);
 
   useEffect(() => {
     syncScale();
     window.addEventListener("resize", syncScale);
+    window.visualViewport?.addEventListener("resize", syncScale);
+    window.visualViewport?.addEventListener("scroll", syncScale);
 
     const inner = innerRef.current;
     const ro = inner ? new ResizeObserver(syncScale) : null;
@@ -39,6 +49,8 @@ export function DashboardScaleShell({ children }: { children: React.ReactNode })
 
     return () => {
       window.removeEventListener("resize", syncScale);
+      window.visualViewport?.removeEventListener("resize", syncScale);
+      window.visualViewport?.removeEventListener("scroll", syncScale);
       ro?.disconnect();
     };
   }, [syncScale]);
