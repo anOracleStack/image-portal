@@ -6,8 +6,16 @@ import { BalancedText } from "@/components/ui/BalancedText";
 import { UseCaseModal } from "@/components/landing/UseCaseModal";
 import { USE_CASES, demoAssetPath, type UseCaseSlug } from "@/lib/use-cases";
 
-export function UseCasesSection() {
+type UseCasesSectionProps = {
+  /** Show only the first N use cases (landing viewport). */
+  limit?: number;
+  /** Tighter cards for full-viewport landing row. */
+  compact?: boolean;
+};
+
+export function UseCasesSection({ limit, compact = false }: UseCasesSectionProps = {}) {
   const [openSlug, setOpenSlug] = useState<UseCaseSlug | null>(null);
+  const cases = limit != null ? USE_CASES.slice(0, limit) : USE_CASES;
   const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -20,15 +28,17 @@ export function UseCasesSection() {
 
   return (
     <>
-      <div className="ip-grid-3 ip-use-cases-grid">
-        {USE_CASES.map((c) => (
+      <div
+        className={`ip-use-cases-grid${compact ? " ip-landing-cards-row ip-landing-use-cases-row" : " ip-grid-3"}`}
+      >
+        {cases.map((c) => (
           <button
             key={c.slug}
             ref={(el) => {
               triggerRefs.current[c.slug] = el;
             }}
             type="button"
-            className="ip-card ip-card-interactive ip-card-glow ip-card-copy ip-use-case-card"
+            className={`ip-card ip-card-interactive ip-card-glow ip-card-copy ip-use-case-card${compact ? " ip-landing-compact-card" : ""}`}
             onClick={() => open(c.slug)}
             aria-haspopup="dialog"
             aria-expanded={openSlug === c.slug}

@@ -54,17 +54,15 @@ export function OnboardingStrip() {
   return (
     <section className="ip-dash-section ip-card ip-card-glow ip-card-copy ip-onboarding ip-onboarding-wizard">
       <div className="ip-onboarding-wizard-head">
-        <div>
-          <h2 className="ip-dash-section-title">First-run checklist</h2>
-          <BalancedText
-            className="ip-muted ip-text-block ip-dash-lead"
-            lines={[
-              "Three steps to your first scannable doorway.",
-              "Safety checks & analytics built in.",
-            ]}
-          />
-        </div>
-        <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm" onClick={dismiss}>
+        <h2 className="ip-dash-section-title">First-run checklist</h2>
+        <BalancedText
+          className="ip-muted ip-text-block ip-dash-lead"
+          lines={[
+            "Three steps to your first scannable doorway.",
+            "Safety checks & analytics built in.",
+          ]}
+        />
+        <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm ip-onboarding-dismiss" onClick={dismiss}>
           Got it
         </button>
       </div>
