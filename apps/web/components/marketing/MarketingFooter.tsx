@@ -10,9 +10,16 @@ const footerLinks = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export function MarketingFooter() {
+type MarketingFooterProps = {
+  /** Attached below landing sections inside scale shell (not viewport-fixed). */
+  attached?: boolean;
+};
+
+export function MarketingFooter({ attached = false }: MarketingFooterProps) {
   return (
-    <footer className="ip-footer ip-marketing-footer">
+    <footer
+      className={`ip-footer${attached ? " ip-landing-footer-attached" : " ip-marketing-footer"}`}
+    >
       <div className="ip-container ip-footer-inner">
         <span className="ip-faint ip-footer-copy">
           © {new Date().getFullYear()} RQ Plus

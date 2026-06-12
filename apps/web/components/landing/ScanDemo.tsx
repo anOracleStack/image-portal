@@ -10,6 +10,7 @@ export function ScanDemo() {
       autoAdvance="immediate"
       priorityFrames
       initialStep={0}
+      layout="landing"
       className="ip-demo ip-animate-in ip-animate-in-delay-2"
     />
   );

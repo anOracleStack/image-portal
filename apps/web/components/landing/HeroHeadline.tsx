@@ -15,11 +15,13 @@ export async function HeroHeadline() {
 
   return (
     <div className="ip-hero-headline ip-animate-in ip-animate-in-delay-1">
-      <div
-        className="ip-hero-qr-bg"
-        aria-hidden
-        dangerouslySetInnerHTML={{ __html: qrSvg }}
-      />
+      <div className="ip-hero-qr-bg" aria-hidden>
+        <div className="ip-hero-qr-sweep" />
+        <div
+          className="ip-hero-qr-svg"
+          dangerouslySetInnerHTML={{ __html: qrSvg }}
+        />
+      </div>
       <h1 className="ip-hero-title ip-hero-grabber">
         <span className="ip-hero-grabber-line">The Next</span>
         <span className="ip-hero-grabber-line">Generation</span>

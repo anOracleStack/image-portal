@@ -33,12 +33,15 @@ function getSpeechRecognition(): SpeechRecognitionCtor | null {
 
 interface HelpChatProps {
   embedded?: boolean;
+  /** Position inside landing scale root instead of viewport-fixed. */
+  inScale?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
 export function HelpChat({
   embedded = false,
+  inScale = false,
   open: controlledOpen,
   onOpenChange,
 }: HelpChatProps) {
@@ -129,7 +132,7 @@ export function HelpChat({
 
   const rootClass = embedded
     ? `ip-help-chat ip-help-chat-embedded${open ? " ip-help-chat-open" : ""}`
-    : "ip-help-chat";
+    : `ip-help-chat${inScale ? " ip-help-chat-in-scale" : ""}`;
 
   return (
     <div className={rootClass}>

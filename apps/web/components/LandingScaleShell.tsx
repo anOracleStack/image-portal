@@ -1,25 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import {
-  REF_WIDTH,
-  MIN_SCALE,
-  computeScale,
-  getViewportWidth,
-} from "@/lib/scale-shell";
+import { REF_WIDTH, computeScale, getViewportWidth } from "@/lib/scale-shell";
 
-/** @deprecated Use REF_WIDTH from scale-shell */
-export const DASHBOARD_REF_WIDTH = REF_WIDTH;
-
-/** @deprecated Use MIN_SCALE from scale-shell */
-export const DASHBOARD_MIN_SCALE = MIN_SCALE;
-
-/** @deprecated Use computeScale from scale-shell */
-export function computeDashboardScale(viewportWidth: number): number {
-  return computeScale(viewportWidth);
-}
-
-export function DashboardScaleShell({ children }: { children: React.ReactNode }) {
+export function LandingScaleShell({ children }: { children: React.ReactNode }) {
   const slotRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
 
@@ -30,8 +14,9 @@ export function DashboardScaleShell({ children }: { children: React.ReactNode })
 
     const scale = computeScale(getViewportWidth());
 
-    document.documentElement.style.setProperty("--dash-scale", String(scale));
+    document.documentElement.style.setProperty("--landing-scale", String(scale));
     inner.style.transform = scale === 1 ? "none" : `scale(${scale})`;
+    inner.dataset.scaleBelow = scale < 0.65 ? "true" : "false";
 
     const visualWidth = REF_WIDTH * scale;
     slot.style.width = `${visualWidth}px`;
@@ -53,13 +38,14 @@ export function DashboardScaleShell({ children }: { children: React.ReactNode })
       window.visualViewport?.removeEventListener("resize", syncScale);
       window.visualViewport?.removeEventListener("scroll", syncScale);
       ro?.disconnect();
+      document.documentElement.style.removeProperty("--landing-scale");
     };
   }, [syncScale]);
 
   return (
-    <div className="ip-dash-scale-viewport">
-      <div ref={slotRef} className="ip-dash-scale-slot">
-        <div ref={innerRef} className="ip-dash-scale-root">
+    <div className="ip-landing-scale-viewport">
+      <div ref={slotRef} className="ip-landing-scale-slot">
+        <div ref={innerRef} className="ip-landing-scale-root">
           {children}
         </div>
       </div>
