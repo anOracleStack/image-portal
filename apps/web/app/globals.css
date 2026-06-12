@@ -2267,6 +2267,9 @@ a {
   text-decoration: none;
   color: inherit;
   text-align: center;
+  border: 1px solid var(--portal-rim);
+  background: var(--portal-glass);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
 }
 
 .ip-onboarding-wizard-cta {
@@ -4689,6 +4692,41 @@ a {
   background: var(--portal-glass);
 }
 
+.ip-landing-scan .ip-demo-match-card-open {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 6%, transparent),
+    0 0 24px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.ip-demo-landing .ip-demo-frame {
+  --ip-bracket: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+.ip-demo-landing .ip-demo-frame::before,
+.ip-demo-landing .ip-demo-frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--ip-bracket);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.ip-demo-landing .ip-demo-frame::before {
+  top: 7px;
+  left: 7px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.ip-demo-landing .ip-demo-frame::after {
+  right: 7px;
+  bottom: 7px;
+  border-left: none;
+  border-top: none;
+}
+
 .ip-landing-scan-privacy {
   display: flex;
   flex-direction: column;
@@ -4800,6 +4838,13 @@ a {
 
 .ip-landing-step-card .ip-card-title-sm {
   font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ip-landing-why-row .ip-card-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .ip-landing-why,
@@ -4936,6 +4981,13 @@ a {
   gap: 12px;
   justify-content: center;
   margin-top: 8px;
+}
+
+.ip-landing-cta-actions .ip-btn,
+.ip-landing-pricing-inner .ip-btn {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .ip-landing-scale-root[data-scale-below="true"] .ip-landing-steps-row,

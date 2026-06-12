@@ -36,10 +36,10 @@ export function LandingCtaSection() {
             lines={[...CTA_LINES]}
           />
           <div className="ip-landing-cta-actions">
-            <Button href={CTA_PRIMARY.href} variant="primary">
+            <Button href={CTA_PRIMARY.href} variant="primary" className="ip-btn-hero">
               {CTA_PRIMARY.label}
             </Button>
-            <Button href={CTA_SECONDARY.href} variant="secondary">
+            <Button href={CTA_SECONDARY.href} variant="secondary" className="ip-btn-hero">
               {CTA_SECONDARY.label}
             </Button>
           </div>

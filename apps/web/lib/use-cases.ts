@@ -28,7 +28,7 @@ export const USE_CASES: readonly UseCaseConfig[] = [
     titleCaps: "POSTERS & FLYERS",
     lines: [
       "Printed materials that change with your content.",
-      "Update the link anytime — no reprinting needed.",
+      "Update the link without reprinting.",
     ],
     destination: "rub.pub/summer-launch",
     categoryLabel: "event poster",
@@ -41,7 +41,7 @@ export const USE_CASES: readonly UseCaseConfig[] = [
     titleCaps: "RESTAURANT MENUS",
     lines: [
       "The menu image itself is scannable.",
-      "Change prices & items instantly from your dashboard.",
+      "Change prices & bring up items instantly.",
     ],
     destination: "rub.pub/menu",
     categoryLabel: "restaurant menu",
@@ -53,8 +53,8 @@ export const USE_CASES: readonly UseCaseConfig[] = [
     slug: "event-tickets",
     titleCaps: "EVENT TICKETS",
     lines: [
-      "Link tickets in real time from one image.",
-      "Update schedule, venue, & refunds on the fly.",
+      "Real-time — schedule, venue, & refunds.",
+      "Update ticket details without reprinting.",
     ],
     destination: "rub.pub/tickets",
     categoryLabel: "event ticket",
@@ -67,7 +67,7 @@ export const USE_CASES: readonly UseCaseConfig[] = [
     titleCaps: "PRODUCT PACKAGING",
     lines: [
       "Packaging becomes a channel to your brand.",
-      "Manuals, offers, & unboxing — one scan away.",
+      "Manuals, offers, & unboxing.",
     ],
     destination: "rub.pub/unbox",
     categoryLabel: "product box",

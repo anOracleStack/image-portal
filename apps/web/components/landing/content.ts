@@ -14,21 +14,21 @@ export const HERO_CTA_SECONDARY = {
 
 export const HOW_STEPS = [
   {
-    title: "Upload any image",
+    title: "UPLOAD ANY IMAGE",
     lines: [
       "Poster, flyer, menu, screenshot, or artwork.",
       "Upload a file or snap a photo — both work.",
     ],
   },
   {
-    title: "Link a destination",
+    title: "LINK A DESTINATION",
     lines: [
       "Website, profile, store, or payment page.",
       "Change it anytime from your dashboard.",
     ],
   },
   {
-    title: "Share everywhere",
+    title: "SHARE EVERYWHERE",
     lines: [
       "Print, post, or display on any screen.",
       "Viewers scan with the web or installed app.",

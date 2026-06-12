@@ -352,10 +352,12 @@ export function UseCaseDemo({
             </div>
           )}
 
-          {isLanding && index === 5 && step5Phase === "match" ? (
-            <div className="ip-demo-match-card ip-scan-result-card ip-scan-motion-in">
+          {isLanding && index === 5 ? (
+            <div
+              className={`ip-demo-match-card ip-scan-result-card ip-scan-motion-in${step5Phase === "open" ? " ip-demo-match-card-open" : ""}`}
+            >
               <div className="ip-scan-status-label">
-                Matched
+                {step5Phase === "open" ? "OPEN" : "MATCHED"}
                 <span className="ip-match-badge ip-match-badge-yes">Demo</span>
               </div>
               <div className="ip-scan-url-domain">{step.linkBadge}</div>

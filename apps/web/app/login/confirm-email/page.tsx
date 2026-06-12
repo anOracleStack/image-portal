@@ -59,7 +59,7 @@ function ConfirmEmailContent() {
     return (
       <AuthShell>
         <div className="ip-auth-card ip-auth-card-center ip-auth-card-portal">
-          <h1 className="ip-display ip-auth-title ip-auth-title-caps">Check your email</h1>
+          <h1 className="ip-display ip-auth-title ip-auth-title-caps">CHECK YOUR EMAIL</h1>
           <BalancedText
             className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
             lines={[
@@ -79,10 +79,10 @@ function ConfirmEmailContent() {
     <AuthShell>
       <div className="ip-auth-card ip-auth-card-center ip-auth-card-confirm ip-auth-card-portal">
         <p className="ip-mono ip-badge ip-badge-accent ip-auth-badge ip-auth-badge-caps">
-          Almost there
+          ALMOST THERE
         </p>
         <h1 className="ip-display ip-auth-title ip-auth-title-confirm ip-auth-title-caps">
-          Confirm your email
+          CONFIRM YOUR EMAIL
         </h1>
         <BalancedText
           className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"

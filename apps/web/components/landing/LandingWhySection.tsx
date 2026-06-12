@@ -3,7 +3,10 @@ import { WHY_ITEMS } from "@/components/landing/content";
 
 export function LandingWhySection() {
   return (
-    <section className="ip-landing-section ip-landing-why ip-container ip-section-center">
+    <section
+      id="why"
+      className="ip-landing-section ip-landing-why ip-container ip-section-center"
+    >
       <div className="ip-landing-section-inner">
         <h2 className="ip-display ip-section-title">WHY RQ PLUS?</h2>
         <div className="ip-landing-cards-row ip-landing-why-row">

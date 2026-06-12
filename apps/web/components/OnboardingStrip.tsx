@@ -54,7 +54,7 @@ export function OnboardingStrip() {
   return (
     <section className="ip-dash-section ip-card ip-card-glow ip-card-copy ip-onboarding ip-onboarding-wizard">
       <div className="ip-onboarding-wizard-head">
-        <h2 className="ip-dash-section-title ip-onboarding-title-caps">First-run checklist</h2>
+        <h2 className="ip-dash-section-title ip-onboarding-title-caps">FIRST-RUN CHECKLIST</h2>
         <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm ip-onboarding-dismiss" onClick={dismiss}>
           Got it
         </button>

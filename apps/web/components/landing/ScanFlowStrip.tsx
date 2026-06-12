@@ -11,8 +11,15 @@ type ScanFlowStripProps = {
 };
 
 export function ScanFlowStrip({ activePhase }: ScanFlowStripProps) {
+  const activeLabel = PHASES.find((p) => p.id === activePhase)?.label ?? "SCAN";
+
   return (
-    <div className="ip-scan-demo-flow" aria-hidden>
+    <div
+      className="ip-scan-demo-flow"
+      role="status"
+      aria-live="polite"
+      aria-label={`Scan flow: ${activeLabel}`}
+    >
       {PHASES.map((phase, index) => (
         <span key={phase.id} className="ip-scan-demo-flow-group">
           <span
