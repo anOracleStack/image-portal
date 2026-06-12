@@ -2243,10 +2243,18 @@ a {
   transition: border-color var(--duration-fast), color var(--duration-fast);
 }
 
+.ip-onboarding-title-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .ip-onboarding-wizard-pill[data-active="true"] {
-  border-color: var(--accent);
+  border-color: var(--portal-rim-active);
   color: var(--accent);
-  background: var(--accent-dim);
+  background: color-mix(in srgb, var(--accent-dim) 75%, var(--portal-glass));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent),
+    0 0 18px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .ip-onboarding-wizard-card {
@@ -3218,14 +3226,45 @@ a {
   text-align: left;
 }
 
+.ip-auth-card-portal {
+  border: 1px solid var(--portal-rim);
+  background: var(--portal-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-md), 0 0 36px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.ip-auth-card-welcome {
+  max-width: 360px;
+  max-height: 55vh;
+  padding: 1.35rem 1.25rem;
+  overflow: auto;
+}
+
+.ip-auth-badge-caps,
+.ip-auth-title-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ip-auth-title-caps {
+  letter-spacing: 0.02em;
+}
+
+.ip-confirm-steps-balanced {
+  margin: 0 auto 1.15rem;
+  max-width: 32ch;
+  line-height: 1.55;
+}
+
 .ip-auth-card-confirm {
   max-width: 360px;
-  padding: 1.5rem 1.35rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
+  padding: 1.28rem 1.15rem;
+  border-color: var(--portal-rim-active);
   background: linear-gradient(
     165deg,
-    color-mix(in srgb, var(--bg-card) 92%, var(--accent-dim)),
-    var(--bg-card)
+    color-mix(in srgb, var(--portal-glass) 88%, var(--accent-dim)),
+    var(--portal-glass)
   );
   box-shadow: var(--shadow-md), 0 0 40px color-mix(in srgb, var(--accent) 12%, transparent);
 }

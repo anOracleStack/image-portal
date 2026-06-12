@@ -77,27 +77,32 @@ function ConfirmEmailContent() {
 
   return (
     <AuthShell>
-      <div className="ip-auth-card ip-auth-card-center ip-auth-card-confirm">
-        <p className="ip-mono ip-badge ip-badge-accent ip-auth-badge">Almost there</p>
-        <h1 className="ip-display ip-auth-title ip-auth-title-confirm">Confirm your email</h1>
+      <div className="ip-auth-card ip-auth-card-center ip-auth-card-confirm ip-auth-card-portal">
+        <p className="ip-mono ip-badge ip-badge-accent ip-auth-badge ip-auth-badge-caps">
+          Almost there
+        </p>
+        <h1 className="ip-display ip-auth-title ip-auth-title-confirm ip-auth-title-caps">
+          Confirm your email
+        </h1>
         <BalancedText
           className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
           lines={[
-            "We sent a confirmation link to",
-            "the address below. Confirm",
-            "before using RQ Plus.",
+            "We sent a confirmation link",
+            "to the address below.",
+            "Confirm before using RQ Plus.",
           ]}
         />
 
         <div className="ip-confirm-email-chip">{email}</div>
 
-        <ol className="ip-muted ip-confirm-steps ip-confirm-steps-centered">
-          <li>Open your inbox — use the button below if we recognize your provider.</li>
-          <li>
-            Find the message from RQ Plus & tap <strong>Confirm email</strong>.
-          </li>
-          <li>Come back here — we will send you to your dashboard.</li>
-        </ol>
+        <BalancedText
+          className="ip-muted ip-text-block ip-copy-sm ip-confirm-steps-balanced"
+          lines={[
+            "Open your inbox & tap Confirm email.",
+            "Use the shortcut below if we know your provider.",
+            "Return here — we will send you to your dashboard.",
+          ]}
+        />
 
         {status && (
           <div className="ip-badge ip-badge-success ip-card-spaced">

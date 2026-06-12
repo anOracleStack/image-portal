@@ -29,7 +29,7 @@ export function LandingCtaSection() {
             ))}
           </div>
           <h2 className="ip-hero-title ip-landing-cta-title">
-            Ready to <span>open the door</span>?
+            Ready to <span className="ip-hero-grabber-accent">open the door</span>?
           </h2>
           <BalancedText
             className="ip-muted ip-text-block ip-copy-md ip-landing-cta-copy"

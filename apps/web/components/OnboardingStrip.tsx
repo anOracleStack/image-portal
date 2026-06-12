@@ -54,7 +54,10 @@ export function OnboardingStrip() {
   return (
     <section className="ip-dash-section ip-card ip-card-glow ip-card-copy ip-onboarding ip-onboarding-wizard">
       <div className="ip-onboarding-wizard-head">
-        <h2 className="ip-dash-section-title">First-run checklist</h2>
+        <h2 className="ip-dash-section-title ip-onboarding-title-caps">First-run checklist</h2>
+        <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm ip-onboarding-dismiss" onClick={dismiss}>
+          Got it
+        </button>
         <BalancedText
           className="ip-muted ip-text-block ip-dash-lead"
           lines={[
@@ -62,9 +65,6 @@ export function OnboardingStrip() {
             "Safety checks & analytics built in.",
           ]}
         />
-        <button type="button" className="ip-btn ip-btn-ghost ip-btn-sm ip-onboarding-dismiss" onClick={dismiss}>
-          Got it
-        </button>
       </div>
 
       <div className="ip-onboarding-wizard-steps" role="tablist" aria-label="Onboarding steps">

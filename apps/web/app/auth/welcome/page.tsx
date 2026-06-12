@@ -7,11 +7,11 @@ import { BalancedText } from "@/components/ui/BalancedText";
 export default function AuthWelcomePage() {
   return (
     <AuthShell>
-      <div className="ip-auth-card ip-auth-card-center">
-        <p className="ip-mono ip-badge ip-badge-success ip-auth-badge-lg">
+      <div className="ip-auth-card ip-auth-card-center ip-auth-card-portal ip-auth-card-welcome">
+        <p className="ip-mono ip-badge ip-badge-success ip-auth-badge-lg ip-auth-badge-caps">
           Email confirmed
         </p>
-        <h1 className="ip-display ip-auth-title">You are in</h1>
+        <h1 className="ip-display ip-auth-title ip-auth-title-caps">You are in</h1>
         <BalancedText
           className="ip-muted ip-text-block ip-copy-sm ip-card-spaced-lg"
           lines={[
