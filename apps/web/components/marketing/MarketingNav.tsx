@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { RqPlusMark } from "@/components/brand/RqPlusMark";
 import { Button } from "@/components/ui/Button";
 
@@ -33,7 +32,6 @@ export function MarketingNav() {
           <Link href="/login" className="ip-nav-link" onClick={() => setOpen(false)}>
             Log in
           </Link>
-          <ThemeToggle />
           <Button href="/login" size="sm">
             Get started
           </Button>

@@ -20,6 +20,10 @@
   --dash-header-offset: 72px;
   --dash-footer-offset: 52px;
 
+  /* Marketing chrome (fixed nav + footer) */
+  --ip-nav-height: 64px;
+  --ip-footer-height: 64px;
+
   /* Dashboard proportional scale (set by DashboardScaleShell) */
   --dash-ref-width: 1440;
   --dash-scale: 1;
@@ -493,19 +497,22 @@ a {
 
 /* Nav */
 .ip-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--bg) 55%, transparent);
 }
 
 .ip-nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: var(--ip-nav-height);
   gap: 16px;
 }
 
@@ -3320,10 +3327,72 @@ a {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .ip-footer-copy {
   font-size: 0.875rem;
+}
+
+.ip-marketing-shell .ip-main-content,
+.ip-marketing-shell .ip-landing-main {
+  padding-top: var(--ip-nav-height);
+  padding-bottom: var(--ip-footer-height);
+}
+
+.ip-marketing-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--ip-footer-height);
+  padding: 0;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 -4px 24px color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+.ip-marketing-footer .ip-footer-inner {
+  height: var(--ip-footer-height);
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.ip-marketing-footer .ip-footer-copy {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.ip-marketing-footer .ip-footer-links {
+  flex: 1;
+  gap: clamp(8px, 2vw, 20px);
+  min-width: 0;
+}
+
+.ip-footer-link {
+  font-size: 0.8125rem;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.ip-footer-theme {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ip-marketing-footer .ip-theme-toggle {
+  padding: 3px;
+}
+
+.ip-marketing-footer .ip-theme-option {
+  padding: 5px 8px;
+  font-size: 0.65rem;
 }
 
 /* Pricing */
@@ -4274,8 +4343,7 @@ a {
 }
 
 .ip-landing-section {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100dvh - var(--ip-nav-height) - var(--ip-footer-height));
   scroll-snap-align: start;
   scroll-snap-stop: always;
   display: flex;
@@ -4289,14 +4357,13 @@ a {
 
 .ip-landing-section-inner {
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: clamp(12px, 2vh, 24px);
-  padding: clamp(32px, 5vh, 48px) 0;
+  padding: clamp(24px, 4vh, 40px) 0;
   box-sizing: border-box;
 }
 
@@ -4695,8 +4762,8 @@ a {
   }
 }
 
-/* Footer */
-.ip-footer {
+/* Footer (legacy non-marketing pages) */
+.ip-footer:not(.ip-marketing-footer) {
   border-top: 1px solid var(--border);
   padding: 48px 0;
   position: relative;
@@ -4712,6 +4779,14 @@ a {
     display: inline-flex;
   }
 
+  .ip-marketing-footer .ip-footer-copy {
+    display: none;
+  }
+
+  .ip-marketing-footer .ip-footer-links {
+    justify-content: flex-start;
+  }
+
   .ip-nav-inner > .ip-nav-links:not(.ip-nav-links-open) {
     display: none;
   }
@@ -4720,7 +4795,7 @@ a {
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 64px;
+    top: var(--ip-nav-height);
     left: 0;
     right: 0;
     background: var(--bg-elevated);

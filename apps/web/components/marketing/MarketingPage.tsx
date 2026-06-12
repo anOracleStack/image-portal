@@ -5,7 +5,7 @@ import { MarketingFooter } from "./MarketingFooter";
 
 export function MarketingPage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="ip-page">
+    <div className="ip-page ip-marketing-shell">
       <GlowBackground />
       <MarketingNav />
       <div className="ip-main-content">{children}</div>

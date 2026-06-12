@@ -58,7 +58,7 @@ const howSteps = [
 
 export default function LandingPage() {
   return (
-    <div className="ip-page ip-landing">
+    <div className="ip-page ip-landing ip-marketing-shell">
       <GlowBackground />
       <MarketingNav />
 
@@ -174,7 +174,7 @@ export default function LandingPage() {
                 className="ip-muted ip-text-block ip-copy-md ip-landing-cta-copy"
                 lines={[
                   "Create your first portal in under a minute.",
-                  "Dark or light theme — your choice in the nav.",
+                  "Dark or light theme — your choice in the footer.",
                 ]}
               />
               <Button href="/login" variant="primary">
