@@ -58,8 +58,8 @@ function ConfirmEmailContent() {
   if (!email) {
     return (
       <AuthShell>
-        <div className="ip-auth-card ip-auth-card-center">
-          <h1 className="ip-display ip-auth-title">Check your email</h1>
+        <div className="ip-auth-card ip-auth-card-center ip-auth-card-portal">
+          <h1 className="ip-display ip-auth-title ip-auth-title-caps">Check your email</h1>
           <BalancedText
             className="ip-muted ip-text-block ip-copy-sm ip-auth-subcopy"
             lines={[

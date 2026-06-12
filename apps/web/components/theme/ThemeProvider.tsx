@@ -24,7 +24,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>("system");
-  const [resolved, setResolved] = useState<"dark" | "light">("dark");
+  const [resolved, setResolved] = useState<"dark" | "light">("light");
 
   const apply = useCallback((pref: ThemePreference) => {
     const next = resolveTheme(pref);
@@ -37,7 +37,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const pref =
       stored === "dark" || stored === "light" || stored === "system"
         ? stored
-        : "system";
+        : "light";
     setPreferenceState(pref);
     apply(pref);
 
