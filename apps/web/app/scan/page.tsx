@@ -244,9 +244,9 @@ export default function ScanPage() {
             <div className={`ip-scan-overlay ip-scan-phase-${phase}`}>
               <span className="ip-scan-overlay-badge">{overlayLabel}</span>
               <div className="ip-scan-motion-strip" aria-hidden>
-                <span data-active={phase === "ready" || phase === "analyzing" ? "true" : "false"}>Scan</span>
-                <span data-active={phase === "analyzing" ? "true" : "false"}>Match</span>
-                <span data-active={phase === "success" ? "true" : "false"}>Open</span>
+                <span data-active={phase === "ready" || phase === "analyzing" ? "true" : "false"}>SCAN</span>
+                <span data-active={phase === "analyzing" ? "true" : "false"}>MATCH</span>
+                <span data-active={phase === "success" ? "true" : "false"}>OPEN</span>
               </div>
             </div>
           )}
@@ -305,15 +305,18 @@ export default function ScanPage() {
         )}
 
         {cameraState === "ready" && (
-          <p className="ip-muted ip-scan-privacy-note ip-text-block">
-            One photo is enough. We check quality on your device first, then match against
-            our catalog. Camera frames are not saved unless a portal match is logged.
-          </p>
+          <BalancedText
+            className="ip-muted ip-scan-privacy-note ip-text-block"
+            lines={[
+              "One photo is enough — we check quality on your device first.",
+              "Camera frames are not saved unless a portal match is logged.",
+            ]}
+          />
         )}
 
         {phase === "retry" && retryMessage && (
           <div className="ip-card ip-card-danger ip-text-block">
-            <div className="ip-scan-status-label">Try again</div>
+            <div className="ip-scan-status-label">TRY AGAIN</div>
             <BalancedText className="ip-text-block" lines={[retryMessage]} />
             {result && !result.matched && result.confidence > 0 && (
               <p className="ip-faint ip-scan-result-detail">
@@ -325,7 +328,7 @@ export default function ScanPage() {
 
         {phase === "success" && result?.matched && result.portal && (
           <div className="ip-card ip-scan-result-card ip-scan-url-popup ip-scan-motion-in">
-            <div className="ip-scan-status-label">Link found</div>
+            <div className="ip-scan-status-label">LINK FOUND</div>
             <div className="ip-scan-url-domain">{result.portal.destinationDomain}</div>
             <p className="ip-faint ip-scan-result-detail">
               {result.portal.title} · {(result.confidence * 100).toFixed(0)}% match
@@ -335,7 +338,7 @@ export default function ScanPage() {
                 href={`/p/${result.portal.slug}/go`}
                 className="ip-btn ip-btn-primary ip-scan-result-cta"
               >
-                Open link →
+                OPEN LINK →
               </a>
             )}
           </div>

@@ -2,6 +2,7 @@
 
 import { MarketingPage } from "@/components/marketing/MarketingPage";
 import { PageIntro } from "@/components/ui/PageIntro";
+import { BalancedText } from "@/components/ui/BalancedText";
 
 const plans = [
   {
@@ -66,26 +67,41 @@ const comparisonRows: [string, boolean[], string][] = [
   ["SLA", [false, false, false, true], ""],
 ];
 
-const faqs: [string, string][] = [
+const faqs: [string, readonly string[]][] = [
   [
     "Can I change plans?",
-    "Yes — upgrade or downgrade anytime. Changes are prorated to your billing period.",
+    [
+      "Yes — upgrade or downgrade anytime.",
+      "Changes are prorated to your billing period.",
+    ],
   ],
   [
     "What happens if I exceed my scan limit?",
-    "We notify you. Portals stay active for the month; upgrade when you need more capacity.",
+    [
+      "We notify you when you approach the cap.",
+      "Portals stay active; upgrade when you need more.",
+    ],
   ],
   [
     "Is there a free trial for paid plans?",
-    "Start on Free — no card required. Upgrade when you need more.",
+    [
+      "Start on Free — no card required.",
+      "Upgrade when you need more portals or scans.",
+    ],
   ],
   [
     "Can I cancel anytime?",
-    "Yes. Your subscription runs through the end of the billing period, then stops.",
+    [
+      "Yes. Your subscription runs through",
+      "the end of the billing period, then stops.",
+    ],
   ],
   [
     "What payment methods do you accept?",
-    "Major cards via Stripe. Annual invoicing available for Enterprise.",
+    [
+      "Major cards via Stripe.",
+      "Annual invoicing is available for Enterprise.",
+    ],
   ],
 ];
 
@@ -148,7 +164,10 @@ export default function PricingPage() {
       <section className="ip-marketing-section ip-marketing-section-tight ip-section-center">
         <PageIntro
           title="Pricing"
-          lines={["Free to start. Scale as you grow."]}
+          lines={[
+            "Free to start — scale as you grow.",
+            "Pick a plan that fits your portals & scans.",
+          ]}
         />
       </section>
 
@@ -164,7 +183,10 @@ export default function PricingPage() {
               )}
 
               <h3 className="ip-pricing-plan-name">{plan.name}</h3>
-              <p className="ip-pricing-plan-desc">{plan.desc}</p>
+              <BalancedText
+                className="ip-pricing-plan-desc"
+                lines={[plan.desc]}
+              />
 
               <div className="ip-pricing-price-row">
                 <span className="ip-pricing-price">{plan.price}</span>
@@ -203,7 +225,7 @@ export default function PricingPage() {
       </section>
 
       <section className="ip-marketing-section ip-marketing-section-wide ip-section-center ip-panel">
-        <h2 className="ip-section-title">Compare plans</h2>
+        <h2 className="ip-display ip-section-title-sm">Compare plans</h2>
 
         <div className="ip-pricing-table-wrap">
           <table className="ip-pricing-table">
@@ -243,16 +265,16 @@ export default function PricingPage() {
       </section>
 
       <section className="ip-marketing-section ip-marketing-section-tight ip-section-center ip-marketing-section-narrow ip-panel">
-        <h2 className="ip-section-title">FAQ</h2>
+        <h2 className="ip-display ip-section-title-sm">FAQ</h2>
 
         <div className="ip-faq-list">
-          {faqs.map(([q, a]) => (
+          {faqs.map(([q, lines]) => (
             <details key={q} className="ip-faq-item">
               <summary className="ip-faq-summary">
                 {q}
                 <span className="ip-faint">+</span>
               </summary>
-              <p className="ip-faq-answer">{a}</p>
+              <BalancedText className="ip-faq-answer" lines={lines} />
             </details>
           ))}
         </div>

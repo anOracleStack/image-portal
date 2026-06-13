@@ -89,9 +89,13 @@ export default function GalleryPage() {
             "Paid plans can stay public or hide from the gallery.",
           ]}
         />
-        <p className="ip-muted ip-gallery-explainer">
-          Only portals marked <strong>public</strong> are listed. Private portals stay off this page.
-        </p>
+        <BalancedText
+          className="ip-muted ip-gallery-explainer"
+          lines={[
+            "Only portals marked public are listed.",
+            "Private portals stay off this page.",
+          ]}
+        />
       </section>
 
       <section className="ip-section ip-gallery-search-wrap ip-panel">

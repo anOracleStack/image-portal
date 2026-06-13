@@ -87,8 +87,8 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 ### Implementation — sitewide polish
 
-- [ ] **T-050** Pricing page (`apps/web/app/pricing/page.tsx`): center alignment, `&`, BalancedText — per user text rules.
-- [ ] **T-051** Other marketing pages: gallery, features, etc. — audit center/`&`/balanced lines from checklist.
+- [x] **T-050** Pricing page (`apps/web/app/pricing/page.tsx`): center alignment, `&`, BalancedText — **done 2026-06-13** (portal glass cards, ALL CAPS section titles, balanced FAQ).
+- [x] **T-051** Other marketing pages: gallery, scan shell — **done 2026-06-13** (portal rim on gallery/scan, balanced copy).
 - [ ] **T-052** Any dashboard/portal items from memos 54–57 (fill from T-020 checklist).
 
 ### Completion build-out (2026-06-07 session)
@@ -123,6 +123,20 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 ## Work log (newest first)
 
 Append entries here. **Do not delete history.**
+
+### 2026-06-13 — Luminous Portal marketing polish (T-050, T-051)
+
+- **Agent:** Cursor (subagent)
+- **Task id(s):** T-050, T-051
+- **Done:**
+  - Portal glass/rim tokens on marketing panels, pricing cards, gallery cards, scan video & result card
+  - Pricing: ALL CAPS section titles, BalancedText plan desc + FAQ answers, centered FAQ
+  - Gallery: BalancedText explainer
+  - Scan: SCAN/MATCH/OPEN strip ALL CAPS, balanced privacy note, portal result card, OPEN LINK CTA
+- **Files changed:** `apps/web/app/globals.css`, `apps/web/app/pricing/page.tsx`, `apps/web/app/gallery/page.tsx`, `apps/web/app/scan/page.tsx`, `docs/PROJECT-TASKS.md`
+- **Commit:** (see `git log -1` after push)
+- **Verification:** `npm run typecheck` + `npm run build` in `apps/web`
+- **Deploy:** `vercel --prod --yes` from image-portal root → https://rub.pub
 
 ### 2026-06-09 — PWA ship-today (Approach 1)
 
