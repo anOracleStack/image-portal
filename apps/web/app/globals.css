@@ -1,5 +1,12 @@
 /* RQ Plus — design tokens (dark / light via data-theme on <html>) */
 
+@import "../styles/tokens.css";
+@import "../styles/landing/portal.css";
+@import "../styles/landing/luminous.css";
+@import "../styles/landing/signal.css";
+@import "../styles/landing/cinema.css";
+@import "../styles/landing/design-preview.css";
+
 :root {
   --font-display: var(--font-syne), system-ui, sans-serif;
   --font-body: var(--font-dm-sans), system-ui, sans-serif;
@@ -524,7 +531,7 @@ a {
 /* Glow background */
 .ip-glow-bg {
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
@@ -559,6 +566,166 @@ a {
   }
 }
 
+.ip-glow-bg-portal::before {
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 15%, var(--hero-mesh-1), transparent 58%),
+    radial-gradient(ellipse 40% 35% at 75% 25%, var(--hero-mesh-2), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 25% 80%, var(--accent-dim), transparent 50%);
+}
+
+.ip-glow-portal-mesh {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, color-mix(in srgb, #6366f1 12%, transparent) 0%, transparent 40%);
+  opacity: 1;
+}
+
+.ip-glow-portal-beam {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  width: 2px;
+  height: 60%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 60%, transparent),
+    transparent
+  );
+  opacity: 0.4;
+  filter: blur(1px);
+}
+
+.ip-glow-portal-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--portal-scan-line),
+    transparent
+  );
+  animation: ip-portal-page-sweep 1.2s var(--ease-out) 0.3s both;
+  opacity: 0;
+}
+
+@keyframes ip-portal-page-sweep {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    top: 35%;
+    opacity: 0;
+  }
+}
+
+.ip-hero-aperture {
+  isolation: isolate;
+}
+
+.ip-btn-hero-cta {
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.ip-scan-demo-flow {
+  opacity: 0.4;
+  transform: translateY(6px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+.ip-scan-demo-flow-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ip-demo-skeleton {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+}
+
+.ip-demo-skeleton-frame {
+  width: min(100%, 280px);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    110deg,
+    var(--bg-elevated) 30%,
+    color-mix(in srgb, var(--accent) 8%, var(--bg-elevated)) 50%,
+    var(--bg-elevated) 70%
+  );
+  background-size: 200% 100%;
+  animation: ip-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes ip-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.ip-landing-pricing-card {
+  text-align: center;
+  align-items: center;
+  padding: clamp(24px, 4vh, 40px) clamp(20px, 4vw, 32px);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--portal-rim);
+  background: var(--portal-glass);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.ip-landing-pricing-copy .ip-text-block-line {
+  text-align: center;
+}
+
+.ip-landing-why-row .ip-card-section-title,
+.ip-landing-why-row .ip-text-block-line {
+  text-align: center;
+}
+
+.ip-marketing-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+.ip-marketing-shell .ip-nav,
+.ip-marketing-shell .ip-footer {
+  border-color: var(--portal-rim);
+}
+
+.ip-marketing-shell .ip-main-content {
+  padding-top: var(--ip-nav-height);
+  padding-bottom: var(--ip-footer-height);
+}
+
+.ip-design-preview .ip-mt-md {
+  margin-top: 20px;
+}
+
 .ip-scan-grid {
   pointer-events: none;
   position: absolute;
@@ -568,6 +735,117 @@ a {
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent);
+}
+
+.ip-glow-bg-portal::before {
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 18%, var(--hero-mesh-1), transparent 60%),
+    radial-gradient(ellipse 40% 35% at 75% 25%, var(--hero-mesh-2), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, var(--accent-dim), transparent 50%);
+}
+
+.ip-glow-portal-mesh {
+  position: absolute;
+  inset: -30%;
+  background: conic-gradient(
+    from 200deg at 50% 40%,
+    transparent 0deg,
+    color-mix(in srgb, var(--accent) 8%, transparent) 60deg,
+    transparent 120deg,
+    color-mix(in srgb, var(--hero-mesh-2) 12%, transparent) 200deg,
+    transparent 280deg
+  );
+  animation: ip-mesh-drift 22s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+.ip-glow-portal-sweep {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 20%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--portal-scan-line),
+    transparent
+  );
+  animation: ip-portal-sweep 6s linear infinite;
+}
+
+@keyframes ip-portal-sweep {
+  0% {
+    top: 15%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 75%;
+    opacity: 0;
+  }
+}
+
+.ip-demo-skeleton {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+}
+
+.ip-demo-skeleton-frame {
+  width: min(100%, 280px);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    110deg,
+    var(--bg-elevated) 8%,
+    color-mix(in srgb, var(--accent) 12%, var(--bg-elevated)) 18%,
+    var(--bg-elevated) 33%
+  );
+  background-size: 200% 100%;
+  animation: ip-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes ip-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.ip-landing-pricing-copy,
+.ip-landing-pricing-inner {
+  text-align: center;
+}
+
+.ip-mt-md {
+  margin-top: 1rem;
+}
+
+.ip-marketing-shell .ip-panel {
+  border: 1px solid var(--mood-portal-rim, var(--border));
+  background: var(--mood-portal-glass, var(--bg-card));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ip-marketing-shell .ip-section-title-sm,
+.ip-marketing-shell .ip-page-intro-title {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Nav */
@@ -1552,11 +1830,11 @@ a {
   bottom: 0;
 }
 
-/* Landing proportional scale — ref 1440px, transform-origin top center */
+/* Landing proportional scale — ref 1440px, transform-origin top left (matches dashboard) */
 .ip-landing-scale-viewport {
   width: 100%;
   min-height: 100vh;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: auto;
   display: flex;
   justify-content: center;
@@ -1566,12 +1844,12 @@ a {
 .ip-landing-scale-slot {
   position: relative;
   flex-shrink: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ip-landing-scale-root {
   width: 1440px;
-  transform-origin: top center;
+  transform-origin: top left;
   will-change: transform;
   position: relative;
 }
@@ -1589,13 +1867,27 @@ a {
   top: 0;
   left: auto;
   right: auto;
+  z-index: 50;
+}
+
+.ip-landing-scale-root .ip-glow-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .ip-help-chat-in-scale {
   position: absolute;
   right: 24px;
-  bottom: 24px;
-  z-index: 120;
+  bottom: calc(var(--ip-footer-height) + 16px);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.ip-help-chat-in-scale .ip-help-chat-fab,
+.ip-help-chat-in-scale .ip-help-chat-panel {
+  pointer-events: auto;
 }
 
 .ip-landing-footer-attached {
@@ -4578,7 +4870,7 @@ a {
 }
 
 .ip-landing-section {
-  min-height: calc(100dvh - var(--ip-nav-height) - var(--ip-footer-height));
+  min-height: var(--landing-section-height);
   scroll-snap-align: start;
   scroll-snap-stop: always;
   display: flex;
@@ -4591,8 +4883,29 @@ a {
 }
 
 .ip-landing-scale-root .ip-landing-section {
-  min-height: 100vh;
-  max-height: 100vh;
+  min-height: var(--landing-section-height);
+}
+
+.ip-landing-scale-root .ip-container {
+  max-width: 1200px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ip-landing-scale-root .ip-landing-hero {
+  overflow: hidden;
+  min-height: calc(100dvh - var(--ip-nav-height) - var(--ip-footer-height));
+}
+
+.ip-landing-scale-root .ip-landing-scan {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ip-landing-hero .ip-hero-actions {
+  position: relative;
+  z-index: 3;
 }
 
 .ip-landing-section-inner {
@@ -4617,8 +4930,12 @@ a {
 }
 
 .ip-landing-hero-inner {
-  gap: clamp(8px, 1.5vh, 16px);
-  max-width: 720px;
+  gap: clamp(12px, 2vh, 20px);
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 .ip-landing-hero .ip-hero-badge-wrap {
@@ -5209,6 +5526,25 @@ a {
   animation-delay: 0.35s;
 }
 
+.ip-animate-in-delay-4 {
+  animation-delay: 0.5s;
+}
+
+.ip-landing-cinema .ip-animate-in {
+  animation: ip-cinema-reveal 0.85s var(--ease-out) both;
+}
+
+@keyframes ip-cinema-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Skeleton */
 .ip-skeleton {
   background: linear-gradient(
@@ -5282,8 +5618,13 @@ a {
     transition-duration: 0.01ms !important;
   }
 
-  .ip-hero-qr-sweep {
+  .ip-hero-qr-sweep,
+  .ip-glow-portal-sweep {
     animation: none;
     display: none;
+  }
+
+  .ip-demo-skeleton-frame {
+    animation: none;
   }
 }

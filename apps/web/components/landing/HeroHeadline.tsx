@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import { HERO_HEADLINE_LINES, HERO_SUBTITLE } from "@/components/landing/content";
 
 export async function HeroHeadline() {
   const qrSvg = (
@@ -15,6 +16,7 @@ export async function HeroHeadline() {
 
   return (
     <div className="ip-hero-headline ip-animate-in ip-animate-in-delay-1">
+      <div className="ip-hero-aperture" aria-hidden />
       <div className="ip-hero-qr-bg" aria-hidden>
         <div className="ip-hero-qr-sweep" />
         <div
@@ -23,12 +25,13 @@ export async function HeroHeadline() {
         />
       </div>
       <h1 className="ip-hero-title ip-hero-grabber">
-        <span className="ip-hero-grabber-line">The Next</span>
-        <span className="ip-hero-grabber-line">Generation</span>
-        <span className="ip-hero-grabber-line ip-hero-grabber-phrase">
-          OF QR <span className="ip-hero-grabber-accent">CODES</span>
-        </span>
+        {HERO_HEADLINE_LINES.map((line) => (
+          <span key={line} className="ip-hero-grabber-line">
+            {line}
+          </span>
+        ))}
       </h1>
+      <p className="ip-hero-subtitle ip-hero-cap">{HERO_SUBTITLE}</p>
     </div>
   );
 }

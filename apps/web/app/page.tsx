@@ -14,8 +14,8 @@ import { LandingCtaSection } from "@/components/landing/LandingCtaSection";
 export default function LandingPage() {
   return (
     <LandingScaleShell>
-      <div className="ip-page ip-landing">
-        <GlowBackground />
+      <div className="ip-page ip-landing ip-landing-cinema">
+        <GlowBackground variant="portal" showGrid />
         <MarketingNav />
         <main className="ip-landing-main">
           <LandingHeroSection />

@@ -11,6 +11,7 @@ export function LandingCtaSection() {
     <section
       id="gallery-cta"
       className="ip-landing-section ip-container ip-section-center ip-landing-cta-section"
+      data-section-mood="portal"
     >
       <div className="ip-landing-section-inner">
         <div className="ip-card ip-card-glow ip-card-copy ip-landing-cta-card">

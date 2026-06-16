@@ -1,0 +1,31 @@
+/* Shared landing mood tokens — imported before mood overlays */
+
+:root {
+  --mood-portal-bg: radial-gradient(
+    ellipse 80% 60% at 50% 20%,
+    color-mix(in srgb, var(--accent) 10%, transparent),
+    transparent 70%
+  );
+  --mood-portal-rim: color-mix(in srgb, var(--accent) 22%, var(--border));
+  --mood-portal-glass: color-mix(in srgb, var(--bg-card) 72%, transparent);
+  --mood-portal-glow: 0 0 48px var(--accent-glow);
+
+  --mood-luminous-bg: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-elevated) 95%, white 5%) 0%,
+    color-mix(in srgb, var(--accent) 8%, var(--bg)) 100%
+  );
+  --mood-luminous-card: var(--bg-elevated);
+  --mood-luminous-shadow: 0 24px 64px color-mix(in srgb, var(--bg) 25%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--accent) 12%, var(--border));
+  --mood-luminous-elevation: var(--mood-luminous-shadow);
+
+  --mood-signal-grid: color-mix(in srgb, var(--accent) 14%, transparent);
+  --mood-signal-divider: color-mix(in srgb, var(--text) 10%, transparent);
+  --mood-signal-label: var(--font-mono);
+  --mood-signal-border: color-mix(in srgb, var(--text) 12%, transparent);
+
+  --landing-section-height: calc(
+    100dvh - var(--ip-nav-height) - var(--ip-footer-height)
+  );
+}

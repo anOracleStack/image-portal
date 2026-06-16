@@ -176,7 +176,7 @@ export type UseCaseDemoProps = {
   priorityFrames?: boolean;
   /** Start on a specific step index */
   initialStep?: number;
-  layout?: "default" | "landing";
+  layout?: "default" | "landing" | "hero";
 };
 
 export function UseCaseDemo({
@@ -188,7 +188,9 @@ export function UseCaseDemo({
   layout = "default",
 }: UseCaseDemoProps) {
   const steps = buildSteps(slug);
-  const isLanding = layout === "landing";
+  const useCase = getUseCase(slug);
+  const isLanding = layout === "landing" || layout === "hero";
+  const isHero = layout === "hero";
   const [active, setActive] = useState(initialStep % steps.length);
   const [advanceEnabled, setAdvanceEnabled] = useState(autoAdvance === "immediate");
   const [step5Phase, setStep5Phase] = useState<"match" | "open">("match");
@@ -245,6 +247,7 @@ export function UseCaseDemo({
   const rootClass = [
     className,
     isLanding ? "ip-demo-layout-landing ip-demo-landing" : "",
+    isHero ? "ip-demo-layout-hero" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -352,15 +355,15 @@ export function UseCaseDemo({
             </div>
           )}
 
-          {isLanding && index === 5 ? (
+          {isLanding && index >= 4 ? (
             <div
               className={`ip-demo-match-card ip-scan-result-card ip-scan-motion-in${step5Phase === "open" ? " ip-demo-match-card-open" : ""}`}
             >
               <div className="ip-scan-status-label">
-                {step5Phase === "open" ? "OPEN" : "MATCHED"}
+                {index === 5 && step5Phase === "open" ? "OPEN" : index === 5 ? "MATCHED" : "LIVE PREVIEW"}
                 <span className="ip-match-badge ip-match-badge-yes">Demo</span>
               </div>
-              <div className="ip-scan-url-domain">{step.linkBadge}</div>
+              <div className="ip-scan-url-domain">{step.linkBadge ?? useCase.destination}</div>
               <p className="ip-faint ip-scan-result-detail">
                 Summer launch portal · 94% · high
               </p>

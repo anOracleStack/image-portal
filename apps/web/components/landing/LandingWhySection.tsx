@@ -6,6 +6,7 @@ export function LandingWhySection() {
     <section
       id="why"
       className="ip-landing-section ip-landing-why ip-container ip-section-center"
+      data-section-mood="signal"
     >
       <div className="ip-landing-section-inner">
         <h2 className="ip-display ip-section-title">WHY RQ PLUS?</h2>

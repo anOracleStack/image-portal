@@ -1,8 +1,14 @@
 export const HERO_BADGE = "VISUAL SCAN · PROGRAMMABLE LINKS" as const;
 
+export const HERO_HEADLINE_LINES = [
+  "Turn any Image",
+  "into a Doorway",
+] as const;
+
+export const HERO_SUBTITLE = "NEXT GENERATION QR CODE" as const;
+
 export const HERO_LEAD_LINES = [
-  "Turn any image into a doorway.",
-  "Upload it, link it anywhere — the image is the key.",
+  "Upload it, link it anywhere — the image is the key, not the destination.",
   "Anyone with a camera phone can open your link in seconds.",
 ] as const;
 

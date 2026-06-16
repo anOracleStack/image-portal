@@ -1,0 +1,52 @@
+/* Signal Brutalist — how / why / use cases */
+
+[data-section-mood="signal"] {
+  --section-bg: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--bg-elevated) 50%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+[data-section-mood="signal"].ip-landing-section {
+  background: var(--section-bg);
+  background-image:
+    linear-gradient(var(--mood-signal-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mood-signal-grid) 1px, transparent 1px),
+    var(--section-bg);
+  background-size: 48px 48px, 48px 48px, auto;
+}
+
+[data-section-mood="signal"] .ip-section-title,
+[data-section-mood="signal"] .ip-card-section-title {
+  font-family: var(--mood-signal-label);
+  letter-spacing: 0.12em;
+}
+
+[data-section-mood="signal"] .ip-landing-step-card,
+[data-section-mood="signal"] .ip-why-card,
+[data-section-mood="signal"] .ip-use-case-card {
+  border: 1px solid var(--mood-signal-border);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  box-shadow: none;
+  text-align: center;
+}
+
+[data-section-mood="signal"] .ip-landing-step-card .ip-step-num {
+  border-radius: 0;
+  border: 1px solid var(--mood-signal-border);
+  background: transparent;
+  font-family: var(--mood-signal-label);
+}
+
+[data-section-mood="signal"] .ip-why-card .ip-text-block,
+[data-section-mood="signal"] .ip-use-case-card .ip-text-block {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[data-section-mood="signal"] .ip-landing-section-inner {
+  text-align: center;
+}

@@ -1,0 +1,300 @@
+/* Cinema mode — immersive dark sci-fi landing */
+
+.ip-landing-cinema {
+  --bg: #020408;
+  --bg-elevated: #080c14;
+  --bg-card: #0c1018;
+  --text: #f4f6f8;
+  --text-muted: rgba(244, 246, 248, 0.68);
+  --text-faint: rgba(244, 246, 248, 0.38);
+  --accent: #5eead4;
+  --accent-glow: rgba(94, 234, 212, 0.45);
+  --accent-dim: rgba(94, 234, 212, 0.12);
+  --border: rgba(94, 234, 212, 0.12);
+  --border-strong: rgba(94, 234, 212, 0.22);
+  --grid-line: rgba(94, 234, 212, 0.07);
+  --hero-mesh-1: rgba(94, 234, 212, 0.18);
+  --hero-mesh-2: rgba(99, 102, 241, 0.14);
+  color-scheme: dark;
+}
+
+.ip-landing-cinema .ip-nav {
+  background: color-mix(in srgb, #020408 75%, transparent);
+  border-bottom-color: rgba(94, 234, 212, 0.15);
+  backdrop-filter: blur(20px);
+}
+
+.ip-landing-cinema .ip-landing-footer-attached {
+  background: color-mix(in srgb, #020408 88%, transparent);
+  border-top-color: rgba(94, 234, 212, 0.12);
+}
+
+/* —— Hero cinema split —— */
+
+.ip-landing-cinema .ip-landing-hero {
+  min-height: calc(100dvh - var(--ip-nav-height) - var(--ip-footer-height));
+  background:
+    radial-gradient(ellipse 120% 80% at 70% 20%, rgba(94, 234, 212, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 45%),
+    linear-gradient(180deg, #010306 0%, #040a10 40%, #020408 100%);
+}
+
+.ip-hero-cinema-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(94, 234, 212, 0.02) 2px,
+    rgba(94, 234, 212, 0.02) 4px
+  );
+  animation: ip-scanlines-drift 8s linear infinite;
+}
+
+@keyframes ip-scanlines-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 40px;
+  }
+}
+
+.ip-hero-cinema-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, #020408 100%);
+}
+
+.ip-hero-cinema {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: center;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vh, 32px) clamp(24px, 4vw, 48px);
+  position: relative;
+  z-index: 3;
+}
+
+.ip-hero-cinema-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.ip-hero-cinema-demo {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ip-hero-demo-eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin: 0 0 12px;
+  text-shadow: 0 0 20px var(--accent-glow);
+  animation: ip-demo-eyebrow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes ip-demo-eyebrow-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Hero-stage demo — large, glowing, floating */
+
+.ip-demo-hero-stage {
+  width: 100%;
+  max-width: 520px;
+  animation: ip-demo-float 6s ease-in-out infinite;
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(94, 234, 212, 0.1),
+    0 0 60px rgba(94, 234, 212, 0.2),
+    0 32px 80px rgba(0, 0, 0, 0.55);
+  background: linear-gradient(165deg, #0e141c 0%, #080c12 100%);
+}
+
+@keyframes ip-demo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.ip-demo-layout-hero .ip-demo-frame {
+  max-height: 340px !important;
+  width: min(100%, 440px) !important;
+}
+
+.ip-demo-layout-hero .ip-demo-figure {
+  width: min(100%, 440px) !important;
+  margin: 0 auto;
+}
+
+.ip-demo-layout-hero .ip-scan-demo-flow {
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+
+.ip-demo-skeleton-pulse {
+  width: min(100%, 400px);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    110deg,
+    #0a1018 25%,
+    rgba(94, 234, 212, 0.15) 50%,
+    #0a1018 75%
+  );
+  background-size: 200% 100%;
+  animation: ip-skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.ip-demo-skeleton-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  margin-top: 16px;
+  animation: ip-demo-eyebrow-pulse 1.5s ease-in-out infinite;
+}
+
+/* Glow cinema layers */
+
+.ip-glow-bg-cinema .ip-glow-portal-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.ip-glow-portal-orb-a {
+  width: 400px;
+  height: 400px;
+  top: 10%;
+  right: 15%;
+  background: rgba(94, 234, 212, 0.12);
+  animation: ip-orb-drift-a 12s ease-in-out infinite;
+}
+
+.ip-glow-portal-orb-b {
+  width: 300px;
+  height: 300px;
+  bottom: 20%;
+  left: 10%;
+  background: rgba(99, 102, 241, 0.1);
+  animation: ip-orb-drift-b 15s ease-in-out infinite;
+}
+
+@keyframes ip-orb-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-30px, 20px) scale(1.1);
+  }
+}
+
+@keyframes ip-orb-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(25px, -15px) scale(1.08);
+  }
+}
+
+.ip-glow-cinema-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(94, 234, 212, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, black 20%, transparent 75%);
+}
+
+/* Scan bridge section (below hero) */
+
+.ip-scan-bridge {
+  gap: 20px;
+  padding: clamp(32px, 5vh, 56px) 24px;
+}
+
+.ip-scan-bridge-lead {
+  font-size: 1rem;
+  max-width: 42ch;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.ip-landing-cinema .ip-landing-scan {
+  background: linear-gradient(
+    180deg,
+    #020408 0%,
+    rgba(94, 234, 212, 0.04) 50%,
+    #020408 100%
+  );
+}
+
+/* Signal sections in cinema */
+
+.ip-landing-cinema [data-section-mood="signal"] {
+  background-color: #03060a;
+}
+
+.ip-landing-cinema [data-section-mood="signal"].ip-landing-section {
+  background-image:
+    linear-gradient(rgba(94, 234, 212, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ip-hero-cinema-scanlines,
+  .ip-demo-hero-stage,
+  .ip-glow-portal-orb-a,
+  .ip-glow-portal-orb-b,
+  .ip-hero-demo-eyebrow {
+    animation: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .ip-hero-cinema {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+  }
+
+  .ip-hero-cinema-copy {
+    order: 1;
+  }
+
+  .ip-hero-cinema-demo {
+    order: 2;
+    width: 100%;
+  }
+}

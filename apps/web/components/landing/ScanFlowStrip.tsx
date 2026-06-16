@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 export type ScanFlowPhase = "scan" | "match" | "open";
 
 const PHASES: { id: ScanFlowPhase; label: string }[] = [
@@ -11,11 +15,27 @@ type ScanFlowStripProps = {
 };
 
 export function ScanFlowStrip({ activePhase }: ScanFlowStripProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
   const activeLabel = PHASES.find((p) => p.id === activePhase)?.label ?? "SCAN";
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setVisible(true);
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
-      className="ip-scan-demo-flow"
+      ref={ref}
+      className={`ip-scan-demo-flow${visible ? " ip-scan-demo-flow-visible" : ""}`}
       role="status"
       aria-live="polite"
       aria-label={`Scan flow: ${activeLabel}`}

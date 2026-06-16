@@ -1,0 +1,51 @@
+/* Luminous Demo — scan section */
+
+[data-section-mood="luminous"] {
+  background: var(--mood-luminous-bg);
+}
+
+[data-section-mood="luminous"] .ip-landing-scan-inner {
+  max-width: 800px;
+  width: 100%;
+}
+
+[data-section-mood="luminous"] .ip-section-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: 0.12em;
+}
+
+[data-section-mood="luminous"] .ip-demo.ip-demo-landing {
+  width: 100%;
+  max-width: 560px;
+  background: var(--mood-luminous-card);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  box-shadow: var(--mood-luminous-shadow);
+  border-radius: var(--radius-xl);
+}
+
+[data-section-mood="luminous"] .ip-demo-frame {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+[data-section-mood="luminous"] .ip-landing-scan .ip-demo-landing .ip-demo-frame {
+  max-height: 320px;
+  width: min(100%, 400px);
+  margin: 0 auto;
+}
+
+[data-section-mood="luminous"] .ip-landing-scan .ip-demo-landing .ip-demo-figure {
+  width: min(100%, 400px);
+  margin: 0 auto;
+}
+
+[data-section-mood="luminous"] .ip-scan-demo-flow {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+[data-section-mood="luminous"] .ip-scan-demo-flow-active .ip-scan-demo-flow-label {
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent-glow);
+}
