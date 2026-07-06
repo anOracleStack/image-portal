@@ -18,7 +18,8 @@ the codebase typechecks and builds clean. But two categories of serious problems
    native mobile can never match, embedding-version safety is vacuous) — **flagged for a
    product decision**, not silently changed.
 
-**Totals across all agents:** 16 P0 · 36 P1 · 39 P2 · 33 P3 (some overlap; deduped below).
+**Totals across all agents:** 18 P0 · 40 P1 · 50 P2 · 42 P3 (some overlap; deduped below).
+All six domain reports (`a`–`f`) are complete.
 
 ---
 
@@ -60,6 +61,26 @@ Files: `apps/web/app/api/portals/[id]/route.ts`, `.../scan-history/route.ts`,
   and only made private by later hardening migrations. If those migrations never reached the live
   project (see P0-DB1), every uploaded file is publicly downloadable regardless of the code fixes.
   Verify in Dashboard → Storage that both buckets are Private, and that all 9 migrations are applied.
+
+### Design / UX (Agent C — some FIXED, one DECISION REQUIRED)
+
+- **FIXED this session:** branded 404 page (`app/not-found.tsx`) so expired `/p/{slug}` portals no
+  longer show a raw black error; acquisition CTAs now open the sign-up view (`/login?mode=signup`)
+  instead of "Welcome back"; hero H1 accessible name fixed ("Image**into**" → proper spacing);
+  `/scan` light-theme placeholder text made readable on the dark camera well. Verified: 404 returns
+  proper 404 + branded chrome; `?mode=signup` renders "New here / Create Account".
+- **P0-D1 — DECISION REQUIRED: the landing is not responsive on phones.** `LandingScaleShell` scales
+  the fixed 1440px landing down to a 0.5 floor and **clips** (not reflows) below ~720px, so at 375px
+  roughly half the design — including the nav (logo, Menu, theme toggle) — is off-screen. This is an
+  architecture choice (scale-and-clip vs true mobile reflow), not a one-line fix; the marketing
+  sub-pages (pricing/gallery/scan) are properly responsive. Recommended: a real mobile nav + reflow
+  for the landing below 768px. Flagged for direction rather than a unilateral rework of the strongest
+  desktop asset. `components/LandingScaleShell.tsx`, `lib/scale-shell.ts`, `app/globals.css:1834+`.
+- **P1/P2 (queued):** help-chat FAB overlaps the theme toggle on mobile; gallery error is a raw
+  string with no retry; auth pages drop site chrome; legal pages are "coming soon" stubs beside a
+  paid pricing page; ~6 "and"-vs-"&" copy-rule violations; theme toggle has three inconsistent
+  presentations. Desktop design quality is otherwise strong (coherent mood system, AA+ dark contrast,
+  exemplary reduced-motion handling).
 
 ### Vision engine (DECISION REQUIRED — not silently changed)
 

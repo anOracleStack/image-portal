@@ -12,7 +12,7 @@ export const HERO_LEAD_LINES = [
   "Anyone with a camera phone can open your link in seconds.",
 ] as const;
 
-export const HERO_CTA_PRIMARY = { label: "GET STARTED FREE", href: "/login" } as const;
+export const HERO_CTA_PRIMARY = { label: "GET STARTED FREE", href: "/login?mode=signup" } as const;
 export const HERO_CTA_SECONDARY = {
   label: "SEE HOW IT WORKS ↓",
   href: "#scan-demo",
@@ -78,7 +78,7 @@ export const CTA_LINES = [
   "Explore examples — dark or light theme.",
 ] as const;
 
-export const CTA_PRIMARY = { label: "CREATE FREE ACCOUNT", href: "/login" } as const;
+export const CTA_PRIMARY = { label: "CREATE FREE ACCOUNT", href: "/login?mode=signup" } as const;
 export const CTA_SECONDARY = { label: "BROWSE USE CASES", href: "#use-cases" } as const;
 
 export const SCAN_PRIVACY_LINES = [

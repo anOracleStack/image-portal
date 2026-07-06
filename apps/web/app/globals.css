@@ -4207,7 +4207,8 @@ a {
 }
 
 .ip-scan-placeholder {
-  color: var(--text-faint);
+  /* Always sits on the dark camera surface — must stay light in both themes. */
+  color: rgba(255, 255, 255, 0.66);
   font-size: 14px;
   text-align: center;
   padding: 0 1rem;

@@ -24,7 +24,7 @@ export async function HeroHeadline() {
           dangerouslySetInnerHTML={{ __html: qrSvg }}
         />
       </div>
-      <h1 className="ip-hero-title ip-hero-grabber">
+      <h1 className="ip-hero-title ip-hero-grabber" aria-label={HERO_HEADLINE_LINES.join(" ")}>
         {HERO_HEADLINE_LINES.map((line) => (
           <span key={line} className="ip-hero-grabber-line">
             {line}
