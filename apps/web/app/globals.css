@@ -4129,6 +4129,26 @@ a {
   color: var(--accent);
 }
 
+/* On phones the 500px min-width overflowed and the marketing shell clipped the
+   right-hand plan columns. Drop the min-width and tighten spacing so every
+   column fits the viewport — no horizontal scroll, nothing cut off. */
+@media (max-width: 560px) {
+  .ip-pricing-table {
+    min-width: 0;
+    font-size: 12px;
+  }
+  .ip-pricing-table th,
+  .ip-pricing-table td {
+    padding: 10px 5px;
+  }
+  .ip-pricing-table th:first-child {
+    font-size: 10px;
+  }
+  .ip-pricing-table-wrap {
+    padding: 8px 8px;
+  }
+}
+
 .ip-faq-list {
   display: flex;
   flex-direction: column;
