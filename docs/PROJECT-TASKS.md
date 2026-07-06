@@ -124,6 +124,18 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 Append entries here. **Do not delete history.**
 
+### 2026-07-06 — Prod DB was PAUSED; mobile scaling fix; prod verified
+
+- **Agent:** Claude Code (Fable 5) + background verification agent
+- **Done:**
+  - **Root-caused a live outage:** production Supabase project `duydupyyembdttmjvsxm` was **PAUSED** — every DB-backed route (gallery, login, dashboard, scan match) 500'd while static pages stayed 200. User reactivated it; `/api/portals/public` now returns 200 with 7 real portals. **RISK: free-tier Supabase auto-pauses after ~7 days idle — upgrade to Pro before launch or this recurs.**
+  - **Mobile landing fix (P0-D1):** `LandingScaleShell` floored scale at 0.5 and clipped below 720px, pushing nav off-screen. Removed the floor → design scales proportionally to fit any width; vertical scroll only, never horizontal. Desktop/tablet (≥720px) math is identical → unchanged. Verified at 320/375px: no horizontal scroll, nav reachable.
+  - **Pricing table:** dropped 500px min-width on phones (was clipped by marketing shell); all plan columns now fit.
+  - Background agent verified full production health post-deploy (security 401s live, branded 404 live, 9 pages 200, DB serving). Known gaps unchanged: missing CSP/XFO headers, favicon 404, no apple-touch-icon.
+- **Files:** `apps/web/lib/scale-shell.ts`, `apps/web/app/globals.css`
+- **Deploys:** `dpl_9KfrPqPz…` (security), `dpl_3ti22wJo…` (UX/404), `dpl_6CnNhN31…` (mobile) — all aliased https://rub.pub, verified.
+- **Blockers (USER):** (1) upgrade prod Supabase to Pro (auto-pause); (2) confirm bucket privacy + which project ref is prod (CLI links a different ref); (3) vision-engine scope decision. See `docs/audit/2026-07-06/MASTER-AUDIT.md`.
+
 ### 2026-07-06 — Full audit + security P0 remediation
 
 - **Agent:** Claude Code (Fable 5), 6 parallel read-only audit agents + orchestrator fixes
