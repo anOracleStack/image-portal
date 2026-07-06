@@ -2,20 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { getAppUrl } from "@/lib/app-url";
+import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
   try {
-    const { priceId, userId, successUrl, cancelUrl } = (await req.json()) as {
+    // Bind the checkout to the authenticated user, not a client-supplied id —
+    // otherwise an attacker could attach a subscription to any victim's account.
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = user.id;
+
+    const { priceId, successUrl, cancelUrl } = (await req.json()) as {
       priceId?: string;
-      userId?: string;
       successUrl?: string;
       cancelUrl?: string;
     };
 
-    if (!priceId || !userId) {
+    if (!priceId) {
       return NextResponse.json(
-        { error: "priceId & userId are required" },
+        { error: "priceId is required" },
         { status: 400 },
       );
     }

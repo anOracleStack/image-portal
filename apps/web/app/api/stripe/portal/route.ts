@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { getAppUrl } from "@/lib/app-url";
+import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
-    const { userId } = (await req.json()) as { userId?: string };
+    // Derive the customer from the authenticated session — never trust a
+    // client-supplied userId (that let anyone open any user's billing portal).
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 },
-      );
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const userId = user.id;
 
     const db = createAdminClient();
     const { data: sub } = await db
@@ -34,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe().billingPortal.sessions.create({
       customer: sub.stripe_customer_id,
-      return_url: `${appUrl}/settings`,
+      return_url: `${appUrl}/dashboard/settings`,
     });
 
     return NextResponse.json({ url: session.url });

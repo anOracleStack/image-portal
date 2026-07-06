@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ScanRequest, decideBand, EMBED_MODEL, EMBED_VERSION, matchRetryMessage } from "@ip/shared";
+import { ScanRequest, decideBand, EMBED_MODEL, EMBED_VERSION, matchRetryMessage, validateDestination, destinationUrlErrorMessage } from "@ip/shared";
 import { preprocess, StructuralVerifier, dhash, hashSimilarity } from "@ip/vision";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { checkScanLimit } from "@/lib/subscription";
@@ -20,6 +20,18 @@ export async function POST(req: NextRequest) {
   if (!body.imageUrl || typeof body.imageUrl !== "string") {
     return NextResponse.json({ error: "imageUrl required" }, { status: 400 });
   }
+
+  // SSRF guard: only fetch https URLs whose host is not private/loopback/
+  // link-local (blocks cloud-metadata and internal services). Reuses the same
+  // allowlist that gates destination URLs.
+  const urlVerdict = validateDestination(body.imageUrl);
+  if (!urlVerdict.ok) {
+    return NextResponse.json(
+      { error: `imageUrl rejected: ${destinationUrlErrorMessage(urlVerdict.reason)}` },
+      { status: 400 }
+    );
+  }
+  const safeImageUrl = urlVerdict.normalized;
 
   // Resolve API key to user
   const keyHash = crypto.createHash("sha256").update(apiKey).digest("hex");
@@ -45,7 +57,11 @@ export async function POST(req: NextRequest) {
   // Download the image from the given URL
   let imageResp: Response;
   try {
-    imageResp = await fetch(body.imageUrl, { signal: AbortSignal.timeout(15_000) });
+    imageResp = await fetch(safeImageUrl, {
+      signal: AbortSignal.timeout(15_000),
+      // Refuse redirects — a validated host could otherwise 30x into a private IP.
+      redirect: "error",
+    });
   } catch {
     return NextResponse.json({ error: "failed to fetch imageUrl" }, { status: 502 });
   }

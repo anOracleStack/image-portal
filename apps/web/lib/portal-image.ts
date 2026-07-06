@@ -26,12 +26,15 @@ export async function persistPortalImage(opts: {
 
   const db = createAdminClient();
 
+  // The `phash` column stores the dHash (see insert below), so compare the new
+  // dHash against it — comparing against `dhash` (which holds an aHash) is a
+  // cross-algorithm comparison that never trips the gate.
   const { data: existing } = await db
     .from("portal_images")
-    .select("dhash, portals!inner(status)")
+    .select("phash, portals!inner(status)")
     .eq("portals.status", "active");
   for (const e of existing ?? []) {
-    if (e.dhash && hashSimilarity(dh, e.dhash) >= COLLISION_HASH_SIM) {
+    if (e.phash && hashSimilarity(dh, e.phash) >= COLLISION_HASH_SIM) {
       throw new Error("near-duplicate of an existing active portal");
     }
   }

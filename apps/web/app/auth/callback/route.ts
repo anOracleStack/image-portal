@@ -10,7 +10,15 @@ export async function GET(request: Request) {
 
   const { searchParams } = requestUrl;
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/auth/welcome";
+  // Only allow same-origin relative redirects — reject absolute
+  // (`https://evil.com`) and protocol-relative (`//evil.com`) targets.
+  const nextParam = searchParams.get("next") ?? "/auth/welcome";
+  const next =
+    nextParam.startsWith("/") &&
+    !nextParam.startsWith("//") &&
+    !nextParam.startsWith("/\\")
+      ? nextParam
+      : "/auth/welcome";
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);

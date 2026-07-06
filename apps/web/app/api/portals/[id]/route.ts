@@ -146,14 +146,33 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const db = createAdminClient();
 
-    // Delete dependent records first (portal_images, fingerprints via CASCADE
-    // should handle this if FK constraints are set, but we do it explicitly
-    // for safety).
-    await db.from("portal_images").delete().eq("portal_id", id);
-    await db.from("fingerprints").delete().eq("portal_id", id);
+    const { data: existing, error: loadErr } = await db
+      .from("portals")
+      .select("owner_id")
+      .eq("id", id)
+      .single();
 
+    if (loadErr || !existing) {
+      return NextResponse.json({ error: "Portal not found" }, { status: 404 });
+    }
+
+    if (existing.owner_id !== user.id) {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    }
+
+    // portal_images and portal_fingerprints are removed via ON DELETE CASCADE
+    // when the portal row is deleted.
     const { error } = await db.from("portals").delete().eq("id", id);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -172,18 +191,31 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
 
     if (body.action === "toggle_status") {
       const db = createAdminClient();
       const { data: portal } = await db
         .from("portals")
-        .select("status")
+        .select("status, owner_id")
         .eq("id", id)
         .single();
 
       if (!portal) {
         return NextResponse.json({ error: "Portal not found" }, { status: 404 });
+      }
+
+      if (portal.owner_id !== user.id) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
       }
 
       const newStatus = portal.status === "active" ? "inactive" : "active";

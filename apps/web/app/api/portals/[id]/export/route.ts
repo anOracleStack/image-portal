@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabase-admin";
 
 export async function POST(
@@ -6,6 +7,15 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body: { type?: string } = await req.json().catch(() => ({}));
   const exportType = body.type ?? "image_only";
 
@@ -26,6 +36,10 @@ export async function POST(
 
   if (portalErr || !portal) {
     return NextResponse.json({ error: "Portal not found" }, { status: 404 });
+  }
+
+  if (portal.owner_id !== user.id) {
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
   try {

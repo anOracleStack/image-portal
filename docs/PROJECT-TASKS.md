@@ -124,6 +124,18 @@ Prior work conflated **git push + local build** with **full voice-memo delivery 
 
 Append entries here. **Do not delete history.**
 
+### 2026-07-06 — Full audit + security P0 remediation
+
+- **Agent:** Claude Code (Fable 5), 6 parallel read-only audit agents + orchestrator fixes
+- **Task id(s):** audit (new); relates to T-090 (production verification still pending)
+- **Done:**
+  - Ran 6-domain audit (web, security, design, vision, data, parity). Reports in `docs/audit/2026-07-06/` (`a`–`f` + `MASTER-AUDIT.md`).
+  - **Fixed 9 security P0s** — unauthenticated service-role routes (portal DELETE, toggle, scan-history, stripe/portal, stripe/create-checkout, portal export, image proxy), SSRF on `/api/hooks/scan`, and `/auth/callback` open redirect. All now require auth + ownership / validate input.
+  - Fixed near-duplicate collision gate (dHash-vs-aHash comparison bug) and Safe Browsing env-var mismatch (now accepts `SAFE_BROWSING_API_KEY`).
+- **Files changed:** `apps/web/app/api/portals/[id]/route.ts`, `.../portals/scan-history/route.ts`, `.../stripe/portal/route.ts`, `.../stripe/create-checkout/route.ts`, `.../portals/[id]/export/route.ts`, `.../images/[id]/route.ts`, `.../hooks/scan/route.ts`, `apps/web/app/auth/callback/route.ts`, `apps/web/lib/portal-image.ts`, `apps/web/lib/safe-browsing.ts`
+- **Verification:** `pnpm --filter @ip/web typecheck` ✓ · `build` ✓ · `pnpm test` 4/4 ✓ · runtime probes: all guarded endpoints return 401 to anonymous callers ✓; SSRF metadata-IP rejected ✓
+- **Blockers / follow-ups (USER):** (1) Confirm production Supabase ref — app uses `duydupyyembdttmjvsxm` but CLI is linked to `ybqmvxuvaldfzmkbucqc`; (2) verify storage buckets private + all migrations applied; (3) decide vision-engine scope (ship demo-grade + fast-follow vs hold). Native mobile scan is non-functional (P0-V2) but does not block the web/PWA launch. See `docs/audit/2026-07-06/MASTER-AUDIT.md`.
+
 ### 2026-06-13 — Luminous Portal marketing polish (T-050, T-051)
 
 - **Agent:** Cursor (subagent)

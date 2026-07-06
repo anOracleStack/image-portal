@@ -1,11 +1,18 @@
 import "server-only";
 
-/** Optional Google Safe Browsing lookup (requires GOOGLE_SAFE_BROWSING_API_KEY). */
+/**
+ * Optional Google Safe Browsing lookup. Accepts either env var name:
+ * `SAFE_BROWSING_API_KEY` (documented in ENV_KEYS.md / .env.example) or the
+ * legacy `GOOGLE_SAFE_BROWSING_API_KEY`. Previously only the latter was read,
+ * so following the docs left the check silently disabled.
+ */
 export async function checkSafeBrowsing(url: string): Promise<{
   safe: boolean;
   threats: string[];
 }> {
-  const key = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
+  const key =
+    process.env.SAFE_BROWSING_API_KEY ??
+    process.env.GOOGLE_SAFE_BROWSING_API_KEY;
   if (!key) return { safe: true, threats: [] };
 
   try {
